@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "Baofeng 2.0",
+    "slug": "baofeng2-0",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./src/assets/logo/playstore-icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTabletMode": true,
+      "bundleIdentifier": "dev.baofeng.com",
+      "icon": "./src/assets/logo/playstore-icon.png"
+    },
+    "android": {
+      "icon": "./src/assets/logo/playstore-icon.png",
+      "adaptiveIcon": {
+        "foregroundImage": "./src/assets/logo/playstore-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "dev.baofeng.com"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "apiUrl": "https://api.baofeng.com"
+    }
+  }
+}

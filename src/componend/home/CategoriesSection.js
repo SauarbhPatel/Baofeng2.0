@@ -31,9 +31,13 @@ const CATEGORIES = [
     // Add more items as needed
 ];
 
-const CategoriesSection = () => {
+const CategoriesSection = ({ navigation }) => {
     const renderItem = ({ item }) => (
-        <TouchableOpacity style={styles.categoryCard} activeOpacity={0.7}>
+        <TouchableOpacity
+            style={styles.categoryCard}
+            activeOpacity={0.7}
+            onPress={() => navigation.push("ProductListing")}
+        >
             <View style={styles.imageContainer}>
                 <Image
                     source={item.image}

@@ -21,8 +21,8 @@ const HomeScreen = ({ navigation }) => {
                 <HomeBanner1
                     imageSource={require("../../assets/images/blue_banner_base.png")}
                 />
-                <CategoriesSection />
-                <AccessoriesSection />
+                <CategoriesSection navigation={navigation} />
+                <AccessoriesSection navigation={navigation} />
                 <HorizontalProducts
                     bgColor="#D9EAF3"
                     productBorder="#0069AF"
@@ -32,19 +32,32 @@ const HomeScreen = ({ navigation }) => {
                 <HomeBanner1
                     imageSource={require("../../assets/images/banner2.png")}
                 />
-                <HorizontalProducts bgColor="#ECDFC6" productBorder="#EBF7FD" />
+                <HorizontalProducts
+                    bgColor="#ECDFC6"
+                    productBorder="#EBF7FD"
+                    navigation={navigation}
+                />
                 <HomeBanner1
                     imageSource={require("../../assets/images/banner3.png")}
                 />
                 <GridProduct
                     gradientColors={["#FFFFFF", "#D7E9F2"]}
                     lable="Licence Radios"
+                    navigation={navigation}
                 />
-                <HorizontalProducts bgColor="#D9EAF3" productBorder="#EBF7FD" />
-                <MicrophonesGrid />
-                <HorizontalProducts bgColor="#0069AF" productBorder="#EBF7FD" />
-                <InstagramSection />
-                <NewsAndUpdate />
+                <HorizontalProducts
+                    bgColor="#D9EAF3"
+                    productBorder="#EBF7FD"
+                    navigation={navigation}
+                />
+                <MicrophonesGrid navigation={navigation} />
+                <HorizontalProducts
+                    bgColor="#0069AF"
+                    productBorder="#EBF7FD"
+                    navigation={navigation}
+                />
+                <InstagramSection navigation={navigation} />
+                <NewsAndUpdate navigation={navigation} />
             </ScrollView>
         </SafeAreaView>
     );

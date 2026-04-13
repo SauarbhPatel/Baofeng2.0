@@ -7,7 +7,7 @@
     "icon": "./src/assets/logo/playstore-icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./src/assets/logo/playstore-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -28,10 +28,13 @@
       "package": "dev.baofeng.com"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./src/assets/logo/playstore-icon.png"
     },
     "extra": {
-      "apiUrl": "https://api.baofeng.com"
+      "apiUrl": "https://api.baofeng.com",
+      "eas": {
+        "projectId": "ae56fbe8-a040-4790-a506-9dfe121ec4b9"
+      }
     }
   }
 }

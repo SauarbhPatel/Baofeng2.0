@@ -4,6 +4,7 @@ import ProjectDetailsScreen from "../screens/details/ProjectDetailsScreen";
 import HomeNavigator from "./HomeNavigator";
 import AuthNavigator from "./AuthNavigator";
 import CheckoutScreen from "../screens/manage/CheckoutScreen";
+import ProductListingScreen from "../screens/manage/ProductListingScreen";
 const Stack = createNativeStackNavigator();
 
 export default function MainStackNavigator() {
@@ -31,6 +32,10 @@ export default function MainStackNavigator() {
                 component={ProjectDetailsScreen}
             />
             <Stack.Screen name="Checkout" component={CheckoutScreen} />
+            <Stack.Screen
+                name="ProductListing"
+                component={ProductListingScreen}
+            />
         </Stack.Navigator>
     );
 }

@@ -5,6 +5,8 @@ import HomeNavigator from "./HomeNavigator";
 import AuthNavigator from "./AuthNavigator";
 import CheckoutScreen from "../screens/manage/CheckoutScreen";
 import ProductListingScreen from "../screens/manage/ProductListingScreen";
+import OrderConfirmationScreen from "../screens/details/OrderConfirmationScreen";
+import OrderTrackingScreen from "../screens/details/OrderTrackingScreen";
 const Stack = createNativeStackNavigator();
 
 export default function MainStackNavigator() {
@@ -35,6 +37,14 @@ export default function MainStackNavigator() {
             <Stack.Screen
                 name="ProductListing"
                 component={ProductListingScreen}
+            />
+            <Stack.Screen
+                name="OrderConfirmation"
+                component={OrderConfirmationScreen}
+            />
+            <Stack.Screen
+                name="OrderTracking"
+                component={OrderTrackingScreen}
             />
         </Stack.Navigator>
     );

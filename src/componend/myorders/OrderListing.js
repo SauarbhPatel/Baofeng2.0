@@ -43,7 +43,7 @@ const ORDER_DATA = [
 ];
 
 // --- MAIN SCREEN COMPONENT ---
-export default function OrderListing({ activeTab }) {
+export default function OrderListing({ activeTab, navigation }) {
     return (
         <FlatList
             data={
@@ -51,7 +51,9 @@ export default function OrderListing({ activeTab }) {
                     ? ORDER_DATA
                     : ORDER_DATA.filter((item) => item?.status == activeTab)
             }
-            renderItem={({ item }) => <OrderItem cardData={item} />}
+            renderItem={({ item }) => (
+                <OrderItem cardData={item} navigation={navigation} />
+            )}
             keyExtractor={(item) => item.id}
             scrollEnabled={false}
             contentContainerStyle={{ gap: 15 }}
@@ -60,7 +62,7 @@ export default function OrderListing({ activeTab }) {
 }
 
 // --- ITEM COMPONENT ---
-const OrderItem = ({ cardData }) => {
+const OrderItem = ({ cardData, navigation }) => {
     const { status, id, date, items, price, total, image } = cardData;
 
     return (
@@ -114,12 +116,11 @@ const OrderItem = ({ cardData }) => {
                                     />
                                     <ActionButton label="Cancel Order" />
                                     <ActionButton
-                                        label={
-                                            status === "Processing"
-                                                ? "Track Shipment"
-                                                : "Reorder"
-                                        }
+                                        label={"Track Shipment"}
                                         primary={status !== "Processing"}
+                                        onPress={() => {
+                                            navigation.push("OrderTracking");
+                                        }}
                                     />
                                 </>
                             )}
@@ -173,8 +174,15 @@ const StatusBadge = ({ status }) => {
     );
 };
 
-const ActionButton = ({ label, primary, warning, success }) => (
+const ActionButton = ({
+    label,
+    primary,
+    warning,
+    success,
+    onPress = () => {},
+}) => (
     <TouchableOpacity
+        onPress={onPress}
         style={[
             styles.btn,
             primary && styles.btnPrimary,

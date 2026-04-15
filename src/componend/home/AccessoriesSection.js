@@ -1,40 +1,37 @@
-import React from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
-    Image,
-    Dimensions,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Feather } from "@expo/vector-icons";
-
-const { width } = Dimensions.get("window");
 import { LinearGradient } from "expo-linear-gradient";
-const ACCESSORIES_DATA = [
-    {
-        id: "1",
-        name: "Walkie Talkie Charger",
-        image: require("../../assets/images/0d4d04bbdbc51109d57116b5c30abdc44b3d51a8.png"),
-    },
-    {
-        id: "2",
-        name: "Walkie Talkie Battery",
-        image: require("../../assets/images/645968528d146d72ba078b258c8da6878940f2d2.png"),
-    },
-    {
-        id: "3",
-        name: "Walkie Talkie Charger",
-        image: require("../../assets/images/39f35aedd5ce467bcd35726dd695c50ea455c00c.png"),
-    },
-    {
-        id: "4",
-        name: "Walkie Talkie Battery",
-        image: require("../../assets/images/b6b708e9ce280094349963b78fbf1b69b1f20650.png"),
-    },
-];
+import { getProductListing } from "../../api/commonApi";
+import { AccessorySkeleton } from "../common/SkeletonLoader";
 
-const AccessoriesSection = ({ onViewAll }) => {
+const AccessoriesSection = ({ onViewAll, refreshKey }) => {
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        fetchProducts();
+    }, [refreshKey]);
+
+    const fetchProducts = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const res = await getProductListing(1, 4);
+            if (res?.success && res?.data?.records) {
+                setProducts(res.data.records);
+            } else {
+                setError("Failed to load accessories");
+            }
+        } catch (err) {
+            setError("Network error. Please try again.");
+            console.error("Accessories fetch error:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <View style={styles.container}>
             <LinearGradient
@@ -43,6 +40,7 @@ const AccessoriesSection = ({ onViewAll }) => {
                 end={{ x: 1, y: 1 }}
                 style={styles.blueCard}
             >
+                {/* Header */}
                 <View style={styles.headerRow}>
                     <Text style={styles.title}>Accessories</Text>
                     <TouchableOpacity
@@ -54,26 +52,48 @@ const AccessoriesSection = ({ onViewAll }) => {
                     </TouchableOpacity>
                 </View>
 
-                <View style={styles.grid}>
-                    {ACCESSORIES_DATA.map((item) => (
+                {/* ── Skeleton shimmer while loading ── */}
+                {loading ? (
+                    <View style={styles.grid}>
+                        {[1, 2, 3, 4].map((i) => (
+                            <AccessorySkeleton key={i} />
+                        ))}
+                    </View>
+                ) : error ? (
+                    <View style={styles.errorBox}>
+                        <Text style={styles.errorText}>{error}</Text>
                         <TouchableOpacity
-                            key={item.id}
-                            style={styles.itemCard}
-                            activeOpacity={0.8}
+                            onPress={fetchProducts}
+                            style={styles.retryBtn}
                         >
-                            <View style={styles.whiteBox}>
-                                <Image
-                                    source={item.image}
-                                    style={styles.productImage}
-                                    resizeMode="contain"
-                                />
-                            </View>
-                            <Text style={styles.itemName} numberOfLines={2}>
-                                {item.name}
-                            </Text>
+                            <Text style={styles.retryText}>Retry</Text>
                         </TouchableOpacity>
-                    ))}
-                </View>
+                    </View>
+                ) : (
+                    <View style={styles.grid}>
+                        {products.map((item) => (
+                            <TouchableOpacity
+                                key={item._id}
+                                style={styles.itemCard}
+                                activeOpacity={0.8}
+                            >
+                                <View style={styles.whiteBox}>
+                                    <Image
+                                        source={{ uri: item.imageUrl }}
+                                        style={styles.productImage}
+                                        resizeMode="contain"
+                                    />
+                                </View>
+                                <Text style={styles.itemName} numberOfLines={2}>
+                                    {item.title}
+                                </Text>
+                                {/* <Text style={styles.itemPrice}>
+                                    ₹{item.fromPrice?.toLocaleString("en-IN")}
+                                </Text> */}
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                )}
             </LinearGradient>
         </View>
     );
@@ -109,6 +129,8 @@ const styles = StyleSheet.create({
         marginRight: 5,
         fontWeight: "500",
     },
+
+    // ── Grid layout ─────────────────────────────────────────────
     grid: {
         flexDirection: "row",
         flexWrap: "wrap",
@@ -133,9 +155,39 @@ const styles = StyleSheet.create({
     },
     itemName: {
         color: "#FFFFFF",
-        fontSize: 15,
+        fontSize: 14,
         fontWeight: "700",
         lineHeight: 18,
+    },
+    itemPrice: {
+        color: "#93C5FD",
+        fontSize: 13,
+        fontWeight: "600",
+        marginTop: 4,
+    },
+
+    // ── Error state ─────────────────────────────────────────────
+    errorBox: {
+        alignItems: "center",
+        paddingVertical: 30,
+    },
+    errorText: {
+        color: "#FCA5A5",
+        fontSize: 13,
+        marginBottom: 10,
+    },
+    retryBtn: {
+        paddingHorizontal: 20,
+        paddingVertical: 8,
+        backgroundColor: "rgba(255,255,255,0.2)",
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: "rgba(255,255,255,0.4)",
+    },
+    retryText: {
+        color: "#fff",
+        fontSize: 13,
+        fontWeight: "600",
     },
 });
 

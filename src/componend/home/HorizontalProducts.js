@@ -9,6 +9,7 @@ import {
     Dimensions,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
+import { HorizontalProductSkeleton } from "../common/SkeletonLoader";
 
 const { width } = Dimensions.get("window");
 
@@ -37,6 +38,7 @@ const HorizontalProducts = ({
     bgColor = "#fff",
     productBorder,
     navigation,
+    loading = false,
 }) => {
     const renderItem = ({ item }) => (
         <TouchableOpacity
@@ -44,7 +46,6 @@ const HorizontalProducts = ({
             activeOpacity={0.9}
             onPress={() => navigation.push("ProjectDetails")}
         >
-            {/* Product Image Section */}
             <View style={styles.imageContainer}>
                 <Image
                     source={item.image}
@@ -52,14 +53,10 @@ const HorizontalProducts = ({
                     resizeMode="cover"
                 />
             </View>
-
-            {/* Product Info Section */}
             <View style={styles.infoContainer}>
                 <Text style={styles.productName} numberOfLines={2}>
                     {item.name}
                 </Text>
-
-                {/* Rating Row */}
                 <View style={styles.ratingRow}>
                     {[1, 2, 3, 4, 5].map((star) => (
                         <FontAwesome
@@ -72,8 +69,6 @@ const HorizontalProducts = ({
                     ))}
                     <Text style={styles.reviewText}>({item.reviews})</Text>
                 </View>
-
-                {/* Price Row */}
                 <View style={styles.priceRow}>
                     <Text style={styles.currentPrice}>₹{item.price}</Text>
                     <Text style={styles.oldPrice}>₹{item.oldPrice}</Text>
@@ -82,15 +77,21 @@ const HorizontalProducts = ({
         </TouchableOpacity>
     );
 
+    // ── Skeleton shimmer while loading ──────────────────────────
+    if (loading) {
+        return (
+            <View style={[styles.container, { backgroundColor: bgColor }]}>
+                <View style={styles.skeletonRow}>
+                    {[1, 2].map((i) => (
+                        <HorizontalProductSkeleton key={i} />
+                    ))}
+                </View>
+            </View>
+        );
+    }
+
     return (
-        <View
-            style={[
-                styles.container,
-                {
-                    backgroundColor: bgColor,
-                },
-            ]}
-        >
+        <View style={[styles.container, { backgroundColor: bgColor }]}>
             <FlatList
                 data={PRODUCTS}
                 renderItem={renderItem}
@@ -111,6 +112,11 @@ const styles = StyleSheet.create({
     },
     listPadding: {
         paddingHorizontal: 10,
+    },
+    skeletonRow: {
+        flexDirection: "row",
+        paddingHorizontal: 10,
+        gap: 10,
     },
     card: {
         backgroundColor: "#FFFFFF",

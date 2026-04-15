@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 
-const BillingSummary = () => {
+const BillingSummary = ({ navigation }) => {
     const [isChecked, setIsChecked] = useState(true);
     const [note, setNote] = useState("");
 
@@ -64,7 +64,11 @@ const BillingSummary = () => {
             </View>
 
             {/* Payment Action */}
-            <TouchableOpacity style={styles.paymentBtn} activeOpacity={0.8}>
+            <TouchableOpacity
+                style={styles.paymentBtn}
+                activeOpacity={0.8}
+                onPress={() => navigation.push("OrderConfirmation")}
+            >
                 <Text style={styles.paymentBtnText}>Continue to Payment</Text>
             </TouchableOpacity>
 

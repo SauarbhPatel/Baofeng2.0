@@ -1,5 +1,5 @@
 import AppInfo from "../../appInfo";
-import { __getToken } from "../localization";
+// import { __getToken } from "../localization";
 
 const baseUrl = AppInfo.Api;
 const _CompanyId = AppInfo?.companyId;
@@ -11,8 +11,8 @@ function __apiHeader() {
     return {
         headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer " + __getToken(),
-            companyId: _CompanyId,
+            // Authorization: "Bearer " + __getToken(),
+            "x-company-id": _CompanyId,
         },
     };
 }
@@ -21,8 +21,8 @@ function __apiHeaderFormData() {
     return {
         headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: "Bearer " + __getToken(),
-            companyId: _CompanyId,
+            // Authorization: "Bearer " + __getToken(),
+            "x-company-id": _CompanyId,
         },
     };
 }

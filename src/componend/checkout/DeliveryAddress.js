@@ -1,34 +1,50 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import AddressCard from "./AddressCard";
+import AddAddress from "../../screens/form/AddAddress";
 
 const DeliveryAddress = () => {
+    const [showAdd, setShowAdd] = useState(false);
+
     return (
         <View style={styles.wrapper}>
             {/* Alert Header */}
-            <View style={styles.alertRow}>
+            {!showAdd && (
+                <>
+                    {/* <View style={styles.alertRow}>
                 <MaterialCommunityIcons name="star" size={18} color="#ef4444" />
                 <Text style={styles.alertText}>No saved found</Text>
-            </View>
+            </View> */}
 
-            {/* Main Container */}
-            <View style={styles.container}>
-                <Text style={styles.title}>Delivery Address</Text>
-
-                <TouchableOpacity
-                    style={styles.dashedButton}
-                    activeOpacity={0.7}
-                >
-                    <View style={styles.iconCircle}>
-                        <MaterialCommunityIcons
-                            name="plus"
-                            size={20}
-                            color="#0275d8"
+                    {/* Main Container */}
+                    <View style={styles.container}>
+                        <Text style={styles.title}>Delivery Address</Text>
+                        <AddressCard
+                            onSelect={() => {}}
+                            onEdit={() => {}}
+                            onDelete={() => {}}
                         />
+
+                        <TouchableOpacity
+                            style={styles.dashedButton}
+                            activeOpacity={0.7}
+                            onPress={() => setShowAdd(true)}
+                        >
+                            <View style={styles.iconCircle}>
+                                <MaterialCommunityIcons
+                                    name="plus"
+                                    size={20}
+                                    color="#0275d8"
+                                />
+                            </View>
+                            <Text style={styles.addText}>Add Address</Text>
+                        </TouchableOpacity>
                     </View>
-                    <Text style={styles.addText}>Add Address</Text>
-                </TouchableOpacity>
-            </View>
+                </>
+            )}
+
+            {showAdd && <AddAddress />}
         </View>
     );
 };

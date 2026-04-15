@@ -14,7 +14,7 @@ import MainHeader from "../../componend/common/MainHeader";
 import OrderDashboard from "../../componend/myorders/OrderDashboard";
 import OrderListing from "../../componend/myorders/OrderListing";
 
-const OrdersScreen = () => {
+const OrdersScreen = ({ navigation }) => {
     const [state, setState] = useState({
         cartItem: [],
         showEmpty: false,
@@ -37,7 +37,10 @@ const OrdersScreen = () => {
                         activeTab={activeTab}
                         setActiveTab={setActiveTab}
                     />
-                    <OrderListing activeTab={activeTab} />
+                    <OrderListing
+                        activeTab={activeTab}
+                        navigation={navigation}
+                    />
                 </View>
             </ScrollView>
         </SafeAreaView>

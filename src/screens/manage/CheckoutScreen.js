@@ -5,6 +5,8 @@ import DeliveryAddress from "../../componend/checkout/DeliveryAddress";
 import OrderReviewHeader from "../../componend/checkout/OrderReviewHeader";
 import DiscountCodes from "../../componend/checkout/DiscountCodes";
 import BillingSummary from "../../componend/checkout/BillingSummary";
+import ShippingMethod from "../../componend/checkout/ShippingMethod";
+import PaymentMethod from "../../componend/checkout/PaymentMethod";
 
 const CheckoutScreen = ({ navigation }) => {
     return (
@@ -15,9 +17,11 @@ const CheckoutScreen = ({ navigation }) => {
                 contentContainerStyle={{ paddingTop: 15 }}
             >
                 <DeliveryAddress />
+                <ShippingMethod />
+                <PaymentMethod />
                 <OrderReviewHeader />
                 <DiscountCodes />
-                <BillingSummary />
+                <BillingSummary navigation={navigation} />
             </ScrollView>
         </SafeAreaView>
     );

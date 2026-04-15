@@ -1,5 +1,4 @@
 import axios from "axios";
-import { __getToken } from "../localization";
 import { __apiHeader, __apiHeaderFormData, baseUrl } from "./constant";
 
 const BASE_URL = baseUrl;

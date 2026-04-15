@@ -5,7 +5,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { getProductListing } from "../../api/commonApi";
 import { AccessorySkeleton } from "../common/SkeletonLoader";
 
-const AccessoriesSection = ({ onViewAll, refreshKey }) => {
+const AccessoriesSection = ({ onViewAll, refreshKey, navigation }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -75,7 +75,12 @@ const AccessoriesSection = ({ onViewAll, refreshKey }) => {
                             <TouchableOpacity
                                 key={item._id}
                                 style={styles.itemCard}
-                                activeOpacity={0.8}
+                                activeOpacity={1}
+                                onPress={() =>
+                                    navigation.push("ProjectDetails", {
+                                        product: item,
+                                    })
+                                }
                             >
                                 <View style={styles.whiteBox}>
                                     <Image

@@ -136,7 +136,12 @@ const OrderItem = ({ cardData, navigation }) => {
                         <View style={styles.buttonRow}>
                             {status === "Delivered" && (
                                 <>
-                                    <ActionButton label="Return / Exchange" />
+                                    <ActionButton
+                                        label="Return / Exchange"
+                                        onPress={() => {
+                                            navigation.push("RefundRequest");
+                                        }}
+                                    />
                                     <ActionButton
                                         label="Leave a Review"
                                         warning

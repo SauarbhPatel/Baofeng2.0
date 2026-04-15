@@ -7,6 +7,7 @@ import CheckoutScreen from "../screens/manage/CheckoutScreen";
 import ProductListingScreen from "../screens/manage/ProductListingScreen";
 import OrderConfirmationScreen from "../screens/details/OrderConfirmationScreen";
 import OrderTrackingScreen from "../screens/details/OrderTrackingScreen";
+import RefundRequestScreen from "../screens/details/RefundRequestScreen";
 const Stack = createNativeStackNavigator();
 
 export default function MainStackNavigator() {
@@ -45,6 +46,10 @@ export default function MainStackNavigator() {
             <Stack.Screen
                 name="OrderTracking"
                 component={OrderTrackingScreen}
+            />
+            <Stack.Screen
+                name="RefundRequest"
+                component={RefundRequestScreen}
             />
         </Stack.Navigator>
     );

@@ -10,7 +10,9 @@ import SimilarProducts from "../../componend/product/SimilarProducts";
 import CustomerReviews from "../../componend/product/CustomerReviews";
 import HomeBanner1 from "../../componend/home/HomeBanner1";
 
-const ProjectDetailsScreen = ({ navigation }) => {
+const ProjectDetailsScreen = ({ navigation, route }) => {
+    console.log(JSON.stringify(route?.params));
+    const {} = route?.params?.product;
     return (
         <SafeAreaView style={styles.container}>
             <MainHeader bgColor="#ffffff" />

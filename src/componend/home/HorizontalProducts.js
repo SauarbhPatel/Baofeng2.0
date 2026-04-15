@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -9,75 +9,81 @@ import {
     Dimensions,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
+import { getProductListing } from "../../api/commonApi";
 import { HorizontalProductSkeleton } from "../common/SkeletonLoader";
 
 const { width } = Dimensions.get("window");
-
-const PRODUCTS = [
-    {
-        id: "1",
-        name: "Baofeng BF-888s Licence Free Walkie Talkie",
-        image: require("../../assets/images/bb81bc903cd264300ba5b10b1013095c65f4abe2.png"),
-        rating: 4,
-        reviews: 234,
-        price: 1399,
-        oldPrice: 1599,
-    },
-    {
-        id: "2",
-        name: "Baofeng BF-888s Licence Free Walkie Talkie",
-        image: require("../../assets/images/287a20ea431c80761203c9f3c075d7b29b6401f1.png"),
-        rating: 4,
-        reviews: 234,
-        price: 1399,
-        oldPrice: 1599,
-    },
-];
 
 const HorizontalProducts = ({
     bgColor = "#fff",
     productBorder,
     navigation,
-    loading = false,
+    refreshKey,
 }) => {
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        fetchProducts();
+    }, [refreshKey]);
+
+    const fetchProducts = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const res = await getProductListing(2, 4);
+            if (res?.success && res?.data?.records) {
+                setProducts(res.data.records);
+            } else {
+                setError("Failed to load products");
+            }
+        } catch (err) {
+            setError("Network error. Please try again.");
+            console.error("HorizontalProducts fetch error:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const renderItem = ({ item }) => (
         <TouchableOpacity
             style={[styles.card, { borderColor: productBorder }]}
             activeOpacity={0.9}
-            onPress={() => navigation.push("ProjectDetails")}
+            onPress={() => navigation.push("ProjectDetails", { product: item })}
         >
             <View style={styles.imageContainer}>
                 <Image
-                    source={item.image}
+                    source={{ uri: item.imageUrl }}
                     style={styles.productImage}
-                    resizeMode="cover"
+                    resizeMode="contain"
                 />
             </View>
             <View style={styles.infoContainer}>
                 <Text style={styles.productName} numberOfLines={2}>
-                    {item.name}
+                    {item.title}
                 </Text>
+                {/* Static 4-star rating until ratings API is available */}
                 <View style={styles.ratingRow}>
                     {[1, 2, 3, 4, 5].map((star) => (
                         <FontAwesome
                             key={star}
                             name="star"
                             size={14}
-                            color={star <= item.rating ? "#FFD700" : "#E2E8F0"}
+                            color={star <= 4 ? "#FFD700" : "#E2E8F0"}
                             style={styles.starIcon}
                         />
                     ))}
-                    <Text style={styles.reviewText}>({item.reviews})</Text>
                 </View>
                 <View style={styles.priceRow}>
-                    <Text style={styles.currentPrice}>₹{item.price}</Text>
-                    <Text style={styles.oldPrice}>₹{item.oldPrice}</Text>
+                    <Text style={styles.currentPrice}>
+                        ₹{item.fromPrice?.toLocaleString("en-IN")}
+                    </Text>
                 </View>
             </View>
         </TouchableOpacity>
     );
 
-    // ── Skeleton shimmer while loading ──────────────────────────
     if (loading) {
         return (
             <View style={[styles.container, { backgroundColor: bgColor }]}>
@@ -90,12 +96,18 @@ const HorizontalProducts = ({
         );
     }
 
+    if (error) {
+        return (
+            <View style={[styles.container, { backgroundColor: bgColor }]} />
+        );
+    }
+
     return (
         <View style={[styles.container, { backgroundColor: bgColor }]}>
             <FlatList
-                data={PRODUCTS}
+                data={products}
                 renderItem={renderItem}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item._id}
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.listPadding}
@@ -107,7 +119,6 @@ const HorizontalProducts = ({
 const styles = StyleSheet.create({
     container: {
         paddingVertical: 15,
-        backgroundColor: "#D9EAF3",
         marginBottom: 15,
     },
     listPadding: {
@@ -124,7 +135,6 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         marginRight: 10,
         borderWidth: 1,
-        borderColor: "#3B82F6",
         overflow: "hidden",
         padding: 12,
     },
@@ -157,11 +167,6 @@ const styles = StyleSheet.create({
     starIcon: {
         marginRight: 2,
     },
-    reviewText: {
-        fontSize: 13,
-        color: "#94A3B8",
-        marginLeft: 5,
-    },
     priceRow: {
         flexDirection: "row",
         alignItems: "baseline",
@@ -171,11 +176,6 @@ const styles = StyleSheet.create({
         fontWeight: "900",
         color: "#000000",
         marginRight: 8,
-    },
-    oldPrice: {
-        fontSize: 14,
-        color: "#94A3B8",
-        textDecorationLine: "line-through",
     },
 });
 

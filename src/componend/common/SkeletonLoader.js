@@ -165,6 +165,54 @@ export const OrderCardSkeleton = () => (
     </View>
 );
 
+// ─── Product Listing card skeleton (2-column grid) ─────────────
+export const ProductListingSkeleton = () => (
+    <View style={styles.listingCard}>
+        {/* Image placeholder */}
+        <SkeletonBox
+            width="100%"
+            height={140}
+            borderRadius={14}
+            style={styles.mb10}
+        />
+        {/* Badge placeholder */}
+        <SkeletonBox
+            width="35%"
+            height={18}
+            borderRadius={20}
+            style={styles.mb10}
+        />
+        {/* Title line 1 */}
+        <SkeletonBox width="95%" height={13} borderRadius={6} />
+        {/* Title line 2 */}
+        {/* <SkeletonBox
+            width="70%"
+            height={13}
+            borderRadius={6}
+            style={styles.mt6}
+        /> */}
+        {/* Stars row */}
+        <SkeletonBox
+            width="55%"
+            height={10}
+            borderRadius={6}
+            style={styles.mt8}
+        />
+        {/* Price row */}
+        <View style={styles.priceRow}>
+            <SkeletonBox width="40%" height={16} borderRadius={6} />
+            <SkeletonBox width="28%" height={12} borderRadius={6} />
+        </View>
+        {/* Button */}
+        <SkeletonBox
+            width="100%"
+            height={36}
+            borderRadius={10}
+            style={styles.mt8}
+        />
+    </View>
+);
+
 const styles = StyleSheet.create({
     // Category
     categoryCard: {
@@ -226,6 +274,23 @@ const styles = StyleSheet.create({
     orderDetails: {
         flex: 1,
         justifyContent: "center",
+    },
+
+    // Product Listing card
+    listingCard: {
+        width: "48%",
+        backgroundColor: "#fff",
+        borderRadius: 16,
+        padding: 12,
+        marginBottom: 14,
+        borderWidth: 1,
+        borderColor: "#EDF1FA",
+    },
+    priceRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginTop: 8,
     },
 
     // Spacing helpers

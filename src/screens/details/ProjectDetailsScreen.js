@@ -9,6 +9,7 @@ import ProductTabs from "../../componend/product/ProductTabs";
 import SimilarProducts from "../../componend/product/SimilarProducts";
 import CustomerReviews from "../../componend/product/CustomerReviews";
 import HomeBanner1 from "../../componend/home/HomeBanner1";
+import VariantCard from "../../componend/product/VariantCard";
 
 const ProjectDetailsScreen = ({ navigation, route }) => {
     console.log(JSON.stringify(route?.params));
@@ -22,6 +23,7 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
             >
                 <ProductGallery />
                 <ProductDetail />
+                <VariantCard />
                 <LicenceNote />
                 <MustRead />
                 <ProductTabs />

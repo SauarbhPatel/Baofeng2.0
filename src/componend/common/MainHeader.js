@@ -38,6 +38,7 @@ const MainHeader = ({ bgColor }) => {
                         style={styles.searchInput}
                         placeholder="Search..."
                         placeholderTextColor="#A0AEC0"
+                        editable={false}
                     />
                 </View>
             </View>

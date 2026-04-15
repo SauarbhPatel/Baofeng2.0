@@ -216,14 +216,16 @@ const CheckBox = ({ label, isActive, onPress }) => (
 );
 
 const styles = StyleSheet.create({
-    container: { padding: 10, paddingTop: 0 },
+    container: { paddingTop: 0 },
     filterTrigger: {
         width: 50,
-        height: 50,
+        height: 44,
         backgroundColor: "#F3FBFF",
         borderRadius: 14,
         justifyContent: "center",
         alignItems: "center",
+        borderWidth: 1,
+        borderColor: "#EBF7FD",
     },
     modalOverlay: {
         flex: 1,

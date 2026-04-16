@@ -13,3 +13,7 @@ export const getProductListing = (page = 1, limit = 4) =>
 // pickupPointId → e.g. "69a1e57b1aeed5f800c42ef8"
 export const getProductDetails = (slug, listingId, pickupPointId) =>
     __getApiData(`product/${slug}/${listingId}?pickupPointId=${pickupPointId}`);
+
+// ─── Similar Products ─────────────────────────────────────────
+export const getSimilarProducts = (categoryId, productId) =>
+    __getApiData(`product/similar/${categoryId}/${productId}`);

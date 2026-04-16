@@ -343,6 +343,37 @@ export const VariantSkeleton = () => (
     </View>
 );
 
+// ─── Similar product card skeleton (2-column grid) ─────────────
+export const SimilarProductSkeleton = () => (
+    <View style={styles.similarCard}>
+        {/* Product image */}
+        <SkeletonBox
+            width={100}
+            height={120}
+            borderRadius={8}
+            style={styles.similarImg}
+        />
+        {/* Title line */}
+        <SkeletonBox
+            width="90%"
+            height={11}
+            borderRadius={5}
+            style={styles.mt8}
+        />
+        {/* Price row */}
+        <View style={styles.similarPriceRow}>
+            <SkeletonBox width="45%" height={12} borderRadius={5} />
+            <SkeletonBox width="30%" height={10} borderRadius={5} />
+        </View>
+        {/* Action row — cart | BUY NOW | heart */}
+        <SkeletonBox
+            width="100%"
+            height={28}
+            borderRadius={5}
+            style={styles.mt8}
+        />
+    </View>
+);
 const styles = StyleSheet.create({
     // Category
     categoryCard: {
@@ -444,6 +475,26 @@ const styles = StyleSheet.create({
         paddingBottom: 15,
     },
     variantItem: { alignItems: "center" },
+
+    // Similar product card
+    similarCard: {
+        width: "48%",
+        backgroundColor: "#fff",
+        borderRadius: 8,
+        padding: 10,
+        marginBottom: 15,
+        borderWidth: 1,
+        borderColor: "#e2e8f0",
+        alignItems: "center",
+    },
+    similarImg: { alignSelf: "center", marginBottom: 8 },
+    similarPriceRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100%",
+        marginTop: 6,
+    },
 
     // Spacing helpers
     mb10: { marginBottom: 10 },

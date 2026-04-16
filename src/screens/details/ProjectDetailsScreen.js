@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     StyleSheet,
-    ScrollView,
     SafeAreaView,
     View,
     TouchableOpacity,
     Text,
+    FlatList,
 } from "react-native";
 import MainHeader from "../../componend/common/MainHeader";
 import ProductGallery from "../../componend/product/ProductGallary";
@@ -36,7 +36,7 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
     const { slug, listingId, pickupPointId } = route?.params?.product || {};
 
     useEffect(() => {
-        if (slug && listingId && pickupPointId) {
+        if (slug && listingId) {
             fetchProduct(slug, listingId, pickupPointId);
         }
     }, [slug, listingId, pickupPointId]);
@@ -78,73 +78,161 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
             );
         }
     };
+    const HOME_SECTIONS = [
+        { id: "ProductGallery", type: "ProductGallery" },
+        { id: "ProductDetail", type: "ProductDetail" },
+        { id: "VariantCard", type: "VariantCard" },
+        { id: "LicenceNote", type: "LicenceNote" },
+        { id: "MustRead", type: "MustRead" },
+        { id: "ProductTabs", type: "ProductTabs" },
+        { id: "SimilarProducts", type: "SimilarProducts" },
+        { id: "CustomerReviews", type: "CustomerReviews" },
+        { id: "HomeBanner1", type: "HomeBanner1" },
+    ];
+
+    const renderItem = useCallback(
+        ({ item }) => {
+            switch (item.type) {
+                case "ProductGallery":
+                    return (
+                        <>
+                            <ProductGallery
+                                mainImageUrl={product?.mainImageUrl}
+                                galleryImageUrls={product?.galleryImageUrls}
+                            />
+                        </>
+                    );
+                case "ProductDetail":
+                    return (
+                        <>
+                            <ProductDetail product={product} />
+                        </>
+                    );
+                case "VariantCard":
+                    return (
+                        <>
+                            <VariantCard
+                                variantAttributes={product?.variantAttributes}
+                                onVariantSelect={handleVariantSelect}
+                                productVariationSlug={
+                                    product?.productVariationSlug
+                                }
+                            />
+                        </>
+                    );
+                case "LicenceNote":
+                    return (
+                        <>
+                            {product?.complianceDocuments &&
+                                product?.complianceDocuments?.length > 0 && (
+                                    <LicenceNote
+                                        complianceDocuments={
+                                            product?.complianceDocuments
+                                        }
+                                    />
+                                )}
+                        </>
+                    );
+                case "MustRead":
+                    return (
+                        <>
+                            <MustRead bulletPoints={product?.bulletPoints} />
+                        </>
+                    );
+                case "ProductTabs":
+                    return (
+                        <>
+                            <ProductTabs
+                                dynamicSection={product?.dynamicSection}
+                            />
+                        </>
+                    );
+                case "SimilarProducts":
+                    return (
+                        <>
+                            <SimilarProducts
+                                categoryId={product?.categoryId}
+                                productId={product?._id}
+                                navigation={navigation}
+                            />
+                        </>
+                    );
+                case "CustomerReviews":
+                    return (
+                        <>
+                            <CustomerReviews />
+                        </>
+                    );
+                case "HomeBanner1":
+                    return (
+                        <>
+                            <HomeBanner1
+                                imageSource={require("../../assets/images/banner5.png")}
+                            />
+                        </>
+                    );
+
+                default:
+                    return null;
+            }
+        },
+        [product, navigation],
+    );
 
     return (
         <SafeAreaView style={styles.container}>
             <MainHeader bgColor="#ffffff" />
-            <ScrollView
+
+            <FlatList
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingTop: loading ? 1 : 15 }}
-            >
-                {loading ? (
-                    // ── Skeleton placeholders ─────────────────────
-                    <View style={{ backgroundColor: "#fff", paddingTop: 14 }}>
-                        <ProductGallerySkeleton />
-                        <ProductDetailSkeleton />
-                        <VariantSkeleton />
-                    </View>
-                ) : error ? (
-                    <View style={styles.errorBox}>
-                        <Text style={styles.errorText}>{error}</Text>
-                        <TouchableOpacity
-                            onPress={() => {
-                                if (slug && listingId && pickupPointId) {
-                                    fetchProduct(
-                                        slug,
-                                        listingId,
-                                        pickupPointId,
-                                    );
-                                }
-                            }}
-                            style={styles.retryBtn}
-                        >
-                            <Text style={styles.retryText}>Retry</Text>
-                        </TouchableOpacity>
-                    </View>
-                ) : (
-                    // ── Real content ──────────────────────────────
+                windowSize={8}
+                removeClippedSubviews
+                onEndReachedThreshold={0.5}
+                scrollEventThrottle={100}
+                data={!error && !loading ? HOME_SECTIONS : []}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
+                ListHeaderComponent={
                     <>
-                        <ProductGallery
-                            mainImageUrl={product?.mainImageUrl}
-                            galleryImageUrls={product?.galleryImageUrls}
-                        />
-                        <ProductDetail product={product} />
-                        <VariantCard
-                            variantAttributes={product?.variantAttributes}
-                            onVariantSelect={handleVariantSelect}
-                            productVariationSlug={product?.productVariationSlug}
-                        />
-                        {product?.complianceDocuments &&
-                            product?.complianceDocuments?.length > 0 && (
-                                <LicenceNote
-                                    complianceDocuments={
-                                        product?.complianceDocuments
-                                    }
-                                />
-                            )}
-                        <MustRead bulletPoints={product?.bulletPoints} />
-                        <ProductTabs dynamicSection={product?.dynamicSection} />
-                        <SimilarProducts
-                            categoryId={product?.categoryId}
-                            productId={product?._id}
-                        />
-                        <CustomerReviews />
-                        <HomeBanner1
-                            imageSource={require("../../assets/images/banner5.png")}
-                        />
+                        {loading ? (
+                            // ── Skeleton placeholders ─────────────────────
+                            <View
+                                style={{
+                                    backgroundColor: "#fff",
+                                    paddingTop: 14,
+                                }}
+                            >
+                                <ProductGallerySkeleton />
+                                <ProductDetailSkeleton />
+                                <VariantSkeleton />
+                            </View>
+                        ) : error ? (
+                            <View style={styles.errorBox}>
+                                <Text style={styles.errorText}>{error}</Text>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        if (
+                                            slug &&
+                                            listingId &&
+                                            pickupPointId
+                                        ) {
+                                            fetchProduct(
+                                                slug,
+                                                listingId,
+                                                pickupPointId,
+                                            );
+                                        }
+                                    }}
+                                    style={styles.retryBtn}
+                                >
+                                    <Text style={styles.retryText}>Retry</Text>
+                                </TouchableOpacity>
+                            </View>
+                        ) : null}
                     </>
-                )}
-            </ScrollView>
+                }
+            />
         </SafeAreaView>
     );
 };

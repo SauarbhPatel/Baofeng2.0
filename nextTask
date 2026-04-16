@@ -1,0 +1,107 @@
+
+
+check in ProductDetail Componend we have a button for check  "COD Delivery"   
+https://consumerapi.baofengradios.co.in/pincode/check?pincode=486001
+  this is api for that and its reponse
+
+  {
+    "success": true,
+    "message": "Request successful",
+    "data": {
+        "pincode": "486001",
+        "serviceable": false,
+        "codAllowed": false
+    },
+    "meta": {
+        "timestamp": "2026-04-16T07:48:37.451Z",
+        "path": "/pincode/check?pincode=486001"
+    }
+}
+
+and also we have a componend "LicenceNote" make this funcional to upload Document
+
+
+and 
+https://consumerapi.baofengradios.co.in/cart/addToCart  
+ this is a api to add to cart and 
+ its payload 
+ {"productId":"69dcdb4a5c533d896a46c07b","listingId":"69dcdb4a5c533d896a46c081","quantity":1}  
+
+and response 
+{
+    "success": true,
+    "message": "Request successful",
+    "data": {
+        "cartToken": "979a7d9d-d4ea-4bd8-a661-bd03c8780b46",
+        "isConsumerRegistered": false,
+        "items": [
+            {
+                "itemId": "69e0959a6878903cd6097d70",
+                "listingId": "69dcdb4a5c533d896a46c081",
+                "productId": "69dcdb4a5c533d896a46c07b",
+                "quantity": 1,
+                "listingBusinessId": "L00000507",
+                "sku": "STABCDE-5-GT-22-1",
+                "unitSellingPrice": 1849,
+                "productName": "Baofeng GT-22 (pack-1)",
+                "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775729090137_978cdca3-a405-467b-890c-fafeb9bdeff3.jpg"
+            }
+        ],
+        "updatedAt": "2026-04-16T07:54:02.253Z"
+    },
+    "meta": {
+        "timestamp": "2026-04-16T07:54:02.261Z",
+        "path": "/cart/addToCart"
+    }
+}
+
+
+save   "cartToken": "979a7d9d-d4ea-4bd8-a661-bd03c8780b46",  this token in local storage 
+
+for when you add second product in add to cart then it will use 
+
+{"productId":"69ddc78c5c533d896a46d28c","listingId":"69ddc78c5c533d896a46d292","quantity":1,"cartToken":"979a7d9d-d4ea-4bd8-a661-bd03c8780b46"}
+
+like this
+
+
+and 
+https://consumerapi.baofengradios.co.in/cart?cartToken=979a7d9d-d4ea-4bd8-a661-bd03c8780b46  this is a api to get cart list 
+
+{
+    "success": true,
+    "message": "Request successful",
+    "data": {
+        "cartToken": "979a7d9d-d4ea-4bd8-a661-bd03c8780b46",
+        "isConsumerRegistered": false,
+        "items": [
+            {
+                "itemId": "69e0959a6878903cd6097d70",
+                "listingId": "69dcdb4a5c533d896a46c081",
+                "productId": "69dcdb4a5c533d896a46c07b",
+                "quantity": 1,
+                "listingBusinessId": "L00000507",
+                "sku": "STABCDE-5-GT-22-1",
+                "unitSellingPrice": 1849,
+                "productName": "Baofeng GT-22 (pack-1)",
+                "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775729090137_978cdca3-a405-467b-890c-fafeb9bdeff3.jpg"
+            },
+            {
+                "itemId": "69e096766878903cd6097dd4",
+                "listingId": "69ddc78c5c533d896a46d292",
+                "productId": "69ddc78c5c533d896a46d28c",
+                "quantity": 1,
+                "listingBusinessId": "L00000527",
+                "sku": "STABCDE-69a1e5514a37a4e1413c74e5-STABCDE-UV-5R-pack-1",
+                "unitSellingPrice": 3999,
+                "productName": "BAOFENG UV-5R (pack-1)",
+                "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775467307326_676f209f-95a3-4e0a-9773-0ce428dd6291.jpg"
+            }
+        ],
+        "updatedAt": "2026-04-16T07:57:42.697Z"
+    },
+    "meta": {
+        "timestamp": "2026-04-16T07:58:45.788Z",
+        "path": "/cart?cartToken=979a7d9d-d4ea-4bd8-a661-bd03c8780b46"
+    }
+}  make cart list dynammic too

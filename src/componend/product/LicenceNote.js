@@ -27,7 +27,7 @@ const LicenceNote = ({ complianceDocuments = [] }) => {
                         <TouchableOpacity style={styles.addToCartBtn}>
                             <Feather name="upload" size={16} color="#DC8282" />
                             <Text style={styles.addToCartText}>
-                                Add to Cart
+                                Upload Document
                             </Text>
                         </TouchableOpacity>
                     </View>

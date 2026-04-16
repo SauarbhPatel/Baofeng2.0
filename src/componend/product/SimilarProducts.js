@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -8,86 +8,78 @@ import {
     FlatList,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { getSimilarProducts } from "../../api/commonApi";
+import { SimilarProductSkeleton } from "../common/SkeletonLoader";
 
-const products = [
-    {
-        id: "1",
-        name: "BAOFENG BF-888S LICENCE",
-        price: "₹129.00",
-        oldPrice: "₹150.00",
-        isNew: false,
-        active: false,
-        image: require("../../assets/images/0d4d04bbdbc51109d57116b5c30abdc44b3d51a8.png"),
-    },
-    {
-        id: "2",
-        name: "BAOFENG BF-888S LICENCE",
-        price: "₹129.00",
-        oldPrice: "₹150.00",
-        isNew: true,
-        active: false,
-        image: require("../../assets/images/645968528d146d72ba078b258c8da6878940f2d2.png"),
-    },
-    {
-        id: "3",
-        name: "BAOFENG BF-888S LICENCE",
-        price: "₹129.00",
-        oldPrice: "₹150.00",
-        isNew: false,
-        active: false,
-        image: require("../../assets/images/5f2a99b44308a725a2ebf76ef7bcfb48db1bd821.png"),
-    },
-    {
-        id: "4",
-        name: "BAOFENG BF-888S LICENCE",
-        price: "₹129.00",
-        oldPrice: "₹150.00",
-        isNew: false,
-        active: false,
-        image: require("../../assets/images/287a20ea431c80761203c9f3c075d7b29b6401f1.png"),
-    },
-    {
-        id: "5",
-        name: "BAOFENG BF-888S LICENCE",
-        price: "₹129.00",
-        oldPrice: "₹150.00",
-        isNew: false,
-        active: false,
-        image: require("../../assets/images/287a20ea431c80761203c9f3c075d7b29b6401f1.png"),
-    },
-    {
-        id: "6",
-        name: "BAOFENG BF-888S LICENCE",
-        price: "₹129.00",
-        oldPrice: "₹150.00",
-        isNew: false,
-        active: false,
-        image: require("../../assets/images/b6b708e9ce280094349963b78fbf1b69b1f20650.png"),
-    },
-    {
-        id: "7",
-        name: "BAOFENG BF-888S LICENCE",
-        price: "₹129.00",
-        oldPrice: "₹150.00",
-        isNew: false,
-        active: false,
-        image: require("../../assets/images/bb81bc903cd264300ba5b10b1013095c65f4abe2.png"),
-    },
-    {
-        id: "8",
-        name: "BAOFENG BF-888S LICENCE",
-        price: "₹129.00",
-        oldPrice: "₹150.00",
-        isNew: false,
-        active: false,
-        image: require("../../assets/images/79afc99f229c34e6f460664cfe72f0958a020179.png"),
-    },
-    // Add more items to fill the grid...
-];
+const SKELETON_COUNT = 6;
 
-const SimilarProducts = ({ categoryId, productId }) => {
+const SimilarProducts = ({ categoryId, productId, navigation }) => {
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        if (categoryId && productId) {
+            fetchSimilarProducts();
+        }
+    }, [categoryId, productId]);
+
+    const fetchSimilarProducts = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const res = await getSimilarProducts(categoryId, productId);
+            if (res?.success && res?.data?.records) {
+                setProducts(res.data.records);
+            } else if (res?.success && Array.isArray(res?.data)) {
+                setProducts(res.data);
+            } else {
+                setError("Failed to load similar products");
+            }
+        } catch (err) {
+            setError("Network error. Please try again.");
+            console.error("SimilarProducts fetch error:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // ── Skeleton grid ──────────────────────────────────────────
+    if (loading) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.sectionTitle}>
+                    <Text style={styles.blueText}>Similar</Text> Products
+                </Text>
+                <View style={styles.skeletonGrid}>
+                    {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
+                        <SimilarProductSkeleton key={i} />
+                    ))}
+                </View>
+            </View>
+        );
+    }
+
+    // ── Error / empty state ────────────────────────────────────
+    if (error || !products.length) return null;
+
+    // ── Real product card ──────────────────────────────────────
     const renderProduct = ({ item }) => (
-        <View style={styles.card}>
+        <TouchableOpacity
+            style={styles.card}
+            activeOpacity={0.85}
+            onPress={() =>
+                navigation.push("ProjectDetails", {
+                    product: {
+                        slug:
+                            item.variants?.[0]?.productVariationSlug ||
+                            item.slug,
+                        listingId: item.variants?.[0]?.listingId || "",
+                        pickupPointId: null,
+                    },
+                })
+            }
+        >
             {item.isNew && (
                 <View style={styles.newBadge}>
                     <Text style={styles.newBadgeText}>NEW</Text>
@@ -95,18 +87,27 @@ const SimilarProducts = ({ categoryId, productId }) => {
             )}
 
             <Image
-                source={item?.image}
+                source={{ uri: item?.variants?.[0]?.mainImageUrl || "" }}
                 style={styles.productImage}
                 resizeMode="contain"
             />
 
             <Text style={styles.productName} numberOfLines={1}>
-                {item.name}
+                {item.title}
             </Text>
 
             <View style={styles.priceRow}>
-                <Text style={styles.currentPrice}>{item.price}</Text>
-                <Text style={styles.oldPrice}>{item.oldPrice}</Text>
+                <Text style={styles.currentPrice}>
+                    ₹
+                    {item?.variants?.[0]?.boxsellingPrice?.toLocaleString(
+                        "en-IN",
+                    )}
+                </Text>
+                {item?.variants?.[0]?.boxMrp && (
+                    <Text style={styles.oldPrice}>
+                        ₹{item?.variants?.[0]?.boxMrp?.toLocaleString("en-IN")}
+                    </Text>
+                )}
             </View>
 
             <View style={styles.actionRow}>
@@ -118,22 +119,8 @@ const SimilarProducts = ({ categoryId, productId }) => {
                     />
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={[
-                        styles.buyBtn,
-                        item.active
-                            ? styles.buyBtnActive
-                            : styles.buyBtnInactive,
-                    ]}
-                >
-                    <Text
-                        style={[
-                            styles.buyBtnText,
-                            item.active
-                                ? styles.buyTextActive
-                                : styles.buyTextInactive,
-                        ]}
-                    >
+                <TouchableOpacity style={[styles.buyBtn, styles.buyBtnActive]}>
+                    <Text style={[styles.buyBtnText, styles.buyTextActive]}>
                         BUY NOW
                     </Text>
                 </TouchableOpacity>
@@ -146,7 +133,7 @@ const SimilarProducts = ({ categoryId, productId }) => {
                     />
                 </TouchableOpacity>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 
     return (
@@ -158,7 +145,7 @@ const SimilarProducts = ({ categoryId, productId }) => {
             <FlatList
                 data={products}
                 renderItem={renderProduct}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item._id}
                 numColumns={2}
                 columnWrapperStyle={styles.row}
                 scrollEnabled={false}
@@ -188,9 +175,14 @@ const styles = StyleSheet.create({
         fontWeight: "700",
         color: "#0284c7",
     },
-    row: {
+    // ── Skeleton grid ────────────────────────────────────────
+    skeletonGrid: {
+        flexDirection: "row",
+        flexWrap: "wrap",
         justifyContent: "space-between",
     },
+    // ── Product card ─────────────────────────────────────────
+    row: { justifyContent: "space-between" },
     card: {
         backgroundColor: "#fff",
         width: "48%",
@@ -213,10 +205,7 @@ const styles = StyleSheet.create({
         borderRadius: 2,
         zIndex: 1,
     },
-    newBadgeText: {
-        color: "#fff",
-        fontSize: 8,
-    },
+    newBadgeText: { color: "#fff", fontSize: 8 },
     productImage: {
         width: 100,
         height: 120,
@@ -259,22 +248,9 @@ const styles = StyleSheet.create({
         flex: 0.8,
         alignItems: "center",
     },
-    buyBtnActive: {
-        backgroundColor: "#0284c7",
-    },
-    buyBtnInactive: {
-        backgroundColor: "transparent",
-    },
-    buyBtnText: {
-        fontSize: 10,
-        fontWeight: "800",
-    },
-    buyTextActive: {
-        color: "#fff",
-    },
-    buyTextInactive: {
-        color: "#0284c7",
-    },
+    buyBtnActive: { backgroundColor: "#0284c7" },
+    buyBtnText: { fontSize: 10, fontWeight: "800" },
+    buyTextActive: { color: "#fff" },
 });
 
 export default SimilarProducts;

@@ -76,9 +76,28 @@ const AccessoriesSection = ({ onViewAll, refreshKey, navigation }) => {
                                 key={item._id}
                                 style={styles.itemCard}
                                 activeOpacity={1}
+                                // onPress={() =>
+                                //     navigation.push("ProjectDetails", {
+                                //         product: item,
+                                //     })
+                                // }
                                 onPress={() =>
                                     navigation.push("ProjectDetails", {
-                                        product: item,
+                                        product: {
+                                            slug:
+                                                item.variants?.[0]
+                                                    ?.productVariationSlug ||
+                                                item.slug,
+                                            listingId:
+                                                item.variants?.[0]
+                                                    ?.listings?.[0]
+                                                    ?.listingId || "",
+                                            pickupPointId:
+                                                item.variants?.[0]
+                                                    ?.listings?.[0]
+                                                    ?.inventoryByPickup?.[0]
+                                                    ?.pickupPointId || "",
+                                        },
                                     })
                                 }
                             >

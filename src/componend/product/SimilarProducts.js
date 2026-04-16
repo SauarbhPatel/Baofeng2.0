@@ -85,7 +85,7 @@ const products = [
     // Add more items to fill the grid...
 ];
 
-const SimilarProducts = () => {
+const SimilarProducts = ({ categoryId, productId }) => {
     const renderProduct = ({ item }) => (
         <View style={styles.card}>
             {item.isNew && (

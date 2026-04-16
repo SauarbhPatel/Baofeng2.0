@@ -1,8 +1,14 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    Linking,
+} from "react-native";
 import { Feather } from "@expo/vector-icons";
 
-const LicenceNote = () => {
+const LicenceNote = ({ complianceDocuments = [] }) => {
     return (
         <View style={styles.container}>
             <View style={styles.contentCard}>
@@ -12,20 +18,33 @@ const LicenceNote = () => {
                     Licence
                 </Text>
 
-                <View style={styles.dashedBox}>
-                    <Text style={styles.licenceTitle}>Licence</Text>
+                {complianceDocuments?.map((item) => (
+                    <View key={item?.complianceId} style={styles.dashedBox}>
+                        <Text style={styles.licenceTitle}>
+                            {item?.documentName}
+                        </Text>
 
-                    <TouchableOpacity style={styles.addToCartBtn}>
-                        <Feather name="upload" size={16} color="#DC8282" />
-                        <Text style={styles.addToCartText}>Add to Cart</Text>
-                    </TouchableOpacity>
-                </View>
+                        <TouchableOpacity style={styles.addToCartBtn}>
+                            <Feather name="upload" size={16} color="#DC8282" />
+                            <Text style={styles.addToCartText}>
+                                Add to Cart
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                ))}
 
                 <View style={styles.footerRow}>
                     <Text style={styles.footerText}>
                         If you do not have WPC user Licence click
                     </Text>
-                    <TouchableOpacity style={styles.hereBtn}>
+                    <TouchableOpacity
+                        style={styles.hereBtn}
+                        onPress={async () =>
+                            await Linking.openURL(
+                                "https://www.nsws.gov.in/portal/approval-details/ministry-of-communications/department-of-telecommunications/wpc-network-fixed-land-mobile-hf-vhf-uhf-below-806-mhz",
+                            )
+                        }
+                    >
                         <Text style={styles.hereText}>HERE</Text>
                     </TouchableOpacity>
                     <Text style={styles.footerText}> to apply.</Text>
@@ -64,12 +83,11 @@ const styles = StyleSheet.create({
         borderColor: "#64748b",
         borderStyle: "dashed",
         borderRadius: 16,
-        flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "center",
         paddingHorizontal: 16,
         paddingVertical: 12,
         marginBottom: 16,
+        gap: 10,
     },
     licenceTitle: {
         fontSize: 16,
@@ -86,6 +104,7 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         borderRadius: 12,
         gap: 6,
+        justifyContent: "center",
     },
     addToCartText: {
         color: "#DC8282",

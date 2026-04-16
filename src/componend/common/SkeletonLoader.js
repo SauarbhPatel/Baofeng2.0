@@ -213,6 +213,136 @@ export const ProductListingSkeleton = () => (
     </View>
 );
 
+// ─── Product Detail Gallery skeleton ──────────────────────────
+export const ProductGallerySkeleton = () => (
+    <View style={styles.gallerySkeleton}>
+        {/* Main image */}
+        <SkeletonBox width="100%" height={width * 0.9} borderRadius={24} />
+        {/* Thumbnails */}
+        <View style={styles.thumbRow}>
+            {[1, 2, 3, 4].map((i) => (
+                <SkeletonBox key={i} width={75} height={75} borderRadius={12} />
+            ))}
+        </View>
+    </View>
+);
+
+// ─── Product Detail Info skeleton ─────────────────────────────
+export const ProductDetailSkeleton = () => (
+    <View style={styles.detailSkeleton}>
+        {/* Buy / Cart buttons */}
+        <View style={styles.btnRow}>
+            <SkeletonBox width="48%" height={54} borderRadius={16} />
+            <SkeletonBox width="48%" height={54} borderRadius={16} />
+        </View>
+        {/* Title */}
+        <SkeletonBox
+            width="60%"
+            height={30}
+            borderRadius={8}
+            style={styles.mt10}
+        />
+        {/* Description lines */}
+        <SkeletonBox
+            width="100%"
+            height={14}
+            borderRadius={6}
+            style={styles.mt10}
+        />
+        <SkeletonBox
+            width="90%"
+            height={14}
+            borderRadius={6}
+            style={styles.mt6}
+        />
+        <SkeletonBox
+            width="75%"
+            height={14}
+            borderRadius={6}
+            style={styles.mt6}
+        />
+        {/* Stars */}
+        <SkeletonBox
+            width={130}
+            height={24}
+            borderRadius={6}
+            style={styles.mt10}
+        />
+        {/* Brand tag */}
+        <SkeletonBox
+            width={120}
+            height={38}
+            borderRadius={15}
+            style={styles.mt10}
+        />
+        {/* Divider */}
+        <SkeletonBox
+            width="100%"
+            height={1}
+            borderRadius={1}
+            style={styles.mt15}
+        />
+        {/* Price */}
+        <SkeletonBox
+            width="70%"
+            height={18}
+            borderRadius={6}
+            style={styles.mt10}
+        />
+        <SkeletonBox
+            width="40%"
+            height={24}
+            borderRadius={6}
+            style={styles.mt8}
+        />
+        {/* Divider */}
+        <SkeletonBox
+            width="100%"
+            height={1}
+            borderRadius={1}
+            style={styles.mt15}
+        />
+        {/* Delivery row */}
+        <SkeletonBox
+            width="100%"
+            height={48}
+            borderRadius={25}
+            style={styles.mt10}
+        />
+        {/* Divider */}
+        <SkeletonBox
+            width="100%"
+            height={1}
+            borderRadius={1}
+            style={styles.mt15}
+        />
+        {/* Qty + stock */}
+        <SkeletonBox
+            width="100%"
+            height={70}
+            borderRadius={20}
+            style={styles.mt10}
+        />
+    </View>
+);
+
+// ─── Variant strip skeleton ────────────────────────────────────
+export const VariantSkeleton = () => (
+    <View style={styles.variantRow}>
+        {[1, 2, 3, 4].map((i) => (
+            <View key={i} style={styles.variantItem}>
+                <SkeletonBox width={50} height={50} borderRadius={5} />
+                <SkeletonBox
+                    width={50}
+                    height={11}
+                    borderRadius={5}
+                    style={styles.mt6}
+                />
+            </View>
+        ))}
+    </View>
+);
+
 const styles = StyleSheet.create({
     // Category
     categoryCard: {
@@ -292,6 +422,28 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginTop: 8,
     },
+
+    // Product Gallery
+    gallerySkeleton: { marginHorizontal: 10, marginBottom: 15 },
+    thumbRow: {
+        flexDirection: "row",
+        gap: 10,
+        marginTop: 16,
+        paddingRight: 20,
+    },
+
+    // Product Detail
+    detailSkeleton: { marginHorizontal: 10, marginBottom: 15 },
+    btnRow: { flexDirection: "row", justifyContent: "space-between" },
+
+    // Variant
+    variantRow: {
+        flexDirection: "row",
+        paddingHorizontal: 10,
+        gap: 16,
+        paddingBottom: 15,
+    },
+    variantItem: { alignItems: "center" },
 
     // Spacing helpers
     mb10: { marginBottom: 10 },

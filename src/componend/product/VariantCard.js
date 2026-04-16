@@ -8,36 +8,19 @@ import {
     ScrollView,
 } from "react-native";
 
-const VariantCard = () => {
-    const [selectedVariant, setSelectedVariant] = useState("Pack Of 2");
+const VariantCard = ({
+    variantAttributes = [],
+    onVariantSelect,
+    productVariationSlug,
+}) => {
+    // Use the first attribute's values as the variant list (e.g. pack-of)
+    const variants = variantAttributes?.[0]?.values || [];
 
-    const variants = [
-        {
-            id: "1",
-            label: "Pack Of 1",
-            image: require("../../assets/images/79afc99f229c34e6f460664cfe72f0958a020179.png"),
-        },
-        {
-            id: "2",
-            label: "Pack Of 2",
-            image: require("../../assets/images/79afc99f229c34e6f460664cfe72f0958a020179.png"),
-        },
-        {
-            id: "3",
-            label: "Pack Of 3",
-            image: require("../../assets/images/79afc99f229c34e6f460664cfe72f0958a020179.png"),
-        },
-        {
-            id: "4",
-            label: "Pack Of 4",
-            image: require("../../assets/images/79afc99f229c34e6f460664cfe72f0958a020179.png"),
-        },
-        {
-            id: "5",
-            label: "Pack Of 6",
-            image: require("../../assets/images/79afc99f229c34e6f460664cfe72f0958a020179.png"),
-        },
-    ];
+    if (!variants.length) return null;
+
+    const handleSelect = (item) => {
+        onVariantSelect && onVariantSelect(item);
+    };
 
     return (
         <ScrollView
@@ -45,39 +28,40 @@ const VariantCard = () => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.scrollContainer}
         >
-            {variants.map((item) => (
-                <TouchableOpacity
-                    key={item.id}
-                    onPress={() => setSelectedVariant(item.label)}
-                    style={styles.variantWrapper}
-                >
-                    {/* Image Container */}
-                    <View
-                        style={[
-                            styles.imageContainer,
-                            selectedVariant === item.label &&
-                                styles.selectedContainer,
-                        ]}
+            {variants.map((item) => {
+                const isSelected =
+                    productVariationSlug == item?.productVariationSlug;
+                return (
+                    <TouchableOpacity
+                        key={item.value}
+                        onPress={() => handleSelect(item)}
+                        style={styles.variantWrapper}
                     >
-                        <Image
-                            source={item.image}
-                            style={styles.radioImage}
-                            resizeMode="contain"
-                        />
-                    </View>
-
-                    {/* Label */}
-                    <Text
-                        style={[
-                            styles.label,
-                            selectedVariant === item.label &&
-                                styles.selectedLabel,
-                        ]}
-                    >
-                        {item.label}
-                    </Text>
-                </TouchableOpacity>
-            ))}
+                        <View
+                            style={[
+                                styles.imageContainer,
+                                isSelected && styles.selectedContainer,
+                            ]}
+                        >
+                            <Image
+                                source={{ uri: item.imageUrl }}
+                                style={styles.radioImage}
+                                resizeMode="contain"
+                            />
+                        </View>
+                        <Text
+                            style={[
+                                styles.label,
+                                isSelected && styles.selectedLabel,
+                            ]}
+                        >
+                            {item.value
+                                .replace(/-/g, " ")
+                                .replace(/\b\w/g, (c) => c.toUpperCase())}
+                        </Text>
+                    </TouchableOpacity>
+                );
+            })}
         </ScrollView>
     );
 };
@@ -85,7 +69,6 @@ const VariantCard = () => {
 const styles = StyleSheet.create({
     scrollContainer: {
         paddingHorizontal: 10,
-        // paddingVertical: 20,
         flexDirection: "row",
         alignItems: "center",
         paddingBottom: 15,
@@ -93,13 +76,12 @@ const styles = StyleSheet.create({
     variantWrapper: {
         alignItems: "center",
         marginRight: 16,
-        // width: 90,
     },
     imageContainer: {
         width: 50,
         height: 50,
         borderRadius: 5,
-        backgroundColor: "#f8fafc", // Default light background
+        backgroundColor: "#f8fafc",
         justifyContent: "center",
         alignItems: "center",
         marginBottom: 10,
@@ -117,11 +99,11 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 12,
         fontWeight: "500",
-        color: "#475569", // Default slate color
+        color: "#475569",
         textAlign: "center",
     },
     selectedLabel: {
-        color: "#0f172a", // Darker emphasis for selected label
+        color: "#0f172a",
         fontWeight: "800",
     },
 });

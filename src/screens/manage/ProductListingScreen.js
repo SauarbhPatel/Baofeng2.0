@@ -148,7 +148,20 @@ const ProductListingScreen = ({ navigation }) => {
         <TouchableOpacity
             style={styles.card}
             activeOpacity={0.85}
-            onPress={() => navigation.push("ProjectDetails", { product: item })}
+            onPress={() =>
+                navigation.push("ProjectDetails", {
+                    product: {
+                        slug:
+                            item.variants?.[0]?.productVariationSlug ||
+                            item.slug,
+                        listingId:
+                            item.variants?.[0]?.listings?.[0]?.listingId || "",
+                        pickupPointId:
+                            item.variants?.[0]?.listings?.[0]
+                                ?.inventoryByPickup?.[0]?.pickupPointId || "",
+                    },
+                })
+            }
         >
             {/* Product Image */}
             <View style={styles.imageWrapper}>

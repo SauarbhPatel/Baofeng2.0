@@ -48,7 +48,20 @@ const GridProduct = ({
         <TouchableOpacity
             style={styles.cardContainer}
             activeOpacity={0.8}
-            onPress={() => navigation?.push("ProjectDetails")}
+            onPress={() =>
+                navigation.push("ProjectDetails", {
+                    product: {
+                        slug:
+                            item.variants?.[0]?.productVariationSlug ||
+                            item.slug,
+                        listingId:
+                            item.variants?.[0]?.listings?.[0]?.listingId || "",
+                        pickupPointId:
+                            item.variants?.[0]?.listings?.[0]
+                                ?.inventoryByPickup?.[0]?.pickupPointId || "",
+                    },
+                })
+            }
         >
             <View style={styles.imageWrapper}>
                 <Image

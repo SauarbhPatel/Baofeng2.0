@@ -1,38 +1,17 @@
-import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import { View, Text, StyleSheet } from "react-native";
 
-const MustRead = () => {
+const MustRead = ({ bulletPoints }) => {
     return (
         <View style={styles.container}>
             <Text style={styles.headerTitle}>Must Read</Text>
 
             <View style={styles.contentBox}>
-                {/* Bullet Point 1 */}
-                <View style={styles.bulletRow}>
-                    <Text style={styles.bullet}>•</Text>
-                    <Text style={styles.bulletText}>
-                        iBAOFENG BF-888s Frequency 400-470Mhz with Power 2W
-                        Comes under WPC Short Range UHF User Licence. Buyer must
-                        share User Licence before order dispatch.
-                    </Text>
-                </View>
-
-                {/* Bullet Point 2 */}
-                <View style={styles.bulletRow}>
-                    <Text style={styles.bullet}>•</Text>
-                    <Text style={styles.bulletText}>
-                        The Baofeng BF-888S comes with 16 pre-programmed
-                        channels that are ready to use right out of the box. It
-                        can communicate directly with any BF-88E operating on
-                        the same channel. Each channel includes 100 subchannels,
-                        providing a wide range of frequency options. This
-                        extensive selection ensures clear communication without
-                        interference, even in areas where multiple radios are in
-                        use. The desired channel can be easily selected using
-                        the rotary knob locate...
-                    </Text>
-                </View>
+                {bulletPoints?.map((item) => (
+                    <View style={styles.bulletRow} key={item}>
+                        <Text style={styles.bullet}>•</Text>
+                        <Text style={styles.bulletText}>{item}</Text>
+                    </View>
+                ))}
             </View>
         </View>
     );

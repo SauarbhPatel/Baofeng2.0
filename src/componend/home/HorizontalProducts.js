@@ -50,7 +50,20 @@ const HorizontalProducts = ({
         <TouchableOpacity
             style={[styles.card, { borderColor: productBorder }]}
             activeOpacity={0.9}
-            onPress={() => navigation.push("ProjectDetails", { product: item })}
+            onPress={() =>
+                navigation.push("ProjectDetails", {
+                    product: {
+                        slug:
+                            item.variants?.[0]?.productVariationSlug ||
+                            item.slug,
+                        listingId:
+                            item.variants?.[0]?.listings?.[0]?.listingId || "",
+                        pickupPointId:
+                            item.variants?.[0]?.listings?.[0]
+                                ?.inventoryByPickup?.[0]?.pickupPointId || "",
+                    },
+                })
+            }
         >
             <View style={styles.imageContainer}>
                 <Image

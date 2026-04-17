@@ -1,4 +1,17 @@
-import { __getApiData, __postApiData, __putApiData, __deleteApiData } from ".";
+import {
+    __getApiData,
+    __postApiData,
+    __putApiData,
+    __deleteApiData,
+    __patchApiData,
+} from ".";
+
+// ─── Auth ─────────────────────────────────────────────────────
+export const loginWithPhone = (payload) =>
+    __postApiData("consumer/login", payload);
+
+export const verifyOtp = (payload) =>
+    __postApiData("consumer/verifyOtp", payload);
 
 // ─── Categories ───────────────────────────────────────────────
 export const getCategories = () => __getApiData("category");
@@ -27,3 +40,11 @@ export const addToCart = (payload) => __postApiData("cart/addToCart", payload);
 
 export const getCart = (cartToken) =>
     __getApiData(`cart?cartToken=${cartToken}`);
+
+export const updateCartQuantity = (payload) =>
+    __patchApiData("cart/items/quantity", payload);
+
+export const removeCartItem = (payload) =>
+    __postApiData("cart/items/remove", payload);
+
+export const clearCart = (payload) => __postApiData("cart/clear", payload);

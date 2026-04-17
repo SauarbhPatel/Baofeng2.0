@@ -1,5 +1,5 @@
 import AppInfo from "../../appInfo";
-// import { __getToken } from "../localization";
+let TOKEN = null;
 
 const baseUrl = AppInfo.Api;
 const _CompanyId = AppInfo?.companyId;
@@ -7,11 +7,21 @@ const _CompanyId = AppInfo?.companyId;
 const pathUrl = {
     // LOGIN_API_URL: "/auth/login",
 };
+
+function __setToken(authToken) {
+    TOKEN = authToken;
+    return;
+}
+
+function __getToken() {
+    return TOKEN;
+}
+
 function __apiHeader() {
     return {
         headers: {
             "Content-Type": "application/json",
-            // Authorization: "Bearer " + __getToken(),
+            ...(TOKEN && { Authorization: "Bearer " + TOKEN }),
             "x-company-id": _CompanyId,
         },
     };
@@ -21,10 +31,17 @@ function __apiHeaderFormData() {
     return {
         headers: {
             "Content-Type": "multipart/form-data",
-            // Authorization: "Bearer " + __getToken(),
+            ...(TOKEN && { Authorization: "Bearer " + TOKEN }),
             "x-company-id": _CompanyId,
         },
     };
 }
 
-export { baseUrl, pathUrl, __apiHeader, __apiHeaderFormData };
+export {
+    baseUrl,
+    pathUrl,
+    __setToken,
+    __getToken,
+    __apiHeader,
+    __apiHeaderFormData,
+};

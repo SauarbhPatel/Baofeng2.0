@@ -13,36 +13,43 @@ import { Ionicons } from "@expo/vector-icons";
 
 const MainHeader = ({ bgColor }) => {
     return (
-        <View
-            style={[
-                styles.headerOuterContainer,
-                bgColor && { backgroundColor: bgColor },
-            ]}
-        >
-            <View style={styles.headerContent}>
-                {/* Logo Text */}
-                <Image
-                    style={{ width: 140, height: 35, resizeMode: "contain" }}
-                    source={require("../../assets/logo/app_logo.png")}
-                />
+        <>
+            <StatusBar backgroundColor={"#0069b3"} barStyle={"light-content"} />
+            <View
+                style={[
+                    styles.headerOuterContainer,
+                    bgColor && { backgroundColor: bgColor },
+                ]}
+            >
+                <View style={styles.headerContent}>
+                    {/* Logo Text */}
+                    <Image
+                        style={{
+                            width: 140,
+                            height: 35,
+                            resizeMode: "contain",
+                        }}
+                        source={require("../../assets/logo/app_logo.png")}
+                    />
 
-                {/* Search Bar Container */}
-                <View style={styles.searchBarWrapper}>
-                    <Ionicons
-                        name="search-outline"
-                        size={20}
-                        color="#A0AEC0"
-                        style={styles.searchIcon}
-                    />
-                    <TextInput
-                        style={styles.searchInput}
-                        placeholder="Search..."
-                        placeholderTextColor="#A0AEC0"
-                        editable={false}
-                    />
+                    {/* Search Bar Container */}
+                    <View style={styles.searchBarWrapper}>
+                        <Ionicons
+                            name="search-outline"
+                            size={20}
+                            color="#A0AEC0"
+                            style={styles.searchIcon}
+                        />
+                        <TextInput
+                            style={styles.searchInput}
+                            placeholder="Search..."
+                            placeholderTextColor="#A0AEC0"
+                            editable={false}
+                        />
+                    </View>
                 </View>
             </View>
-        </View>
+        </>
     );
 };
 

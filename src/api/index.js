@@ -46,6 +46,20 @@ const __putApiData = (endpoint, data, type) => {
             throw error;
         });
 };
+const __patchApiData = (endpoint, data, type) => {
+    return axios
+        .patch(
+            `${BASE_URL}${endpoint}`,
+            data,
+            type == "from" ? __apiHeaderFormData() : __apiHeader(),
+        )
+        .then((response) => {
+            return response.data;
+        })
+        .catch((error) => {
+            throw error;
+        });
+};
 
 const __deleteApiData = (endpoint, data) => {
     return axios
@@ -59,4 +73,10 @@ const __deleteApiData = (endpoint, data) => {
         });
 };
 
-export { __getApiData, __postApiData, __putApiData, __deleteApiData };
+export {
+    __getApiData,
+    __postApiData,
+    __putApiData,
+    __patchApiData,
+    __deleteApiData,
+};

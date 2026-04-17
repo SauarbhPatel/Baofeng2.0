@@ -20,41 +20,21 @@ const CART_TOKEN_KEY = "baofeng_cart_token";
 
 const CartScreen = ({ navigation }) => {
     const [cartItems, setCartItems] = useState([]);
+    const [refreshKey, setRefreshKey] = useState(0);
     const [loading, setLoading] = useState(true);
-    const [showEmpty, setShowEmpty] = useState(false);
-    const [error, setError] = useState(null);
 
-    const fetchCart = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            const token = await AsyncStorage.getItem(CART_TOKEN_KEY);
-            if (!token) {
-                setShowEmpty(true);
-                setCartItems([]);
-                setLoading(false);
-                return;
-            }
-            const res = await getCart(token);
-
-            console.log(JSON.stringify(res));
-            if (res?.success && res?.data?.items) {
-                setShowEmpty(false);
-
-                setCartItems(res.data.items);
-            } else {
-                setError("Failed to load cart");
-            }
-        } catch {
-            setError("Network error. Please try again.");
-        } finally {
-            setLoading(false);
-        }
+    // Called by CartItemBox whenever cart data changes
+    const handleCartUpdate = (items) => {
+        setLoading(false);
+        setCartItems(items);
     };
 
-    useEffect(() => {
-        fetchCart();
-    }, []);
+    const onRefresh = () => {
+        setCartItems([]);
+        setRefreshKey((prev) => prev + 1);
+    };
+
+    const isEmpty = cartItems.length === 0;
 
     return (
         <SafeAreaView style={styles.maincontainer}>
@@ -65,58 +45,33 @@ const CartScreen = ({ navigation }) => {
                 refreshControl={
                     <RefreshControl
                         refreshing={false}
-                        onRefresh={fetchCart}
+                        onRefresh={onRefresh}
                         colors={["#0069AF"]} // Android spinner color
                         tintColor="#0069AF" // iOS spinner color
                         progressBackgroundColor="#fff"
                     />
                 }
             >
-                {error ? (
-                    <View style={styles.container}>
-                        <Text style={styles.headerTitle}>My cart</Text>
-                        <View style={styles.mainContent}>
-                            <Text style={styles.errorText}>{error}</Text>
-                            <TouchableOpacity
-                                // onPress={fetchCart}
-                                style={styles.retryBtn}
-                            >
-                                <Text style={styles.retryText}>Retry</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                ) : loading ? (
-                    <View style={styles.container}>
-                        <Text style={styles.headerTitle}>My cart</Text>
-                        <View style={styles.mainContent}>
-                            <ActivityIndicator
-                                size="large"
-                                color="#0069AF"
-                                style={{ paddingVertical: 30 }}
-                            />
-                        </View>
-                    </View>
-                ) : (
+                {/* CartItemBox always mounts — it shows skeleton / error / items internally */}
+                <CartItemBox
+                    key={refreshKey}
+                    onCartUpdate={handleCartUpdate}
+                    onLoading={() => setLoading(true)}
+                />
+
+                {/* Only show coupon + summary when there are items */}
+                {!isEmpty && !loading && (
                     <>
-                        {!showEmpty ? (
-                            <>
-                                <CartItemBox
-                                    clearCart={async () => {
-                                        await AsyncStorage.removeItem(
-                                            CART_TOKEN_KEY,
-                                        );
-                                        setShowEmpty(true);
-                                    }}
-                                    cartItems={cartItems}
-                                />
-                                <CouponInput />
-                                <CartSummary navigation={navigation} />
-                            </>
-                        ) : (
-                            <EmptyCart />
-                        )}
+                        <CouponInput />
+                        <CartSummary
+                            navigation={navigation}
+                            cartItems={cartItems}
+                        />
                     </>
                 )}
+
+                {/* Show empty cart UI only after data has loaded and cart IS empty */}
+                {isEmpty && !loading && <EmptyCart />}
             </ScrollView>
         </SafeAreaView>
     );

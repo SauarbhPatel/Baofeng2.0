@@ -1,92 +1,81 @@
-for login and resend otp
-Post https://consumerapi.baofengradios.co.in/consumer/login (use same api to resend otp)
-
-payload {"countryCode":"+91","phoneNumber":"9669233736"}
-
-response { "success": true, "message": "OTP sent successfully", "data": { "id": "69e1cc190ecd2a715dd68ddd", "consumerUniqueId": "BUY0426021", "phoneNumber": "9669233736", "countryCode": "+91" }, "meta": { "timestamp": "2026-04-17T05:58:49.591Z", "path": "/consumer/login" } }
+Profile Tabs Task
+1. after login set profile date in ProfileDetails.js
+2. make logout functional , alos make a Alert Model to ask for logout inside AccountMenu.js
+3. make a login to show not login in ProfileScreen, and give a button to navigate to login screen
 
 
-for verify otp 
-Post https://consumerapi.baofengradios.co.in/consumer/verifyOtp
+Category Tabs Task
+1  getCategories  use this function to get category list and display in category screen , also make sure dont show all data at one time , just show 8  and after scrooling show a loader and then show 8 more and then after scrooling show more 
+2. make search functional 
+3. use SkeletonLoader for load data  
+4. also add refress controlar
 
-payload {"countryCode":"+91","phoneNumber":"9669233736","otp":"1234"}
-
-response { "success": true, "message": "Login successful", "data": { "error": false, "message": "Login successful", "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWUxY2MxOTBlY2QyYTcxNWRkNjhkZGQiLCJjb21JZCI6IjY5NWY1M2FjNDE5ZmI5YjM3NTg2N2ExYiIsInJvbGUiOjUsInBob25lTnVtYmVyIjoiOTY2OTIzMzczNiIsImNvdW50cnlDb2RlIjoiKzkxIiwiaWF0IjoxNzc2NDA1NzA5LCJleHAiOjE3NzcwMTA1MDl9.bAObcBEpQJytC4VH59TnGHnIYM6WKe_vmsDTK4vaZ9g", "user": { "id": "69e1cc190ecd2a715dd68ddd", "phoneNumber": "9669233736", "countryCode": "+91", "firstName": "", "lastName": "", "email": "" } }, "meta": { "timestamp": "2026-04-17T06:01:49.288Z", "path": "/consumer/verifyOtp" } }
-
-
-
-cart Screen (i have changed some code in cart screen so check this , and also add content loader in cart screen and set data in CartSummary)
+also check in splash screen , use login or not if it login then set token __setToken() in this function
 
 
-for update product quantity (add button in ui )
-Patch -  https://consumerapi.baofengradios.co.in/cart/items/quantity
+Cart Tabs Task
 
-payload {"listingId":"69dcdb4a5c533d896a46c081","productId":"69dcdb4a5c533d896a46c07b","quantity":3,"cartToken":"e041b627-6031-4f7e-8bda-0507ab8d5eeb"}
+on Clicking Checkout button
 
-response { "success": true, "message": "Request successful", "data": { "cartToken": "e041b627-6031-4f7e-8bda-0507ab8d5eeb", "isConsumerRegistered": true, "consumerId": "69e1cc190ecd2a715dd68ddd", "items": [ { "itemId": "69e1cdbc99ee907b13a9671d", "listingId": "69dce3f55c533d896a46c67d", "productId": "69dce3f55c533d896a46c677", "quantity": 1, "listingBusinessId": "L00000513", "sku": "STABCDE-BF-33-1", "unitSellingPrice": 1999, "productName": "BF-33 (pack-1)", "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775734151098_2a975855-02df-4fb9-b880-504554fde4d4.jpg" }, { "itemId": "69e1ce0d99ee907b13a967b4", "listingId": "69dcdb4a5c533d896a46c081", "productId": "69dcdb4a5c533d896a46c07b", "quantity": 3, "listingBusinessId": "L00000507", "sku": "STABCDE-5-GT-22-1", "unitSellingPrice": 1849, "productName": "Baofeng GT-22 (pack-1)", "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775729090137_978cdca3-a405-467b-890c-fafeb9bdeff3.jpg" } ], "updatedAt": "2026-04-17T06:08:54.500Z" }, "meta": { "timestamp": "2026-04-17T06:08:54.504Z", "path": "/cart/items/quantity" } }
+Post https://consumerapi.baofengradios.co.in/order/checkout
 
-
-for remove product from cart   (it also use if product quantiy is 1 and user click on - tp dicrease quantity)
-Post https://consumerapi.baofengradios.co.in/cart/items/remove
-
-payload {"listingId":"69dce3f55c533d896a46c67d","productId":"69dce3f55c533d896a46c677","cartToken":"e041b627-6031-4f7e-8bda-0507ab8d5eeb"}
+payload {"cartToken":"e041b627-6031-4f7e-8bda-0507ab8d5eeb","discountTotal":0,"taxTotal":0}
 
 response {
     "success": true,
     "message": "Request successful",
     "data": {
-        "cartToken": "e041b627-6031-4f7e-8bda-0507ab8d5eeb",
-        "isConsumerRegistered": true,
+        "_id": "69e1e57535232e1a62d87308",
+        "abundantId": "ABN20260400156",
+        "companyId": "695f53ac419fb9b375867a1b",
         "consumerId": "69e1cc190ecd2a715dd68ddd",
+        "cartToken": "e041b627-6031-4f7e-8bda-0507ab8d5eeb",
+        "status": "ABANDONED",
+        "paymentStatus": "UNPAID",
+        "verificationStatus": "NEW",
+        "shippingAddress": null,
+        "billingAddress": null,
+        "shipping": null,
+        "payment": null,
         "items": [
             {
-                "itemId": "69e1d00099ee907b13a96ab9",
                 "listingId": "69dcda66b096799f19ff2bae",
                 "productId": "69dcda66b096799f19ff2ba8",
-                "quantity": 1,
+                "sellerId": "69a1e5514a37a4e1413c74e5",
                 "listingBusinessId": "L00000497",
                 "sku": "STABCDE-69a1e5514a37a4e1413c74e5-BF-358-1",
-                "unitSellingPrice": 2349,
                 "productName": "BF-358 (pack-1)",
-                "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775717251049_3eac9f74-9510-4c25-bdc6-39c087dda875.jpg"
+                "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775717251049_3eac9f74-9510-4c25-bdc6-39c087dda875.jpg",
+                "isProductSerialNumberRequired": true,
+                "unitPrice": 2349,
+                "quantity": 1,
+                "lineTotal": 2349
             },
             {
-                "itemId": "69e1d00799ee907b13a96b00",
                 "listingId": "69dcc095b096799f19ff1661",
                 "productId": "69dcc095b096799f19ff165b",
-                "quantity": 1,
+                "sellerId": "69a1e5514a37a4e1413c74e5",
                 "listingBusinessId": "L00000448",
                 "sku": "STABCDE-69a1e5514a37a4e1413c74e5-UV-8D-1",
-                "unitSellingPrice": 3299,
                 "productName": "UV-8D Rechargeable (pack-1)",
-                "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1776071601834_1f576c21-aac5-4b3c-beda-b09b20343019.jpg"
+                "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1776071601834_1f576c21-aac5-4b3c-beda-b09b20343019.jpg",
+                "isProductSerialNumberRequired": true,
+                "unitPrice": 3299,
+                "quantity": 2,
+                "lineTotal": 6598
             }
         ],
-        "updatedAt": "2026-04-17T06:16:05.014Z"
+        "subtotal": 8947,
+        "shippingFee": 0,
+        "discountTotal": 0,
+        "taxTotal": 0,
+        "grandTotal": 8947,
+        "roundOff": 0,
+        "createdAt": "2026-04-17T07:47:01.911Z",
+        "updatedAt": "2026-04-17T07:47:01.911Z"
     },
     "meta": {
-        "timestamp": "2026-04-17T06:16:05.018Z",
-        "path": "/cart/items/remove"
-    }
-}
-
-
-Post - https://consumerapi.baofengradios.co.in/cart/clear  (we have a button called clear cart)
-
-payload {"cartToken":"e041b627-6031-4f7e-8bda-0507ab8d5eeb"}  
-
-response {
-    "success": true,
-    "message": "Request successful",
-    "data": {
-        "cartToken": "e041b627-6031-4f7e-8bda-0507ab8d5eeb",
-        "isConsumerRegistered": true,
-        "consumerId": "69e1cc190ecd2a715dd68ddd",
-        "items": [],
-        "updatedAt": "2026-04-17T06:13:44.444Z"
-    },
-    "meta": {
-        "timestamp": "2026-04-17T06:13:44.446Z",
-        "path": "/cart/clear"
+        "timestamp": "2026-04-17T07:47:01.914Z",
+        "path": "/order/checkout"
     }
 }

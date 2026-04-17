@@ -12,6 +12,7 @@ const SplashScreen = ({ navigation }) => {
         // }
         setTimeout(() => {
             navigation.push("HomeNavigator");
+            // navigation.push("Login");
         }, 2000);
     };
 

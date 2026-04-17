@@ -9,10 +9,13 @@ import CategoriesScreen from "../screens/home/CategoriesScreen";
 import OrdersScreen from "../screens/home/OrdersScreen";
 import CartScreen from "../screens/home/CartScreen";
 import ProfileScreen from "../screens/home/ProfileScreen";
+import { __getToken } from "../api/constant";
 
 const Tab = createBottomTabNavigator();
 
 const HomeNavigator = () => {
+    const isLogin = __getToken();
+    console.log("isLogin", isLogin);
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
@@ -57,20 +60,22 @@ const HomeNavigator = () => {
                     ),
                 }}
             />
-            <Tab.Screen
-                name="Orders"
-                component={OrdersScreen}
-                options={{
-                    title: "Orders",
-                    tabBarIcon: ({ color, size }) => (
-                        <Feather
-                            name="shopping-bag"
-                            size={size - 4}
-                            color={color}
-                        />
-                    ),
-                }}
-            />
+            {isLogin && (
+                <Tab.Screen
+                    name="Orders"
+                    component={OrdersScreen}
+                    options={{
+                        title: "Orders",
+                        tabBarIcon: ({ color, size }) => (
+                            <Feather
+                                name="shopping-bag"
+                                size={size - 4}
+                                color={color}
+                            />
+                        ),
+                    }}
+                />
+            )}
             <Tab.Screen
                 name="Cart"
                 component={CartScreen}

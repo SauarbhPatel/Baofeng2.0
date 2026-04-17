@@ -17,3 +17,13 @@ export const getProductDetails = (slug, listingId, pickupPointId) =>
 // ─── Similar Products ─────────────────────────────────────────
 export const getSimilarProducts = (categoryId, productId) =>
     __getApiData(`product/similar/${categoryId}/${productId}`);
+
+// ─── Pincode / COD Check ──────────────────────────────────────
+export const checkPincode = (pincode) =>
+    __getApiData(`pincode/check?pincode=${pincode}`);
+
+// ─── Cart ─────────────────────────────────────────────────────
+export const addToCart = (payload) => __postApiData("cart/addToCart", payload);
+
+export const getCart = (cartToken) =>
+    __getApiData(`cart?cartToken=${cartToken}`);

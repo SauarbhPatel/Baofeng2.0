@@ -30,6 +30,7 @@
     "web": {
       "favicon": "./src/assets/logo/playstore-icon.png"
     },
+    "private": true,
     "extra": {
       "apiUrl": "https://api.baofeng.com",
       "eas": {

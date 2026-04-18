@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -7,36 +7,57 @@ import {
     TouchableOpacity,
     Linking,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const AUTH_USER_KEY = "baofeng_auth_user";
 
 const ProfileDetails = () => {
-    const userData = {
-        name: "Chand Miyan Khan",
-        phone: "+ 91801022676",
-        avatar: require("../../assets/images/user.png"),
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        loadUser();
+    }, []);
+
+    const loadUser = async () => {
+        try {
+            const raw = await AsyncStorage.getItem(AUTH_USER_KEY);
+            if (raw) setUser(JSON.parse(raw));
+        } catch (err) {
+            console.error("ProfileDetails load user error:", err);
+        }
     };
+
+    const fullName =
+        user?.firstName || user?.lastName
+            ? `${user.firstName} ${user.lastName}`.trim()
+            : "Baofeng User";
+
+    const phone = user?.phoneNumber
+        ? `+${user.countryCode?.replace("+", "")} ${user.phoneNumber}`
+        : "";
 
     return (
         <View style={styles.container}>
-            {/* Profile Avatar */}
+            {/* Avatar */}
             <View style={styles.avatarContainer}>
                 <Image
-                    source={userData.avatar}
+                    source={require("../../assets/images/user.png")}
                     style={styles.avatar}
                     resizeMode="cover"
                 />
             </View>
 
-            {/* User Information */}
+            {/* User Info */}
             <View style={styles.infoContainer}>
-                <Text style={styles.nameText}>{userData.name}</Text>
-
-                <TouchableOpacity
-                    style={styles.phoneRow}
-                    onPress={() => Linking.openURL(`tel:${userData.phone}`)}
-                >
-                    <Text style={styles.phoneText}>{userData.phone}</Text>
-                </TouchableOpacity>
+                <Text style={styles.nameText}>{fullName}</Text>
+                {!!phone && (
+                    <View>
+                        <Text style={styles.phoneText}>{phone}</Text>
+                    </View>
+                )}
+                {!!user?.email && (
+                    <Text style={styles.emailText}>{user.email}</Text>
+                )}
             </View>
         </View>
     );
@@ -58,25 +79,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginBottom: 12,
     },
-    avatar: {
-        width: "100%",
-        height: "100%",
-    },
-    infoContainer: {
-        alignItems: "center",
-    },
-    nameText: {
-        fontSize: 16,
-        color: "#1e293b",
-    },
-    phoneRow: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    phoneText: {
-        fontSize: 12,
-        color: "#202021",
-    },
+    avatar: { width: "100%", height: "100%" },
+    infoContainer: { alignItems: "center" },
+    nameText: { fontSize: 16, color: "#1e293b", fontWeight: "700" },
+    phoneText: { fontSize: 12, color: "#202021", marginTop: 4 },
+    emailText: { fontSize: 12, color: "#64748b", marginTop: 2 },
 });
 
 export default ProfileDetails;

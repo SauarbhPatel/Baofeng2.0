@@ -1,21 +1,7 @@
-Profile Tabs Task
-1. after login set profile date in ProfileDetails.js
-2. make logout functional , alos make a Alert Model to ask for logout inside AccountMenu.js
-3. make a login to show not login in ProfileScreen, and give a button to navigate to login screen
-
-
-Category Tabs Task
-1  getCategories  use this function to get category list and display in category screen , also make sure dont show all data at one time , just show 8  and after scrooling show a loader and then show 8 more and then after scrooling show more 
-2. make search functional 
-3. use SkeletonLoader for load data  
-4. also add refress controlar
-
-also check in splash screen , use login or not if it login then set token __setToken() in this function
-
 
 Cart Tabs Task
 
-on Clicking Checkout button
+on Clicking Checkout button  
 
 Post https://consumerapi.baofengradios.co.in/order/checkout
 
@@ -78,4 +64,341 @@ response {
         "timestamp": "2026-04-17T07:47:01.914Z",
         "path": "/order/checkout"
     }
+}  
+
+ then navigate to  "Checkout" screen
+
+ call this 
+ Post https://consumerapi.baofengradios.co.in/cart/register
+ payload {"cartToken":"979a7d9d-d4ea-4bd8-a661-bd03c8780b46"}
+ response {
+    "success": true,
+    "message": "Request successful",
+    "data": {
+        "cartToken": "979a7d9d-d4ea-4bd8-a661-bd03c8780b46",
+        "isConsumerRegistered": true,
+        "consumerId": "69e1cc190ecd2a715dd68ddd",
+        "items": [
+            {
+                "itemId": "69e31b9789299ac01d730be9",
+                "listingId": "69dce3f55c533d896a46c67d",
+                "productId": "69dce3f55c533d896a46c677",
+                "quantity": 1,
+                "listingBusinessId": "L00000513",
+                "sku": "STABCDE-BF-33-1",
+                "unitSellingPrice": 1999,
+                "productName": "BF-33 (pack-1)",
+                "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775734151098_2a975855-02df-4fb9-b880-504554fde4d4.jpg"
+            }
+        ],
+        "updatedAt": "2026-04-18T05:50:34.704Z"
+    },
+    "meta": {
+        "timestamp": "2026-04-18T06:43:07.938Z",
+        "path": "/cart/register"
+    }
 }
+and also call this ,"ABN20260400167" this code from checkout api abundantId
+Get https://consumerapi.baofengradios.co.in/order/abundant/ABN20260400167
+response{
+    "success": true,
+    "message": "Request successful",
+    "data": {
+        "_id": "69e32ac989299ac01d7311dd",
+        "abundantId": "ABN20260400168",
+        "companyId": "695f53ac419fb9b375867a1b",
+        "consumerId": "69e1cc190ecd2a715dd68ddd",
+        "cartToken": "979a7d9d-d4ea-4bd8-a661-bd03c8780b46",
+        "status": "ABANDONED",
+        "paymentStatus": "UNPAID",
+        "verificationStatus": "NEW",
+        "shippingAddress": null,
+        "billingAddress": null,
+        "shipping": null,
+        "payment": null,
+        "items": [
+            {
+                "listingId": "69dcd648b096799f19ff287f",
+                "productId": "69dcd648b096799f19ff2879",
+                "sellerId": "69a1e5514a37a4e1413c74e5",
+                "listingBusinessId": "L00000492",
+                "sku": "STABCDE-69a1e5514a37a4e1413c74e5-MP-31-01",
+                "productName": "Baofeng MP31 (pack-1)",
+                "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775715571367_067056ab-d99b-4f94-b2ba-bc11bdbd70b3.jpg",
+                "isProductSerialNumberRequired": true,
+                "unitPrice": 3499,
+                "quantity": 1,
+                "lineTotal": 3499
+            }
+        ],
+        "subtotal": 3499,
+        "shippingFee": 0,
+        "discountTotal": 0,
+        "taxTotal": 0,
+        "grandTotal": 3499,
+        "roundOff": 0,
+        "createdAt": "2026-04-18T06:55:05.026Z",
+        "updatedAt": "2026-04-18T06:55:05.026Z",
+        "availablePaymentOptions": {
+            "methods": [
+                {
+                    "methodCode": "COD",
+                    "methodName": "COD",
+                    "methodDescription": "Brief description of the COD",
+                    "methodFavIcon": "https://baofengradios.s3.ap-south-1.amazonaws.com/image-1763529753579.png",
+                    "_id": "69d0c56c7fca31377ff68db3"
+                },
+                {
+                    "methodCode": "RAZORPAY",
+                    "methodName": "Razorpay",
+                    "methodDescription": "You will be redirected to razorpay after order for payment",
+                    "methodFavIcon": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1773654157363_99085e1b-2d45-4199-a922-8dc06f4e054e.webp",
+                    "_id": "69a8f6f78d2aca2db1d9fb36"
+                }
+            ],
+            "partial": {
+                "enabled": false
+            }
+        }
+    },
+    "meta": {
+        "timestamp": "2026-04-18T06:55:05.633Z",
+        "path": "/order/abundant/ABN20260400168"
+    }
+}
+
+get Delevery Addresslist
+Get https://consumerapi.baofengradios.co.in/address/getAllAddress/shipping
+
+response {
+    "success": true,
+    "message": "Request successful",
+    "data": [
+        {
+            "_id": "69e318d789299ac01d730a11",
+            "consumerId": "69e1cc190ecd2a715dd68ddd",
+            "addressType": "SHIPPING",
+            "firstName": "Saurabh",
+            "lastName": "Patel",
+            "fullName": "Saurabh Patel",
+            "phone": "+919669233736",
+            "email": "saurabh@gmail.com",
+            "addressLine1": "tgb",
+            "addressLine2": "hvjhkj",
+            "area": "ttvj",
+            "city": "New Delhi",
+            "state": {
+                "stateId": "69ca6bc90587aefb7a245b06",
+                "name": "Delhi",
+                "_id": "69e318d789299ac01d730a12"
+            },
+            "country": {
+                "countryId": "69ca6b070587aefb7a245ae0",
+                "name": "India",
+                "_id": "69e318d789299ac01d730a13"
+            },
+            "postalCode": "100001",
+            "gstNumber": "",
+            "isDefault": true,
+            "companyId": "695f53ac419fb9b375867a1b",
+            "__v": 0,
+            "createdAt": "2026-04-18T05:38:31.654Z",
+            "updatedAt": "2026-04-18T05:38:31.654Z"
+        }
+    ],
+    "meta": {
+        "timestamp": "2026-04-18T06:43:09.192Z",
+        "path": "/address/getAllAddress/shipping"
+    }
+}
+
+check in list "isDefault": true, if this the it should auto selected 
+
+and call a api -pincode should be selected address pincode
+Get https://consumerapi.baofengradios.co.in/pincode/shipping-methods?pincode=100001   thiis is to show shippind method 
+
+response {
+    "success": true,
+    "message": "Request successful",
+    "data": {
+        "pincode": "100001",
+        "serviceable": true,
+        "codAllowed": true,
+        "shippingMethods": [
+            {
+                "id": "69cfad25ca7c6d03b76f5669",
+                "shippingMethodName": "Delivery 1st Class With Tracking",
+                "serviceMode": "ECONOMY",
+                "paymentSupport": "PREPAID",
+                "description": "(5-13) days",
+                "image": "https://www.freelogovectors.net/wp-content/uploads/2019/07/delhivery-logo.jpg",
+                "priority": 1,
+                "charges": {
+                    "chargeModel": "SLAB_RATE",
+                    "baseCharge": [],
+                    "perKgCharge": 5,
+                    "remoteAreaSurcharge": 8,
+                    "codFee": 9
+                }
+            }
+        ]
+    },
+    "meta": {
+        "timestamp": "2026-04-18T06:43:09.387Z",
+        "path": "/pincode/shipping-methods?pincode=100001"
+    }
+}
+
+
+
+after selecteign all ,
+
+if user select Cod 
+then 
+
+call this ,
+
+Post https://consumerapi.baofengradios.co.in/order/placeOrder/69e32ac989299ac01d7311dd ,"69e32ac989299ac01d7311dd " this is from  https://consumerapi.baofengradios.co.in/order/abundant/ABN20260400167  this api _id 
+
+payload {"shippingAddressId":"69e318d789299ac01d730a11","shippingMethodId":"69cfad25ca7c6d03b76f5669","shippingFee":13,"paymentMethodId":"69d0c56c7fca31377ff68db3","estimatedDeliveryText":"Delivery 1st Class With Tracking"}
+response {
+    "success": true,
+    "message": "Request successful",
+    "data": {
+        "checkoutId": "69e32ac989299ac01d7311dd",
+        "checkoutAbundantId": "ABN20260400168",
+        "orders": [
+            {
+                "_id": "69e32b8189299ac01d731207",
+                "orderNumber": "ORD20260400022",
+                "abundantId": "ABN20260400168",
+                "companyId": "695f53ac419fb9b375867a1b",
+                "consumerId": "[object Object]",
+                "cartToken": "979a7d9d-d4ea-4bd8-a661-bd03c8780b46",
+                "status": "PENDING",
+                "paymentStatus": "PENDING",
+                "verificationStatus": "NEW",
+                "shippingAddress": {
+                    "addressDocumentId": "69e318d789299ac01d730a11",
+                    "addressType": "SHIPPING",
+                    "firstName": "Saurabh",
+                    "lastName": "Patel",
+                    "fullName": "Saurabh Patel",
+                    "phone": "+919669233736",
+                    "email": "saurabh@gmail.com",
+                    "addressLine1": "tgb",
+                    "addressLine2": "hvjhkj",
+                    "area": "ttvj",
+                    "city": "New Delhi",
+                    "state": {
+                        "stateId": "69ca6bc90587aefb7a245b06",
+                        "name": "Delhi"
+                    },
+                    "country": {
+                        "countryId": "69ca6b070587aefb7a245ae0",
+                        "name": "India"
+                    },
+                    "postalCode": "100001",
+                    "gstNumber": ""
+                },
+                "billingAddress": {
+                    "addressDocumentId": "69e318d789299ac01d730a11",
+                    "addressType": "SHIPPING",
+                    "firstName": "Saurabh",
+                    "lastName": "Patel",
+                    "fullName": "Saurabh Patel",
+                    "phone": "+919669233736",
+                    "email": "saurabh@gmail.com",
+                    "addressLine1": "tgb",
+                    "addressLine2": "hvjhkj",
+                    "area": "ttvj",
+                    "city": "New Delhi",
+                    "state": {
+                        "stateId": "69ca6bc90587aefb7a245b06",
+                        "name": "Delhi"
+                    },
+                    "country": {
+                        "countryId": "69ca6b070587aefb7a245ae0",
+                        "name": "India"
+                    },
+                    "postalCode": "100001",
+                    "gstNumber": ""
+                },
+                "shipping": {
+                    "shippingMethodId": "69cfad25ca7c6d03b76f5669",
+                    "shippingMethodName": "Delivery 1st Class With Tracking",
+                    "shippingFee": 13,
+                    "estimatedDeliveryText": "Delivery 1st Class With Tracking",
+                    "serviceMode": "ECONOMY"
+                },
+                "payment": {
+                    "paymentMethodMasterId": "69d0c56c7fca31377ff68db3",
+                    "methodCode": "COD",
+                    "methodName": "COD",
+                    "paymentKind": "COD"
+                },
+                "items": [
+                    {
+                        "listingId": "69dcd648b096799f19ff287f",
+                        "productId": "69dcd648b096799f19ff2879",
+                        "sellerId": "69a1e5514a37a4e1413c74e5",
+                        "listingBusinessId": "L00000492",
+                        "sku": "STABCDE-69a1e5514a37a4e1413c74e5-MP-31-01",
+                        "productName": "Baofeng MP31 (pack-1)",
+                        "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775715571367_067056ab-d99b-4f94-b2ba-bc11bdbd70b3.jpg",
+                        "isProductSerialNumberRequired": true,
+                        "unitPrice": 3499,
+                        "quantity": 1,
+                        "lineTotal": 3499,
+                        "gst": {
+                            "supplyType": "INTER_STATE",
+                            "hsnCode": "85256019",
+                            "taxSlabId": "69ca740e0587aefb7a245c25",
+                            "combinedRatePercent": 18,
+                            "cgstRatePercent": 0,
+                            "sgstRatePercent": 0,
+                            "igstRatePercent": 18,
+                            "taxableValue": 2965.25,
+                            "cgstAmount": 0,
+                            "sgstAmount": 0,
+                            "igstAmount": 533.75,
+                            "totalGstAmount": 533.75
+                        },
+                        "pickupPoint": {
+                            "pickupPointId": "69a1e57b1aeed5f800c42ef8",
+                            "pickupPointName": "BAOFENG SURFACE"
+                        }
+                    }
+                ],
+                "subtotal": 3499,
+                "shippingFee": 13,
+                "discountTotal": 0,
+                "taxTotal": 533.75,
+                "grandTotal": 3512,
+                "roundOff": 0,
+                "gst": {
+                    "supplyType": "INTER_STATE",
+                    "hsnCode": "85256019",
+                    "taxSlabId": "69ca740e0587aefb7a245c25",
+                    "combinedRatePercent": 18,
+                    "cgstRatePercent": 0,
+                    "sgstRatePercent": 0,
+                    "igstRatePercent": 18,
+                    "taxableValue": 2965.25,
+                    "cgstAmount": 0,
+                    "sgstAmount": 0,
+                    "igstAmount": 533.75,
+                    "totalGstAmount": 533.75
+                },
+                "createdAt": "2026-04-18T06:58:09.406Z",
+                "updatedAt": "2026-04-18T06:58:09.406Z"
+            }
+        ]
+    },
+    "meta": {
+        "timestamp": "2026-04-18T06:58:09.416Z",
+        "path": "/order/placeOrder/69e32ac989299ac01d7311dd"
+    }
+}
+
+then navigate to OrderConfirmationScreen

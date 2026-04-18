@@ -374,6 +374,14 @@ export const SimilarProductSkeleton = () => (
         />
     </View>
 );
+
+// ─── Category grid card skeleton (2-column ImageBackground cards) ─
+export const CategoryGridSkeleton = () => (
+    <View style={styles.categoryGridCard}>
+        <SkeletonBox width="100%" height={180} borderRadius={16} />
+    </View>
+);
+
 const styles = StyleSheet.create({
     // Category
     categoryCard: {
@@ -494,6 +502,15 @@ const styles = StyleSheet.create({
         alignItems: "center",
         width: "100%",
         marginTop: 6,
+    },
+
+    // Category grid card
+    categoryGridCard: {
+        width: "48%",
+        height: 180,
+        borderRadius: 16,
+        marginBottom: 10,
+        overflow: "hidden",
     },
 
     // Spacing helpers

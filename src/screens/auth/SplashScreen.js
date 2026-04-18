@@ -1,19 +1,27 @@
 import { useEffect } from "react";
 import { SafeAreaView, View, StatusBar } from "react-native";
 import { Image } from "expo-image";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { __setToken } from "../../api/constant";
+
+const AUTH_TOKEN_KEY = "baofeng_auth_token";
 
 const SplashScreen = ({ navigation }) => {
     const checkLogin = async () => {
-        // const data = await __getLocalStorageData("login");
-        // if (data) {
-        //     const login = JSON.parse(data);
-        //     __setLocalization(login);
-        //     __setToken(login.token);
-        // }
-        setTimeout(() => {
-            navigation.push("HomeNavigator");
-            // navigation.push("Login");
-        }, 2000);
+        try {
+            const token = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+            if (token) {
+                // Restore token into the in-memory API header
+                __setToken(token);
+            }
+        } catch (err) {
+            console.error("SplashScreen token restore error:", err);
+        } finally {
+            // Always navigate after check — logged in or not
+            setTimeout(() => {
+                navigation.replace("HomeNavigator");
+            }, 1800);
+        }
     };
 
     useEffect(() => {
@@ -30,23 +38,14 @@ const SplashScreen = ({ navigation }) => {
                     alignItems: "center",
                 }}
             >
-                {appLogo()}
+                <Image
+                    source={require("../../assets/logo/ios-icon.png")}
+                    style={{ width: 280.0, height: 160.0 }}
+                    contentFit="contain"
+                />
             </View>
         </SafeAreaView>
     );
-
-    function appLogo() {
-        return (
-            <Image
-                source={require("../../assets/logo/ios-icon.png")}
-                // source={{
-                // uri: "https://baofengradios.s3.ap-south-1.amazonaws.com/image-1763203968899.png",
-                // }}
-                style={{ width: 280.0, height: 160.0 }}
-                contentFit="contain"
-            />
-        );
-    }
 };
 
 export default SplashScreen;

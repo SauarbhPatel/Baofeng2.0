@@ -1,11 +1,16 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { __setToken } from "../../api/constant";
 
-const AccountMenu = () => {
+const AUTH_TOKEN_KEY = "baofeng_auth_token";
+const AUTH_USER_KEY = "baofeng_auth_user";
+
+const AccountMenu = ({ navigation }) => {
     const menuItems = [
         { id: "1", title: "Edit Account" },
-        { id: "2", title: "Change Passwrd" },
+        { id: "2", title: "Change Password" },
         { id: "3", title: "Address Book" },
         { id: "4", title: "Wishlist" },
         { id: "5", title: "My Orders" },
@@ -13,10 +18,49 @@ const AccountMenu = () => {
         { id: "7", title: "Logout", isDestructive: true },
     ];
 
+    const handleLogout = () => {
+        Alert.alert(
+            "Logout",
+            "Are you sure you want to logout?",
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Logout",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            // Clear stored credentials
+                            await AsyncStorage.removeItem(AUTH_TOKEN_KEY);
+                            await AsyncStorage.removeItem(AUTH_USER_KEY);
+                            // Clear in-memory API token
+                            __setToken(null);
+                            // Navigate back to login
+                            navigation?.replace("AuthNavigator");
+                        } catch (err) {
+                            console.error("Logout error:", err);
+                        }
+                    },
+                },
+            ],
+            { cancelable: true },
+        );
+    };
+
+    const handlePress = (item) => {
+        if (item.isDestructive) {
+            handleLogout();
+        }
+        // Add other navigation cases here as needed
+    };
+
     return (
         <View style={styles.container}>
             {menuItems.map((item) => (
-                <TouchableOpacity key={item.id} style={styles.menuItem}>
+                <TouchableOpacity
+                    key={item.id}
+                    style={styles.menuItem}
+                    onPress={() => handlePress(item)}
+                >
                     <Text
                         style={[
                             styles.menuText,
@@ -26,7 +70,6 @@ const AccountMenu = () => {
                         {item.title}
                     </Text>
 
-                    {/* Arrow Indicator */}
                     <View
                         style={[
                             styles.arrowContainer,
@@ -68,14 +111,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#F0EFF2",
     },
-    menuText: {
-        fontSize: 14,
-        fontWeight: "600",
-        color: "#334155",
-    },
-    logoutText: {
-        color: "#475569",
-    },
+    menuText: { fontSize: 14, fontWeight: "600", color: "#334155" },
+    logoutText: { color: "#ef4444" },
     arrowContainer: {
         width: 32,
         height: 32,

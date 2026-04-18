@@ -35,6 +35,9 @@ export const getSimilarProducts = (categoryId, productId) =>
 export const checkPincode = (pincode) =>
     __getApiData(`pincode/check?pincode=${pincode}`);
 
+export const getShippingMethods = (pincode) =>
+    __getApiData(`pincode/shipping-methods?pincode=${pincode}`);
+
 // ─── Cart ─────────────────────────────────────────────────────
 export const addToCart = (payload) => __postApiData("cart/addToCart", payload);
 
@@ -48,3 +51,20 @@ export const removeCartItem = (payload) =>
     __postApiData("cart/items/remove", payload);
 
 export const clearCart = (payload) => __postApiData("cart/clear", payload);
+
+export const registerCart = (payload) =>
+    __postApiData("cart/register", payload);
+
+// ─── Orders ───────────────────────────────────────────────────
+export const checkoutOrder = (payload) =>
+    __postApiData("order/checkout", payload);
+
+export const getAbundantOrder = (abundantId) =>
+    __getApiData(`order/abundant/${abundantId}`);
+
+export const placeOrder = (orderId, payload) =>
+    __postApiData(`order/placeOrder/${orderId}`, payload);
+
+// ─── Address ──────────────────────────────────────────────────
+export const getShippingAddresses = () =>
+    __getApiData("address/getAllAddress/shipping");

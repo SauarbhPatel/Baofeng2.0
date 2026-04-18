@@ -13,7 +13,9 @@ import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native";
 import MainHeader from "../../componend/common/MainHeader";
 
-const OrderConfirmation = ({ navigation }) => {
+const OrderConfirmation = ({ navigation, route }) => {
+    const { orders } = route?.params || {};
+
     return (
         <SafeAreaView style={styles.container}>
             <MainHeader bgColor="#ffffff" />

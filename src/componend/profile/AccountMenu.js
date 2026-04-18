@@ -9,8 +9,8 @@ const AUTH_USER_KEY = "baofeng_auth_user";
 
 const AccountMenu = ({ navigation }) => {
     const menuItems = [
-        { id: "1", title: "Edit Account" },
-        { id: "2", title: "Change Password" },
+        { id: "1", title: "Edit Account", path: "EditAccount" },
+        { id: "2", title: "Change Password", path: "ChangePassword" },
         { id: "3", title: "Address Book" },
         { id: "4", title: "Wishlist" },
         { id: "5", title: "My Orders" },
@@ -48,9 +48,11 @@ const AccountMenu = ({ navigation }) => {
 
     const handlePress = (item) => {
         if (item.isDestructive) {
-            handleLogout();
+            return handleLogout();
         }
-        // Add other navigation cases here as needed
+        if (item?.path) {
+            return navigation.push(item?.path);
+        }
     };
 
     return (

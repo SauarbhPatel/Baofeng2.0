@@ -1,44 +1,92 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
     View,
-    Text,
     StyleSheet,
     ScrollView,
-    TextInput,
-    TouchableOpacity,
-    Image,
     SafeAreaView,
+    RefreshControl,
 } from "react-native";
-import { MaterialCommunityIcons, Feather } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import MainHeader from "../../componend/common/MainHeader";
 import OrderDashboard from "../../componend/myorders/OrderDashboard";
 import OrderListing from "../../componend/myorders/OrderListing";
+import { getOrderListing } from "../../api/commonApi";
+
+const AUTH_USER_KEY = "baofeng_auth_user";
 
 const OrdersScreen = ({ navigation }) => {
-    const [state, setState] = useState({
-        cartItem: [],
-        showEmpty: false,
-    });
-    const { cartItem, showEmpty } = state;
-    const updateState = (data) => setState((prv) => ({ ...prv, ...data }));
-
     const [activeTab, setActiveTab] = useState("All Orders");
+    const [orders, setOrders] = useState([]);
+    const [counts, setCounts] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+
+    // Re-fetch every time screen comes into focus
+    // useFocusEffect(
+    //     useCallback(() => {
+    //         fetchOrders();
+    //     }, []),
+    // );
+    useEffect(() => {
+        fetchOrders();
+    }, []);
+
+    const fetchOrders = async () => {
+        try {
+            setLoading(true);
+            const raw = await AsyncStorage.getItem(AUTH_USER_KEY);
+            const user = raw ? JSON.parse(raw) : null;
+            const consumerId = user?.id;
+            if (!consumerId) {
+                setLoading(false);
+                return;
+            }
+
+            const res = await getOrderListing(consumerId);
+            if (res?.success && res?.data) {
+                setOrders(res.data.orders || []);
+                setCounts(res.data.counts || {});
+            }
+        } catch (err) {
+            console.error("OrdersScreen fetch error:", err);
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
+        }
+    };
+
+    const onRefresh = () => {
+        setRefreshing(true);
+        fetchOrders();
+    };
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <MainHeader bgColor="#fff" />
-
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingTop: 15 }}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        colors={["#0069AF"]}
+                        tintColor="#0069AF"
+                        progressBackgroundColor="#fff"
+                    />
+                }
             >
                 <View style={styles.mainContainer}>
                     <OrderDashboard
                         activeTab={activeTab}
                         setActiveTab={setActiveTab}
+                        counts={counts}
                     />
                     <OrderListing
                         activeTab={activeTab}
+                        orders={orders}
+                        loading={loading}
                         navigation={navigation}
                     />
                 </View>

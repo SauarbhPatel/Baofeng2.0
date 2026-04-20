@@ -8,10 +8,11 @@ import {
     Platform,
     StatusBar,
     Image,
+    TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-
-const MainHeader = ({ bgColor }) => {
+// Search
+const MainHeader = ({ bgColor, navigation }) => {
     return (
         <>
             <StatusBar backgroundColor={"#0069b3"} barStyle={"dark-content"} />
@@ -33,7 +34,10 @@ const MainHeader = ({ bgColor }) => {
                     />
 
                     {/* Search Bar Container */}
-                    <View style={styles.searchBarWrapper}>
+                    <TouchableOpacity
+                        onPress={() => navigation.push("Search")}
+                        style={styles.searchBarWrapper}
+                    >
                         <Ionicons
                             name="search-outline"
                             size={20}
@@ -46,7 +50,7 @@ const MainHeader = ({ bgColor }) => {
                             placeholderTextColor="#A0AEC0"
                             editable={false}
                         />
-                    </View>
+                    </TouchableOpacity>
                 </View>
             </View>
         </>

@@ -69,50 +69,48 @@ const EditAccountScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#D7E9F2", // Light blue screen background
+        backgroundColor: "#D7E9F2",
     },
     scrollContent: {
-        paddingHorizontal: 10,
         paddingTop: 15,
     },
     card: {
-        backgroundColor: "#ffffff",
+        backgroundColor: "#F3FBFF",
         borderRadius: 24,
         padding: 15,
         marginHorizontal: 10,
         marginBottom: 15,
         borderWidth: 1,
         borderColor: "#EBF7FD",
-        paddingBottom: 10,
     },
     headerTitle: {
-        fontSize: 22,
-        fontWeight: "800",
+        fontSize: 18,
+        fontWeight: "700",
         color: "#0f172a",
-        marginBottom: 25,
+        marginBottom: 15,
     },
     formGroup: {
-        marginBottom: 20,
+        marginBottom: 15,
     },
     label: {
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: "600",
-        color: "#94a3b8", // Muted slate color for labels
+        color: "#94a3b8",
         marginBottom: 8,
     },
     input: {
         height: 50,
         backgroundColor: "#ffffff",
         borderWidth: 1.5,
-        borderColor: "#e2e8f0", // Subtle border
+        borderColor: "#e2e8f0",
         borderRadius: 12,
         paddingHorizontal: 15,
         fontSize: 16,
         color: "#0f172a",
     },
     updateButton: {
-        backgroundColor: "#0064a3", // Deep blue button color
-        height: 55,
+        backgroundColor: "#0064a3",
+        height: 50,
         borderRadius: 12,
         justifyContent: "center",
         alignItems: "center",
@@ -120,7 +118,7 @@ const styles = StyleSheet.create({
     },
     updateButtonText: {
         color: "#ffffff",
-        fontSize: 17,
+        fontSize: 15,
         fontWeight: "700",
     },
 });

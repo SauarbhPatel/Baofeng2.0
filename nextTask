@@ -1,579 +1,185 @@
+Check We have SearcScreen  add api and also make ui ,
 
-Cart Tabs Task
-
-on Clicking Checkout button  
-
-Post https://consumerapi.baofengradios.co.in/order/checkout
-
-payload {"cartToken":"e041b627-6031-4f7e-8bda-0507ab8d5eeb","discountTotal":0,"taxTotal":0}
-
-response {
+Get https: //consumerapi.baofengradios.co.in/product/searchFilter?q=baof
+{
     "success": true,
     "message": "Request successful",
     "data": {
-        "_id": "69e1e57535232e1a62d87308",
-        "abundantId": "ABN20260400156",
-        "companyId": "695f53ac419fb9b375867a1b",
-        "consumerId": "69e1cc190ecd2a715dd68ddd",
-        "cartToken": "e041b627-6031-4f7e-8bda-0507ab8d5eeb",
-        "status": "ABANDONED",
-        "paymentStatus": "UNPAID",
-        "verificationStatus": "NEW",
-        "shippingAddress": null,
-        "billingAddress": null,
-        "shipping": null,
-        "payment": null,
-        "items": [
+        "products": [
             {
-                "listingId": "69dcda66b096799f19ff2bae",
-                "productId": "69dcda66b096799f19ff2ba8",
-                "sellerId": "69a1e5514a37a4e1413c74e5",
-                "listingBusinessId": "L00000497",
-                "sku": "STABCDE-69a1e5514a37a4e1413c74e5-BF-358-1",
-                "productName": "BF-358 (pack-1)",
-                "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775717251049_3eac9f74-9510-4c25-bdc6-39c087dda875.jpg",
-                "isProductSerialNumberRequired": true,
-                "unitPrice": 2349,
-                "quantity": 1,
-                "lineTotal": 2349
+                "_id": "69dce3f55c533d896a46c773",
+                "name": "BF-33 (PACK-10)",
+                "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1776083944882_5ba7f36a-910d-42e7-9290-d2c28a0a2fd5.webp",
+                "productVariationSlug": "baofeng-bf-33c-uhf-compact-communication-radio-licence-free-walkie-talkie-pack-10",
+                "listingId": "L00000522"
             },
             {
-                "listingId": "69dcc095b096799f19ff1661",
-                "productId": "69dcc095b096799f19ff165b",
-                "sellerId": "69a1e5514a37a4e1413c74e5",
-                "listingBusinessId": "L00000448",
-                "sku": "STABCDE-69a1e5514a37a4e1413c74e5-UV-8D-1",
-                "productName": "UV-8D Rechargeable (pack-1)",
-                "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1776071601834_1f576c21-aac5-4b3c-beda-b09b20343019.jpg",
-                "isProductSerialNumberRequired": true,
-                "unitPrice": 3299,
-                "quantity": 2,
-                "lineTotal": 6598
-            }
-        ],
-        "subtotal": 8947,
-        "shippingFee": 0,
-        "discountTotal": 0,
-        "taxTotal": 0,
-        "grandTotal": 8947,
-        "roundOff": 0,
-        "createdAt": "2026-04-17T07:47:01.911Z",
-        "updatedAt": "2026-04-17T07:47:01.911Z"
-    },
-    "meta": {
-        "timestamp": "2026-04-17T07:47:01.914Z",
-        "path": "/order/checkout"
-    }
-}  
-
- then navigate to  "Checkout" screen
-
- call this 
- Post https://consumerapi.baofengradios.co.in/cart/register
- payload {"cartToken":"979a7d9d-d4ea-4bd8-a661-bd03c8780b46"}
- response {
-    "success": true,
-    "message": "Request successful",
-    "data": {
-        "cartToken": "979a7d9d-d4ea-4bd8-a661-bd03c8780b46",
-        "isConsumerRegistered": true,
-        "consumerId": "69e1cc190ecd2a715dd68ddd",
-        "items": [
-            {
-                "itemId": "69e31b9789299ac01d730be9",
-                "listingId": "69dce3f55c533d896a46c67d",
-                "productId": "69dce3f55c533d896a46c677",
-                "quantity": 1,
-                "listingBusinessId": "L00000513",
-                "sku": "STABCDE-BF-33-1",
-                "unitSellingPrice": 1999,
-                "productName": "BF-33 (pack-1)",
-                "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775734151098_2a975855-02df-4fb9-b880-504554fde4d4.jpg"
-            }
-        ],
-        "updatedAt": "2026-04-18T05:50:34.704Z"
-    },
-    "meta": {
-        "timestamp": "2026-04-18T06:43:07.938Z",
-        "path": "/cart/register"
-    }
-}
-and also call this ,"ABN20260400167" this code from checkout api abundantId
-Get https://consumerapi.baofengradios.co.in/order/abundant/ABN20260400167
-response{
-    "success": true,
-    "message": "Request successful",
-    "data": {
-        "_id": "69e32ac989299ac01d7311dd",
-        "abundantId": "ABN20260400168",
-        "companyId": "695f53ac419fb9b375867a1b",
-        "consumerId": "69e1cc190ecd2a715dd68ddd",
-        "cartToken": "979a7d9d-d4ea-4bd8-a661-bd03c8780b46",
-        "status": "ABANDONED",
-        "paymentStatus": "UNPAID",
-        "verificationStatus": "NEW",
-        "shippingAddress": null,
-        "billingAddress": null,
-        "shipping": null,
-        "payment": null,
-        "items": [
-            {
-                "listingId": "69dcd648b096799f19ff287f",
-                "productId": "69dcd648b096799f19ff2879",
-                "sellerId": "69a1e5514a37a4e1413c74e5",
-                "listingBusinessId": "L00000492",
-                "sku": "STABCDE-69a1e5514a37a4e1413c74e5-MP-31-01",
-                "productName": "Baofeng MP31 (pack-1)",
-                "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775715571367_067056ab-d99b-4f94-b2ba-bc11bdbd70b3.jpg",
-                "isProductSerialNumberRequired": true,
-                "unitPrice": 3499,
-                "quantity": 1,
-                "lineTotal": 3499
-            }
-        ],
-        "subtotal": 3499,
-        "shippingFee": 0,
-        "discountTotal": 0,
-        "taxTotal": 0,
-        "grandTotal": 3499,
-        "roundOff": 0,
-        "createdAt": "2026-04-18T06:55:05.026Z",
-        "updatedAt": "2026-04-18T06:55:05.026Z",
-        "availablePaymentOptions": {
-            "methods": [
-                {
-                    "methodCode": "COD",
-                    "methodName": "COD",
-                    "methodDescription": "Brief description of the COD",
-                    "methodFavIcon": "https://baofengradios.s3.ap-south-1.amazonaws.com/image-1763529753579.png",
-                    "_id": "69d0c56c7fca31377ff68db3"
-                },
-                {
-                    "methodCode": "RAZORPAY",
-                    "methodName": "Razorpay",
-                    "methodDescription": "You will be redirected to razorpay after order for payment",
-                    "methodFavIcon": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1773654157363_99085e1b-2d45-4199-a922-8dc06f4e054e.webp",
-                    "_id": "69a8f6f78d2aca2db1d9fb36"
-                }
-            ],
-            "partial": {
-                "enabled": false
-            }
-        }
-    },
-    "meta": {
-        "timestamp": "2026-04-18T06:55:05.633Z",
-        "path": "/order/abundant/ABN20260400168"
-    }
-}
-
-get Delevery Addresslist
-Get https://consumerapi.baofengradios.co.in/address/getAllAddress/shipping
-
-response {
-    "success": true,
-    "message": "Request successful",
-    "data": [
-        {
-            "_id": "69e318d789299ac01d730a11",
-            "consumerId": "69e1cc190ecd2a715dd68ddd",
-            "addressType": "SHIPPING",
-            "firstName": "Saurabh",
-            "lastName": "Patel",
-            "fullName": "Saurabh Patel",
-            "phone": "+919669233736",
-            "email": "saurabh@gmail.com",
-            "addressLine1": "tgb",
-            "addressLine2": "hvjhkj",
-            "area": "ttvj",
-            "city": "New Delhi",
-            "state": {
-                "stateId": "69ca6bc90587aefb7a245b06",
-                "name": "Delhi",
-                "_id": "69e318d789299ac01d730a12"
+                "_id": "69dce3f55c533d896a46c703",
+                "name": "BF-33 (PACK-6)",
+                "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1776083416765_27d9a8b7-5f79-4db9-ab19-ede826826dfb.webp",
+                "productVariationSlug": "baofeng-bf-33c-uhf-compact-communication-radio-licence-free-walkie-talkie-pack-6",
+                "listingId": "L00000518"
             },
-            "country": {
-                "countryId": "69ca6b070587aefb7a245ae0",
-                "name": "India",
-                "_id": "69e318d789299ac01d730a13"
-            },
-            "postalCode": "100001",
-            "gstNumber": "",
-            "isDefault": true,
-            "companyId": "695f53ac419fb9b375867a1b",
-            "__v": 0,
-            "createdAt": "2026-04-18T05:38:31.654Z",
-            "updatedAt": "2026-04-18T05:38:31.654Z"
-        }
-    ],
-    "meta": {
-        "timestamp": "2026-04-18T06:43:09.192Z",
-        "path": "/address/getAllAddress/shipping"
-    }
-}
-
-check in list "isDefault": true, if this the it should auto selected 
-
-and call a api -pincode should be selected address pincode
-Get https://consumerapi.baofengradios.co.in/pincode/shipping-methods?pincode=100001   thiis is to show shippind method 
-
-response {
-    "success": true,
-    "message": "Request successful",
-    "data": {
-        "pincode": "100001",
-        "serviceable": true,
-        "codAllowed": true,
-        "shippingMethods": [
+        ],
+        "categories": [
             {
-                "id": "69cfad25ca7c6d03b76f5669",
-                "shippingMethodName": "Delivery 1st Class With Tracking",
-                "serviceMode": "ECONOMY",
-                "paymentSupport": "PREPAID",
-                "description": "(5-13) days",
-                "image": "https://www.freelogovectors.net/wp-content/uploads/2019/07/delhivery-logo.jpg",
-                "priority": 1,
-                "charges": {
-                    "chargeModel": "SLAB_RATE",
-                    "baseCharge": [],
-                    "perKgCharge": 5,
-                    "remoteAreaSurcharge": 8,
-                    "codFee": 9
-                }
+                "_id": "69ce0b3bdc6c95971b01ee3e",
+                "name": "BF-33C",
+                "image": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775110888968_640390eb-cd53-41a5-9f84-38f231f8a0e1.webp"
+            },
+            {
+                "_id": "69ce0396dc6c95971b01ebc3",
+                "name": "BF-358",
+                "image": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775108952516_445bab97-91d3-441a-a833-4cd51f573607.jpg"
+            }
+        ],
+        "brands": [
+            {
+                "_id": "69ca827b0587aefb7a24605c",
+                "name": "BAOFENG",
+                "logo": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1774878576218_b250b2af-e6b6-4c9a-ba76-46c875f5e5f8.jpg"
+            },
+            {
+                "_id": "69cbbab3939974b82ae854e3",
+                "name": "iBaofeng",
+                "logo": "data:image/avif;base64,AAAAHGZ0eXBhdmlmAAAAAG1pZjFhdmlmbWlhZgAAANZtZXRhAAAAAAAAACFoZGxyAAAAAAAAAABwaWN0AAAAAAAAAAAAAAAAAAAAAA5waXRtAAAAAAABAAAAImlsb2MAAAAAREAAAQABAAAAAAD6AAEAAAAAAAAEmAAAACNpaW5mAAAAAAABAAAAFWluZmUCAAAAAAEAAGF2MDEAAAAAVmlwcnAAAAA4aXBjbwAAAAxhdjFDgSACAAAAABRpc3BlAAAAAAAAALoAAAAtAAAAEHBpeGkAAAAAAwgICAAAABZpcG1hAAAAAAAAAAEAAQOBAgMAAASgbWRhdBIACgk4HW5sYQENBpAyiAlE4AEEEECg3Ss/LGBJnDdXgvC9osDLkaI1JPAaSdQZGfvMXHUp1QPgC9Eg4bHjF9RoTY7Otehj5EeWwPZZPVuRtKNVedSzIXsCU1qtnCu1iTe7FgDALyaXzcnaFjmoD5Uk2pOOzNJd9bwZnGqf0H8SDN+xES3a5bR+0AilkKHBlyM5x/4NFd6igqKqQpJ2lg+IvBt/rHmk6yE6MaBdbldUwhXa5ZmffhQ/xwpQBenl7whVnNTbGCH9tw1G2PjQfSS06u7kqe3QHw/F9RC9GXqPVSB2A4ifebMDTXwURELCguBgUJKJslg8NPwpzgzO7qAAtu+7h6isplID9ToOmwITphfaYw43fqIl7M7hnuxPdQiTnP7tFQRb43EAXb76LRI7hXQ1NVHKmHo5OkuDbRmQSLHxE19eMDBKvjBcKPqWoctnp0Y7nynTICYqG+nPYt1v+TjuzCgEGqlrT5chfsjfEQ/70b/2YkTzsiW3B8yhwtyQMqJTHP047mCtQEtBYFzjQokpfooX1f8ZRKAuCBrOV4GUzos8B1AfPq3iNN72WWs7luoFtZsYp5Z5x6lshBHJnbVq/vs1sjrioC3nXcgAhg2HtlKeBHnmSY24D6huaeNzN9Xf6MOmROKTAfM6jFtGEJZ1s5Bjl/e4Q5yaZpS/nLIF8ltp518i+W00n+tXNjGjvKJEMvdPogM1Lh3g2Gz0OIAeCUHEmCKlaRlTGEn9ZbcbKZLpdz5s6WRUUWcedQuqeqnIuitxfBLtvhYgH+UDRvHhMkJjdrG04rWltrp1hjtNwd+Uomu/jsizQO5C54DfH8OkfYXi1BC/wWAQXissuf05gu+kuhPsqFomMhCfkY5Cvjja+rCIVNDMQTfha5vOMsL2kznYzDnVFFLv4LqpM9yKPV4ouBgbs+qzIH14aMdFZwzY13CGUjhSSZE1AKUO24YtNPNGEW5rRmhhHvM2bJe8InXuN0aSrm9wF870BNLaZWniifkMswkhqM9ORC0yGnpb2ClnLkhD9FQOoklxckECu8LmCdgIBuD0MzazFy1uZKP9d3WgBASqthK04AlC24tuWq1FMpBIdJ35u6WES3njY2/IHHYZMDOTJVwAWEgQf1YuqhrmRjxKQ1/6revj82MOpSi+v9200YW/oSQyjTeMNayH06OYcMIAFEpS632d7LGb1m3KjiqG/2XNJASqSqzvHE/DC3yP5KVEIhkq05Zp4F4p7ur/UhXxU9QBIArllRNgv5z9y4wCUxrIQtAUdtOSHYiecSVAlQ+mfRjbtkmFYV9rzAwoPBHF40zgqBE7BaMS94P2rLxKfNKyMdAZFkLWyCItThhiP6iR0tMb4U8nREsGyUFJ7dZ+XlHFMrzEvzs6UD6jv8xgkGgVPsf3yoxHXPrRCPDX2myQng5vhDiKafZh0k/f8n6FdNlnytwUCHRUhF6s798+BJqjDwLRHT3kph6MLRvfDfyZpSIVmf3ZTzZmqACVIjHztWlFbLd6hJbKIE4R9hwQ/D4fkflCPC8/FMnZWViYHUhrv1er3Pom9X0YZA=="
             }
         ]
     },
     "meta": {
-        "timestamp": "2026-04-18T06:43:09.387Z",
-        "path": "/pincode/shipping-methods?pincode=100001"
+        "timestamp": "2026-04-20T07:32:47.907Z",
+        "path": "/product/searchFilter?q=bf-3"
     }
 }
 
 
 
-after selecteign all ,
+Product Detail Screen  we have a componend called "LicenceNote"
 
-if user select Cod 
-then 
-
-call this ,
-
-Post https://consumerapi.baofengradios.co.in/order/placeOrder/69e32ac989299ac01d7311dd ,"69e32ac989299ac01d7311dd " this is from  https://consumerapi.baofengradios.co.in/order/abundant/ABN20260400167  this api _id 
-
-payload {"shippingAddressId":"69e318d789299ac01d730a11","shippingMethodId":"69cfad25ca7c6d03b76f5669","shippingFee":13,"paymentMethodId":"69d0c56c7fca31377ff68db3","estimatedDeliveryText":"Delivery 1st Class With Tracking"}
-response {
-    "success": true,
-    "message": "Request successful",
-    "data": {
-        "checkoutId": "69e32ac989299ac01d7311dd",
-        "checkoutAbundantId": "ABN20260400168",
-        "orders": [
-            {
-                "_id": "69e32b8189299ac01d731207",
-                "orderNumber": "ORD20260400022",
-                "abundantId": "ABN20260400168",
-                "companyId": "695f53ac419fb9b375867a1b",
-                "consumerId": "[object Object]",
-                "cartToken": "979a7d9d-d4ea-4bd8-a661-bd03c8780b46",
-                "status": "PENDING",
-                "paymentStatus": "PENDING",
-                "verificationStatus": "NEW",
-                "shippingAddress": {
-                    "addressDocumentId": "69e318d789299ac01d730a11",
-                    "addressType": "SHIPPING",
-                    "firstName": "Saurabh",
-                    "lastName": "Patel",
-                    "fullName": "Saurabh Patel",
-                    "phone": "+919669233736",
-                    "email": "saurabh@gmail.com",
-                    "addressLine1": "tgb",
-                    "addressLine2": "hvjhkj",
-                    "area": "ttvj",
-                    "city": "New Delhi",
-                    "state": {
-                        "stateId": "69ca6bc90587aefb7a245b06",
-                        "name": "Delhi"
-                    },
-                    "country": {
-                        "countryId": "69ca6b070587aefb7a245ae0",
-                        "name": "India"
-                    },
-                    "postalCode": "100001",
-                    "gstNumber": ""
-                },
-                "billingAddress": {
-                    "addressDocumentId": "69e318d789299ac01d730a11",
-                    "addressType": "SHIPPING",
-                    "firstName": "Saurabh",
-                    "lastName": "Patel",
-                    "fullName": "Saurabh Patel",
-                    "phone": "+919669233736",
-                    "email": "saurabh@gmail.com",
-                    "addressLine1": "tgb",
-                    "addressLine2": "hvjhkj",
-                    "area": "ttvj",
-                    "city": "New Delhi",
-                    "state": {
-                        "stateId": "69ca6bc90587aefb7a245b06",
-                        "name": "Delhi"
-                    },
-                    "country": {
-                        "countryId": "69ca6b070587aefb7a245ae0",
-                        "name": "India"
-                    },
-                    "postalCode": "100001",
-                    "gstNumber": ""
-                },
-                "shipping": {
-                    "shippingMethodId": "69cfad25ca7c6d03b76f5669",
-                    "shippingMethodName": "Delivery 1st Class With Tracking",
-                    "shippingFee": 13,
-                    "estimatedDeliveryText": "Delivery 1st Class With Tracking",
-                    "serviceMode": "ECONOMY"
-                },
-                "payment": {
-                    "paymentMethodMasterId": "69d0c56c7fca31377ff68db3",
-                    "methodCode": "COD",
-                    "methodName": "COD",
-                    "paymentKind": "COD"
-                },
-                "items": [
-                    {
-                        "listingId": "69dcd648b096799f19ff287f",
-                        "productId": "69dcd648b096799f19ff2879",
-                        "sellerId": "69a1e5514a37a4e1413c74e5",
-                        "listingBusinessId": "L00000492",
-                        "sku": "STABCDE-69a1e5514a37a4e1413c74e5-MP-31-01",
-                        "productName": "Baofeng MP31 (pack-1)",
-                        "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775715571367_067056ab-d99b-4f94-b2ba-bc11bdbd70b3.jpg",
-                        "isProductSerialNumberRequired": true,
-                        "unitPrice": 3499,
-                        "quantity": 1,
-                        "lineTotal": 3499,
-                        "gst": {
-                            "supplyType": "INTER_STATE",
-                            "hsnCode": "85256019",
-                            "taxSlabId": "69ca740e0587aefb7a245c25",
-                            "combinedRatePercent": 18,
-                            "cgstRatePercent": 0,
-                            "sgstRatePercent": 0,
-                            "igstRatePercent": 18,
-                            "taxableValue": 2965.25,
-                            "cgstAmount": 0,
-                            "sgstAmount": 0,
-                            "igstAmount": 533.75,
-                            "totalGstAmount": 533.75
-                        },
-                        "pickupPoint": {
-                            "pickupPointId": "69a1e57b1aeed5f800c42ef8",
-                            "pickupPointName": "BAOFENG SURFACE"
-                        }
-                    }
-                ],
-                "subtotal": 3499,
-                "shippingFee": 13,
-                "discountTotal": 0,
-                "taxTotal": 533.75,
-                "grandTotal": 3512,
-                "roundOff": 0,
-                "gst": {
-                    "supplyType": "INTER_STATE",
-                    "hsnCode": "85256019",
-                    "taxSlabId": "69ca740e0587aefb7a245c25",
-                    "combinedRatePercent": 18,
-                    "cgstRatePercent": 0,
-                    "sgstRatePercent": 0,
-                    "igstRatePercent": 18,
-                    "taxableValue": 2965.25,
-                    "cgstAmount": 0,
-                    "sgstAmount": 0,
-                    "igstAmount": 533.75,
-                    "totalGstAmount": 533.75
-                },
-                "createdAt": "2026-04-18T06:58:09.406Z",
-                "updatedAt": "2026-04-18T06:58:09.406Z"
-            }
-        ]
-    },
-    "meta": {
-        "timestamp": "2026-04-18T06:58:09.416Z",
-        "path": "/order/placeOrder/69e32ac989299ac01d7311dd"
-    }
-}
-
-then navigate to OrderConfirmationScreen
-
-
-
-*************************************
-
-https://consumerapi.baofengradios.co.in/order/placeOrder/69e5bb0689299ac01d731a49
-payload {"shippingAddressId":"69e318d789299ac01d730a11","shippingMethodId":"69cfad25ca7c6d03b76f5669","shippingFee":13,"paymentMethodId":"69a8f6f78d2aca2db1d9fb36","estimatedDeliveryText":"Delivery 1st Class With Tracking"}
-
-response {
-    "success": true,
-    "message": "Transaction Initiated",
-    "data": {
-        "Total": 186200,
-        "orderId": "order_SfdLTrhygQVssc",
-        "currency": "INR",
-        "method": "RAZORPAY",
-        "paymentCred": "rzp_test_RD22meEOU33p5s",
-        "user": {
-            "name": "undefined undefined",
-            "phone": "9669233736"
-        }
-    },
-    "meta": {
-        "timestamp": "2026-04-20T05:35:30.799Z",
-        "path": "/order/placeOrder/69e5bb0689299ac01d731a49"
-    }
-}
-
-https://consumerapi.baofengradios.co.in/order/69e5bb0689299ac01d731a49/verify-razorpay-payment
-payload {"razorpayOrderId":"order_SfdLTrhygQVssc","razorpayPaymentId":"pay_SfdNap99dxZVOA","razorpaySignature":"1878e6bb83858c4cd59cabb0b5812f04883d1fbfb2bd72e236c066dd4c68514f"}
+this api is for post document 
+https://consumerapi.baofengradios.co.in/s3upload/uploadMultipleFiles
+formdata  "files"
 
 response {
     "success": true,
     "message": "Request successful",
     "data": {
-        "checkoutId": "69e5bb0689299ac01d731a49",
-        "checkoutAbundantId": "ABN20260400176",
-        "orders": [
+        "urls": [
+            "https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69e1cc190ecd2a715dd68ddd/image_1776673081584_7c04b150-5741-464a-90d1-66840807a264.webp"
+        ],
+        "authenticatedConsumerId": "69e1cc190ecd2a715dd68ddd"
+    },
+    "meta": {
+        "timestamp": "2026-04-20T08:18:01.773Z",
+        "path": "/s3upload/uploadMultipleFiles"
+    }
+}
+
+
+This api is after post document upload based on  wpcLicenseNumber this comes from given array where a key name is code 
+Post https://consumerapi.baofengradios.co.in/consumer/uploadedDocs
+{"wpcLicenseNumber":"WPC_Certificate","wpcDocumentUrl":"https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69e1cc190ecd2a715dd68ddd/image_1776673081584_7c04b150-5741-464a-90d1-66840807a264.webp"}
+
+response {
+    "success": true,
+    "message": "Document added successfully",
+    "data": {
+        "uploadedDocs": [
             {
-                "_id": "69e5bb2289299ac01d731a75",
-                "orderNumber": "ORD20260400029",
-                "abundantId": "ABN20260400176",
-                "companyId": "695f53ac419fb9b375867a1b",
-                "consumerId": "69e1cc190ecd2a715dd68ddd",
-                "cartToken": "979a7d9d-d4ea-4bd8-a661-bd03c8780b46",
-                "status": "PENDING",
-                "paymentStatus": "PAID",
-                "verificationStatus": "NEW",
-                "shippingAddress": {
-                    "addressDocumentId": "69e318d789299ac01d730a11",
-                    "addressType": "SHIPPING",
-                    "firstName": "Saurabh",
-                    "lastName": "Patel",
-                    "fullName": "Saurabh Patel",
-                    "phone": "+919669233736",
-                    "email": "saurabh@gmail.com",
-                    "addressLine1": "tgb",
-                    "addressLine2": "hvjhkj",
-                    "area": "ttvj",
-                    "city": "New Delhi",
-                    "state": {
-                        "stateId": "69ca6bc90587aefb7a245b06",
-                        "name": "Delhi"
-                    },
-                    "country": {
-                        "countryId": "69ca6b070587aefb7a245ae0",
-                        "name": "India"
-                    },
-                    "postalCode": "100001",
-                    "gstNumber": ""
-                },
-                "billingAddress": {
-                    "addressDocumentId": "69e318d789299ac01d730a11",
-                    "addressType": "SHIPPING",
-                    "firstName": "Saurabh",
-                    "lastName": "Patel",
-                    "fullName": "Saurabh Patel",
-                    "phone": "+919669233736",
-                    "email": "saurabh@gmail.com",
-                    "addressLine1": "tgb",
-                    "addressLine2": "hvjhkj",
-                    "area": "ttvj",
-                    "city": "New Delhi",
-                    "state": {
-                        "stateId": "69ca6bc90587aefb7a245b06",
-                        "name": "Delhi"
-                    },
-                    "country": {
-                        "countryId": "69ca6b070587aefb7a245ae0",
-                        "name": "India"
-                    },
-                    "postalCode": "100001",
-                    "gstNumber": ""
-                },
-                "shipping": {
-                    "shippingMethodId": "69cfad25ca7c6d03b76f5669",
-                    "shippingMethodName": "Delivery 1st Class With Tracking",
-                    "shippingFee": 13,
-                    "estimatedDeliveryText": "Delivery 1st Class With Tracking",
-                    "serviceMode": "ECONOMY"
-                },
-                "payment": {
-                    "paymentMethodMasterId": "69a8f6f78d2aca2db1d9fb36",
-                    "methodCode": "RAZORPAY",
-                    "methodName": "Razorpay",
-                    "paymentKind": "PREPAID",
-                    "paymentGatewayCode": "RAZORPAY",
-                    "paymentGatewayId": "69a90c5f4ae319f22362d22c",
-                    "paymentGatewayName": "Razorpay",
-                    "razorpayOrderId": "order_SfdLTrhygQVssc",
-                    "paymentTransactionId": "pay_SfdNap99dxZVOA"
-                },
-                "items": [
-                    {
-                        "listingId": "69dcdb4a5c533d896a46c081",
-                        "productId": "69dcdb4a5c533d896a46c07b",
-                        "sellerId": "69a1e5514a37a4e1413c74e5",
-                        "listingBusinessId": "L00000507",
-                        "sku": "STABCDE-5-GT-22-1",
-                        "productName": "Baofeng GT-22 (pack-1)",
-                        "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775729090137_978cdca3-a405-467b-890c-fafeb9bdeff3.jpg",
-                        "isProductSerialNumberRequired": true,
-                        "unitPrice": 1849,
-                        "quantity": 1,
-                        "lineTotal": 1849,
-                        "gst": {
-                            "supplyType": "INTER_STATE",
-                            "hsnCode": "85256019",
-                            "taxSlabId": "69ca740e0587aefb7a245c25",
-                            "combinedRatePercent": 18,
-                            "cgstRatePercent": 0,
-                            "sgstRatePercent": 0,
-                            "igstRatePercent": 18,
-                            "taxableValue": 1566.95,
-                            "cgstAmount": 0,
-                            "sgstAmount": 0,
-                            "igstAmount": 282.05,
-                            "totalGstAmount": 282.05
-                        },
-                        "pickupPoint": {
-                            "pickupPointId": "69a1e57b1aeed5f800c42ef8",
-                            "pickupPointName": "BAOFENG SURFACE"
-                        }
-                    }
-                ],
-                "subtotal": 1849,
-                "shippingFee": 13,
-                "discountTotal": 0,
-                "taxTotal": 282.05,
-                "grandTotal": 1862,
-                "roundOff": 0,
-                "gst": {
-                    "supplyType": "INTER_STATE",
-                    "hsnCode": "85256019",
-                    "taxSlabId": "69ca740e0587aefb7a245c25",
-                    "combinedRatePercent": 18,
-                    "cgstRatePercent": 0,
-                    "sgstRatePercent": 0,
-                    "igstRatePercent": 18,
-                    "taxableValue": 1566.95,
-                    "cgstAmount": 0,
-                    "sgstAmount": 0,
-                    "igstAmount": 282.05,
-                    "totalGstAmount": 282.05
-                },
-                "createdAt": "2026-04-20T05:35:30.444Z",
-                "updatedAt": "2026-04-20T05:37:47.739Z"
+                "wpcLicenseNumber": "BRAND_AUTH",
+                "wpcDocumentUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69e1cc190ecd2a715dd68ddd/image_1776405891531_975abb20-c495-44a8-ae7c-4d95569b2d7c.webp",
+                "_id": "69e1cd8999ee907b13a96707"
+            },
+            {
+                "wpcLicenseNumber": "WPC_Certificate",
+                "wpcDocumentUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69e1cc190ecd2a715dd68ddd/image_1776405942945_00715b6d-4c40-4b21-8a5f-6e7edcace46f.webp",
+                "_id": "69e1cdb799ee907b13a96711"
+            },
+            {
+                "wpcLicenseNumber": "WPC_Certificate",
+                "wpcDocumentUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69e1cc190ecd2a715dd68ddd/image_1776406029507_0aef2126-a555-437a-8645-9e24f73d7c37.webp",
+                "_id": "69e1ce0d99ee907b13a967bc"
+            },
+            {
+                "wpcLicenseNumber": "BRAND_AUTH",
+                "wpcDocumentUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69e1cc190ecd2a715dd68ddd/image_1776406030898_d70bcb13-6c7d-4fa2-87b7-c9b0b19ccc45.webp",
+                "_id": "69e1ce0f99ee907b13a967cb"
+            },
+            {
+                "wpcLicenseNumber": "WPC_Certificate",
+                "wpcDocumentUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69e1cc190ecd2a715dd68ddd/image_1776491540533_18512d57-4ecc-4460-a36a-381af82112a9.webp",
+                "_id": "69e31c1489299ac01d730ccd"
+            },
+            {
+                "wpcLicenseNumber": "WPC_Certificate",
+                "wpcDocumentUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69e1cc190ecd2a715dd68ddd/image_1776491552511_43824c43-2e0f-4241-bfbe-b1b9a6dd3e94.webp",
+                "_id": "69e31c2089299ac01d730cdb"
+            },
+            {
+                "wpcLicenseNumber": "WPC_Certificate",
+                "wpcDocumentUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69e1cc190ecd2a715dd68ddd/image_1776673081584_7c04b150-5741-464a-90d1-66840807a264.webp",
+                "_id": "69e5e13965428c3f1c37724c"
             }
         ]
     },
     "meta": {
-        "timestamp": "2026-04-20T05:37:47.748Z",
-        "path": "/order/69e5bb0689299ac01d731a49/verify-razorpay-payment"
+        "timestamp": "2026-04-20T08:18:02.003Z",
+        "path": "/consumer/uploadedDocs"
     }
 }
+
+this api is for get document iis  document are alardy uploaded or not if it already upload then give a button to View And Replace Document ,when user click on View use Linking.openURL to show that document 
+get https://consumerapi.baofengradios.co.in/consumer/uploadedDocs
+
+response 
+
+
+{
+    "success": true,
+    "message": "Request successful",
+    "data": {
+        "uploadedDocs": [
+            {
+                "wpcLicenseNumber": "BRAND_AUTH",
+                "wpcDocumentUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69e1cc190ecd2a715dd68ddd/image_1776405891531_975abb20-c495-44a8-ae7c-4d95569b2d7c.webp",
+                "_id": "69e1cd8999ee907b13a96707"
+            },
+            {
+                "wpcLicenseNumber": "WPC_Certificate",
+                "wpcDocumentUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69e1cc190ecd2a715dd68ddd/image_1776405942945_00715b6d-4c40-4b21-8a5f-6e7edcace46f.webp",
+                "_id": "69e1cdb799ee907b13a96711"
+            },
+            {
+                "wpcLicenseNumber": "WPC_Certificate",
+                "wpcDocumentUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69e1cc190ecd2a715dd68ddd/image_1776406029507_0aef2126-a555-437a-8645-9e24f73d7c37.webp",
+                "_id": "69e1ce0d99ee907b13a967bc"
+            },
+            {
+                "wpcLicenseNumber": "BRAND_AUTH",
+                "wpcDocumentUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69e1cc190ecd2a715dd68ddd/image_1776406030898_d70bcb13-6c7d-4fa2-87b7-c9b0b19ccc45.webp",
+                "_id": "69e1ce0f99ee907b13a967cb"
+            },
+            {
+                "wpcLicenseNumber": "WPC_Certificate",
+                "wpcDocumentUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69e1cc190ecd2a715dd68ddd/image_1776491540533_18512d57-4ecc-4460-a36a-381af82112a9.webp",
+                "_id": "69e31c1489299ac01d730ccd"
+            },
+            {
+                "wpcLicenseNumber": "WPC_Certificate",
+                "wpcDocumentUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69e1cc190ecd2a715dd68ddd/image_1776491552511_43824c43-2e0f-4241-bfbe-b1b9a6dd3e94.webp",
+                "_id": "69e31c2089299ac01d730cdb"
+            },
+            {
+                "wpcLicenseNumber": "WPC_Certificate",
+                "wpcDocumentUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69e1cc190ecd2a715dd68ddd/image_1776673081584_7c04b150-5741-464a-90d1-66840807a264.webp",
+                "_id": "69e5e13965428c3f1c37724c"
+            }
+        ]
+    },
+    "meta": {
+        "timestamp": "2026-04-20T08:18:02.376Z",
+        "path": "/consumer/uploadedDocs"
+    }
+}
+
+also check in Details screen if document not upload and user want to add product in cart so you do not allow user to add , after upload document user can upload document

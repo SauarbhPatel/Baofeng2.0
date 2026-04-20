@@ -14,3 +14,4 @@ yarn-error.*
 web-build/
 .env
 .env.local
+android

@@ -65,6 +65,12 @@ export const getAbundantOrder = (abundantId) =>
 export const placeOrder = (orderId, payload) =>
     __postApiData(`order/placeOrder/${orderId}`, payload);
 
+export const verifyRazorpayPayment = (orderId, payload) =>
+    __postApiData(`order/${orderId}/verify-razorpay-payment`, payload);
+
+export const getOrderListing = (consumerId) =>
+    __getApiData(`order/myOrderListing/${consumerId}`);
+
 // ─── Address ──────────────────────────────────────────────────
 export const getShippingAddresses = () =>
     __getApiData("address/getAllAddress/shipping");

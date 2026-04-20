@@ -10,6 +10,8 @@ import OrderTrackingScreen from "../screens/details/OrderTrackingScreen";
 import RefundRequestScreen from "../screens/details/RefundRequestScreen";
 import EditAccountScreen from "../screens/manage/EditAccountScreen";
 import ChangePasswordScreen from "../screens/manage/ChangePasswordScreen";
+import SearchScreen from "../screens/manage/SearchScreen";
+import AddressScreen from "../screens/manage/AddressScreen";
 const Stack = createNativeStackNavigator();
 
 export default function MainStackNavigator() {
@@ -58,6 +60,8 @@ export default function MainStackNavigator() {
                 name="ChangePassword"
                 component={ChangePasswordScreen}
             />
+            <Stack.Screen name="Search" component={SearchScreen} />
+            <Stack.Screen name="Address" component={AddressScreen} />
         </Stack.Navigator>
     );
 }

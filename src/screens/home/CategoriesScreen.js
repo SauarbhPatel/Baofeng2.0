@@ -112,7 +112,7 @@ const CategoriesScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <MainHeader />
+            <MainHeader navigation={navigation} />
 
             {/* ── Search bar (sticky) ── */}
 

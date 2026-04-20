@@ -402,3 +402,178 @@ response {
 }
 
 then navigate to OrderConfirmationScreen
+
+
+
+*************************************
+
+https://consumerapi.baofengradios.co.in/order/placeOrder/69e5bb0689299ac01d731a49
+payload {"shippingAddressId":"69e318d789299ac01d730a11","shippingMethodId":"69cfad25ca7c6d03b76f5669","shippingFee":13,"paymentMethodId":"69a8f6f78d2aca2db1d9fb36","estimatedDeliveryText":"Delivery 1st Class With Tracking"}
+
+response {
+    "success": true,
+    "message": "Transaction Initiated",
+    "data": {
+        "Total": 186200,
+        "orderId": "order_SfdLTrhygQVssc",
+        "currency": "INR",
+        "method": "RAZORPAY",
+        "paymentCred": "rzp_test_RD22meEOU33p5s",
+        "user": {
+            "name": "undefined undefined",
+            "phone": "9669233736"
+        }
+    },
+    "meta": {
+        "timestamp": "2026-04-20T05:35:30.799Z",
+        "path": "/order/placeOrder/69e5bb0689299ac01d731a49"
+    }
+}
+
+https://consumerapi.baofengradios.co.in/order/69e5bb0689299ac01d731a49/verify-razorpay-payment
+payload {"razorpayOrderId":"order_SfdLTrhygQVssc","razorpayPaymentId":"pay_SfdNap99dxZVOA","razorpaySignature":"1878e6bb83858c4cd59cabb0b5812f04883d1fbfb2bd72e236c066dd4c68514f"}
+
+response {
+    "success": true,
+    "message": "Request successful",
+    "data": {
+        "checkoutId": "69e5bb0689299ac01d731a49",
+        "checkoutAbundantId": "ABN20260400176",
+        "orders": [
+            {
+                "_id": "69e5bb2289299ac01d731a75",
+                "orderNumber": "ORD20260400029",
+                "abundantId": "ABN20260400176",
+                "companyId": "695f53ac419fb9b375867a1b",
+                "consumerId": "69e1cc190ecd2a715dd68ddd",
+                "cartToken": "979a7d9d-d4ea-4bd8-a661-bd03c8780b46",
+                "status": "PENDING",
+                "paymentStatus": "PAID",
+                "verificationStatus": "NEW",
+                "shippingAddress": {
+                    "addressDocumentId": "69e318d789299ac01d730a11",
+                    "addressType": "SHIPPING",
+                    "firstName": "Saurabh",
+                    "lastName": "Patel",
+                    "fullName": "Saurabh Patel",
+                    "phone": "+919669233736",
+                    "email": "saurabh@gmail.com",
+                    "addressLine1": "tgb",
+                    "addressLine2": "hvjhkj",
+                    "area": "ttvj",
+                    "city": "New Delhi",
+                    "state": {
+                        "stateId": "69ca6bc90587aefb7a245b06",
+                        "name": "Delhi"
+                    },
+                    "country": {
+                        "countryId": "69ca6b070587aefb7a245ae0",
+                        "name": "India"
+                    },
+                    "postalCode": "100001",
+                    "gstNumber": ""
+                },
+                "billingAddress": {
+                    "addressDocumentId": "69e318d789299ac01d730a11",
+                    "addressType": "SHIPPING",
+                    "firstName": "Saurabh",
+                    "lastName": "Patel",
+                    "fullName": "Saurabh Patel",
+                    "phone": "+919669233736",
+                    "email": "saurabh@gmail.com",
+                    "addressLine1": "tgb",
+                    "addressLine2": "hvjhkj",
+                    "area": "ttvj",
+                    "city": "New Delhi",
+                    "state": {
+                        "stateId": "69ca6bc90587aefb7a245b06",
+                        "name": "Delhi"
+                    },
+                    "country": {
+                        "countryId": "69ca6b070587aefb7a245ae0",
+                        "name": "India"
+                    },
+                    "postalCode": "100001",
+                    "gstNumber": ""
+                },
+                "shipping": {
+                    "shippingMethodId": "69cfad25ca7c6d03b76f5669",
+                    "shippingMethodName": "Delivery 1st Class With Tracking",
+                    "shippingFee": 13,
+                    "estimatedDeliveryText": "Delivery 1st Class With Tracking",
+                    "serviceMode": "ECONOMY"
+                },
+                "payment": {
+                    "paymentMethodMasterId": "69a8f6f78d2aca2db1d9fb36",
+                    "methodCode": "RAZORPAY",
+                    "methodName": "Razorpay",
+                    "paymentKind": "PREPAID",
+                    "paymentGatewayCode": "RAZORPAY",
+                    "paymentGatewayId": "69a90c5f4ae319f22362d22c",
+                    "paymentGatewayName": "Razorpay",
+                    "razorpayOrderId": "order_SfdLTrhygQVssc",
+                    "paymentTransactionId": "pay_SfdNap99dxZVOA"
+                },
+                "items": [
+                    {
+                        "listingId": "69dcdb4a5c533d896a46c081",
+                        "productId": "69dcdb4a5c533d896a46c07b",
+                        "sellerId": "69a1e5514a37a4e1413c74e5",
+                        "listingBusinessId": "L00000507",
+                        "sku": "STABCDE-5-GT-22-1",
+                        "productName": "Baofeng GT-22 (pack-1)",
+                        "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775729090137_978cdca3-a405-467b-890c-fafeb9bdeff3.jpg",
+                        "isProductSerialNumberRequired": true,
+                        "unitPrice": 1849,
+                        "quantity": 1,
+                        "lineTotal": 1849,
+                        "gst": {
+                            "supplyType": "INTER_STATE",
+                            "hsnCode": "85256019",
+                            "taxSlabId": "69ca740e0587aefb7a245c25",
+                            "combinedRatePercent": 18,
+                            "cgstRatePercent": 0,
+                            "sgstRatePercent": 0,
+                            "igstRatePercent": 18,
+                            "taxableValue": 1566.95,
+                            "cgstAmount": 0,
+                            "sgstAmount": 0,
+                            "igstAmount": 282.05,
+                            "totalGstAmount": 282.05
+                        },
+                        "pickupPoint": {
+                            "pickupPointId": "69a1e57b1aeed5f800c42ef8",
+                            "pickupPointName": "BAOFENG SURFACE"
+                        }
+                    }
+                ],
+                "subtotal": 1849,
+                "shippingFee": 13,
+                "discountTotal": 0,
+                "taxTotal": 282.05,
+                "grandTotal": 1862,
+                "roundOff": 0,
+                "gst": {
+                    "supplyType": "INTER_STATE",
+                    "hsnCode": "85256019",
+                    "taxSlabId": "69ca740e0587aefb7a245c25",
+                    "combinedRatePercent": 18,
+                    "cgstRatePercent": 0,
+                    "sgstRatePercent": 0,
+                    "igstRatePercent": 18,
+                    "taxableValue": 1566.95,
+                    "cgstAmount": 0,
+                    "sgstAmount": 0,
+                    "igstAmount": 282.05,
+                    "totalGstAmount": 282.05
+                },
+                "createdAt": "2026-04-20T05:35:30.444Z",
+                "updatedAt": "2026-04-20T05:37:47.739Z"
+            }
+        ]
+    },
+    "meta": {
+        "timestamp": "2026-04-20T05:37:47.748Z",
+        "path": "/order/69e5bb0689299ac01d731a49/verify-razorpay-payment"
+    }
+}

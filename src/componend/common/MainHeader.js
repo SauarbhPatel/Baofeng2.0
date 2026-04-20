@@ -14,7 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 const MainHeader = ({ bgColor }) => {
     return (
         <>
-            <StatusBar backgroundColor={"#0069b3"} barStyle={"light-content"} />
+            <StatusBar backgroundColor={"#0069b3"} barStyle={"dark-content"} />
             <View
                 style={[
                     styles.headerOuterContainer,

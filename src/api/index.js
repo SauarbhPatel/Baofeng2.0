@@ -22,7 +22,7 @@ const __postApiData = (endpoint, data, type) => {
         .post(
             `${BASE_URL}${endpoint}`,
             data,
-            type == "from" ? __apiHeaderFormData() : __apiHeader(),
+            type == "form" ? __apiHeaderFormData() : __apiHeader(),
         )
         .then((response) => {
             return response.data;
@@ -37,7 +37,7 @@ const __putApiData = (endpoint, data, type) => {
         .put(
             `${BASE_URL}${endpoint}`,
             data,
-            type == "from" ? __apiHeaderFormData() : __apiHeader(),
+            type == "form" ? __apiHeaderFormData() : __apiHeader(),
         )
         .then((response) => {
             return response.data;
@@ -51,7 +51,7 @@ const __patchApiData = (endpoint, data, type) => {
         .patch(
             `${BASE_URL}${endpoint}`,
             data,
-            type == "from" ? __apiHeaderFormData() : __apiHeader(),
+            type == "form" ? __apiHeaderFormData() : __apiHeader(),
         )
         .then((response) => {
             return response.data;

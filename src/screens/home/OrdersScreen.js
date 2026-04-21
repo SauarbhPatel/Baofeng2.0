@@ -63,7 +63,7 @@ const OrdersScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <MainHeader bgColor="#fff" />
+            <MainHeader bgColor="#fff" navigation={navigation} />
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingTop: 15 }}

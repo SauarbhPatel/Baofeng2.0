@@ -13,6 +13,12 @@ export const loginWithPhone = (payload) =>
 export const verifyOtp = (payload) =>
     __postApiData("consumer/verifyOtp", payload);
 
+// ─── Consumer Profile ─────────────────────────────────────────
+export const getConsumerProfile = () => __getApiData("consumer/profile");
+
+export const updateConsumerProfile = (payload) =>
+    __postApiData("consumer/updateProfile", payload);
+
 // ─── Categories ───────────────────────────────────────────────
 export const getCategories = () => __getApiData("category");
 
@@ -30,6 +36,10 @@ export const getProductDetails = (slug, listingId, pickupPointId) =>
 // ─── Similar Products ─────────────────────────────────────────
 export const getSimilarProducts = (categoryId, productId) =>
     __getApiData(`product/similar/${categoryId}/${productId}`);
+
+// ─── Search ───────────────────────────────────────────────────
+export const searchProducts = (q) =>
+    __getApiData(`product/searchFilter?q=${encodeURIComponent(q)}`);
 
 // ─── Pincode / COD Check ──────────────────────────────────────
 export const checkPincode = (pincode) =>
@@ -74,3 +84,18 @@ export const getOrderListing = (consumerId) =>
 // ─── Address ──────────────────────────────────────────────────
 export const getShippingAddresses = () =>
     __getApiData("address/getAllAddress/shipping");
+
+export const getBillingAddresses = () =>
+    __getApiData("address/getAllAddress/Billing");
+
+// ─── Documents ────────────────────────────────────────────────
+// Upload file to S3 — payload is FormData with key "files"
+export const uploadFilesToS3 = (formData) =>
+    __postApiData("s3upload/uploadMultipleFiles", formData, "form");
+
+// Save uploaded doc record
+export const saveUploadedDoc = (payload) =>
+    __postApiData("consumer/uploadedDocs", payload);
+
+// Get all uploaded docs for current consumer
+export const getUploadedDocs = () => __getApiData("consumer/uploadedDocs");

@@ -31,6 +31,10 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    // true = all required compliance docs have been uploaded
+    const [docsReady, setDocsReady] = useState(true);
+    // whether this product actually needs compliance docs
+    const [needsDocs, setNeedsDocs] = useState(false);
 
     // Passed from listing screen: { slug, listingId }
     const { slug, listingId, pickupPointId } = route?.params?.product || {};
@@ -57,6 +61,11 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
             );
             if (res?.success && res?.data) {
                 setProduct(res.data);
+                // Does this product require compliance documents?
+                const hasDocs = res.data.complianceDocuments?.length > 0;
+                setNeedsDocs(hasDocs);
+                // If no docs required, cart is always open
+                if (!hasDocs) setDocsReady(true);
             } else {
                 setError("Failed to load product");
             }
@@ -68,6 +77,12 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
         }
     };
 
+    // Called by LicenceNote whenever upload status changes
+    const handleDocsStatusChange = useCallback((allUploaded) => {
+        console.log("allUploaded", allUploaded);
+        setDocsReady(allUploaded);
+    }, []);
+
     // Handle variant tap → re-fetch with new listingId
     const handleVariantSelect = (variantItem) => {
         if (variantItem?.listingId && slug) {
@@ -78,6 +93,7 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
             );
         }
     };
+
     const HOME_SECTIONS = [
         { id: "ProductGallery", type: "ProductGallery" },
         { id: "ProductDetail", type: "ProductDetail" },
@@ -105,7 +121,11 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
                 case "ProductDetail":
                     return (
                         <>
-                            <ProductDetail product={product} />
+                            <ProductDetail
+                                product={product}
+                                cartBlocked={needsDocs && !docsReady}
+                                navigation={navigation}
+                            />
                         </>
                     );
                 case "VariantCard":
@@ -128,6 +148,9 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
                                     <LicenceNote
                                         complianceDocuments={
                                             product?.complianceDocuments
+                                        }
+                                        onDocsStatusChange={
+                                            handleDocsStatusChange
                                         }
                                     />
                                 )}
@@ -242,6 +265,22 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#D7E9F2",
     },
+
+    // ── Cart blocked banner ──────────────────────────────────────
+    docsBanner: {
+        backgroundColor: "#fef2f2",
+        borderBottomWidth: 1,
+        borderBottomColor: "#fecaca",
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+    },
+    docsBannerText: {
+        fontSize: 13,
+        color: "#dc2626",
+        fontWeight: "600",
+        textAlign: "center",
+    },
+
     // ── Error state ─────────────────────────────────────────────
     errorBox: {
         alignItems: "center",

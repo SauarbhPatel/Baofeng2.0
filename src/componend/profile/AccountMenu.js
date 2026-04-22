@@ -12,8 +12,8 @@ const AccountMenu = ({ navigation }) => {
         { id: "1", title: "Edit Account", path: "EditAccount" },
         { id: "2", title: "Change Password", path: "ChangePassword" },
         { id: "3", title: "Address Book", path: "Address" },
-        { id: "4", title: "Wishlist" },
-        { id: "5", title: "Followed Sellers" },
+        { id: "4", title: "Wishlist", path: "MyWishlist" },
+        { id: "5", title: "Followed Sellers", path: "FollowedSellers" },
         { id: "6", title: "My Returns" },
         { id: "7", title: "Logout", isDestructive: true },
     ];

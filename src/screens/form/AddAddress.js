@@ -8,6 +8,8 @@ import {
     TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native";
+import MainHeader from "../../componend/common/MainHeader";
 
 const AddAddress = () => {
     const [addressType, setAddressType] = useState("Home");
@@ -30,76 +32,127 @@ const AddAddress = () => {
     );
 
     return (
-        <ScrollView
-            style={styles.container}
-            contentContainerStyle={styles.content}
-        >
-            <Text style={styles.title}>Billing Address</Text>
+        <SafeAreaView style={styles.container}>
+            <MainHeader bgColor="#ffffff" />
 
-            {/* Address Type Selection */}
-            <View style={styles.typeSelectorCard}>
-                <View style={styles.radioRow}>
-                    <RadioButton label="Home" />
-                    <RadioButton label="Office" />
-                    <RadioButton label="Other" />
+            <ScrollView contentContainerStyle={styles.content}>
+                <View style={styles.card}>
+                    <Text style={styles.title}>Add Address</Text>
+
+                    {/* Input Fields Stack */}
+                    <View style={styles.formContainer}>
+                        <AddressInput
+                            title={"First name *"}
+                            // placeholder="First Name"
+                        />
+                        <AddressInput
+                            title={"Last name *"}
+                            // placeholder="First Name"
+                        />
+                        <AddressInput
+                            title={"Phone *"}
+                            keyboardType="phone-pad"
+                        />
+                        <AddressInput
+                            title={"Email"}
+                            // placeholder="First Name"
+                        />
+                        <View>
+                            <Text style={styles.label}>Select Country *</Text>
+                            <TouchableOpacity style={styles.inputWrapper}>
+                                <TextInput
+                                    style={styles.input}
+                                    editable={false}
+                                />
+                                <Ionicons
+                                    name="chevron-down"
+                                    size={20}
+                                    color="#64748b"
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <View>
+                            <Text style={styles.label}>Select State *</Text>
+                            <TouchableOpacity style={styles.inputWrapper}>
+                                <TextInput
+                                    style={styles.input}
+                                    editable={false}
+                                />
+                                <Ionicons
+                                    name="chevron-down"
+                                    size={20}
+                                    color="#64748b"
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <View>
+                            <Text style={styles.label}>Select City *</Text>
+                            <TouchableOpacity style={styles.inputWrapper}>
+                                <TextInput
+                                    style={styles.input}
+                                    editable={false}
+                                />
+                                <Ionicons
+                                    name="chevron-down"
+                                    size={20}
+                                    color="#64748b"
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <AddressInput title={"Area"} />
+
+                        <AddressInput title="Address line 1 *" />
+                        <AddressInput title="Address line 2" />
+                        <AddressInput title="Zip/Postal Code " />
+                        <AddressInput title="GST number" />
+
+                        <View style={styles.typeSelectorCard}>
+                            <View style={styles.radioRow}>
+                                <RadioButton label="Set as default address" />
+                            </View>
+                            <View
+                                style={[styles.radioRow, { marginBottom: 0 }]}
+                            >
+                                <RadioButton label="Also save as billing address" />
+                            </View>
+                        </View>
+                    </View>
+                    <TouchableOpacity
+                        style={styles.updateButton}
+                        activeOpacity={0.8}
+                    >
+                        <Text style={styles.updateButtonText}>Save</Text>
+                    </TouchableOpacity>
                 </View>
-                <View style={[styles.radioRow, { marginBottom: 0 }]}>
-                    <RadioButton label="Billing" />
-                    <RadioButton label="Delivery" />
-                    <RadioButton label="Both" />
-                </View>
-            </View>
-
-            {/* Input Fields Stack */}
-            <View style={styles.formContainer}>
-                <AddressInput placeholder="First Name" />
-                <AddressInput placeholder="Last Name" />
-                <AddressInput
-                    placeholder=""
-                    multiline
-                    style={{ height: 100 }}
-                />
-                <AddressInput placeholder="Zip/Postal Code" />
-                <AddressInput placeholder="City" />
-
-                {/* Dropdown Style Input */}
-                <TouchableOpacity style={styles.inputWrapper}>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="State/Province"
-                        editable={false}
-                    />
-                    <Ionicons name="chevron-down" size={20} color="#64748b" />
-                </TouchableOpacity>
-
-                <AddressInput placeholder="Country" />
-                <AddressInput placeholder="GST Number(Optional)" />
-                <AddressInput placeholder="Email (Optional)" />
-                <AddressInput placeholder="GST Number(Optional)" />
-                <AddressInput placeholder="Email (Optional)" />
-                <AddressInput
-                    placeholder="Mobile Number Of Delivery Receiver"
-                    keyboardType="phone-pad"
-                />
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </SafeAreaView>
     );
 };
 
 // Reusable Input Component
-const AddressInput = ({ placeholder, style, ...props }) => (
-    <View style={[styles.inputWrapper, style]}>
-        <TextInput
-            style={styles.input}
-            placeholder={placeholder}
-            placeholderTextColor="#94a3b8"
-            {...props}
-        />
+const AddressInput = ({ title, placeholder, style, ...props }) => (
+    <View>
+        {title && <Text style={styles.label}>{title}</Text>}
+        <View style={[styles.inputWrapper, style]}>
+            <TextInput
+                style={styles.input}
+                placeholder={placeholder}
+                placeholderTextColor="#94a3b8"
+                {...props}
+            />
+        </View>
     </View>
 );
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
+        backgroundColor: "#D7E9F2",
+    },
+    content: {
+        paddingTop: 15,
+    },
+    card: {
         backgroundColor: "#F3FBFF",
         borderRadius: 24,
         padding: 15,
@@ -108,7 +161,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#EBF7FD",
     },
-    content: {},
     title: {
         fontSize: 18,
         fontWeight: "700",
@@ -153,21 +205,39 @@ const styles = StyleSheet.create({
     },
     radioLabel: { fontSize: 13, color: "#334155", fontWeight: "500" },
     formContainer: { gap: 15 },
+    label: {
+        fontSize: 12,
+        fontWeight: "600",
+        color: "#94a3b8",
+        marginBottom: 8,
+    },
     inputWrapper: {
-        backgroundColor: "#fff",
+        height: 50,
+        backgroundColor: "#ffffff",
+        borderWidth: 1.5,
+        borderColor: "#e2e8f0",
         borderRadius: 12,
-        borderWidth: 1,
-        borderColor: "#cbd5e1",
         paddingHorizontal: 15,
-        height: 55,
         flexDirection: "row",
         alignItems: "center",
     },
     input: {
         flex: 1,
+        fontSize: 16,
+        color: "#0f172a",
+    },
+    updateButton: {
+        backgroundColor: "#0064a3",
+        height: 50,
+        borderRadius: 12,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 10,
+    },
+    updateButtonText: {
+        color: "#ffffff",
         fontSize: 15,
-        fontWeight: "600",
-        color: "#1e293b",
+        fontWeight: "700",
     },
 });
 

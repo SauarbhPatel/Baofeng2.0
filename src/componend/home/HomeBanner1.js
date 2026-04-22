@@ -7,6 +7,7 @@ const HomeBanner1 = ({
     onMainPress,
     imageSource,
     dynamicScreenWidth = screenWidth - 20,
+    borderRadius = 20,
 }) => {
     const getDynamicHeight = (source, targetWidth) => {
         const { width, height } = resolveAssetSource(source);
@@ -28,7 +29,7 @@ const HomeBanner1 = ({
                 style={{
                     width: "100%",
                     height: dynamicHeight,
-                    borderRadius: 20,
+                    borderRadius: borderRadius,
                 }}
                 resizeMode="contain"
             />

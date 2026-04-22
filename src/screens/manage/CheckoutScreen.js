@@ -250,6 +250,7 @@ const CheckoutScreen = ({ navigation, route }) => {
                     addresses={addresses}
                     selectedAddress={selectedAddress}
                     onSelect={handleAddressSelect}
+                    navigation={navigation}
                 />
                 <ShippingMethod
                     shippingMethods={shippingMethods}

@@ -160,7 +160,14 @@ const AddressScreen = ({ navigation }) => {
                     )}
 
                     {/* ── Add New Address Button ────────────────── */}
-                    <TouchableOpacity style={styles.addButton}>
+                    <TouchableOpacity
+                        style={styles.addButton}
+                        onPress={() =>
+                            navigation.push("AddAddress", {
+                                onSaved: () => {},
+                            })
+                        }
+                    >
                         <Feather name="plus-circle" size={24} color="#0064a3" />
                         <Text style={styles.addButtonText}>
                             Add New Address

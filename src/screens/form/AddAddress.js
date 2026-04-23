@@ -85,20 +85,10 @@ const AddAddress = () => {
                                 />
                             </TouchableOpacity>
                         </View>
-                        <View>
-                            <Text style={styles.label}>Select City *</Text>
-                            <TouchableOpacity style={styles.inputWrapper}>
-                                <TextInput
-                                    style={styles.input}
-                                    editable={false}
-                                />
-                                <Ionicons
-                                    name="chevron-down"
-                                    size={20}
-                                    color="#64748b"
-                                />
-                            </TouchableOpacity>
-                        </View>
+                        <AddressInput
+                            title={"City *"}
+                            // placeholder="First Name"
+                        />
                         <AddressInput title={"Area"} />
 
                         <AddressInput title="Address line 1 *" />

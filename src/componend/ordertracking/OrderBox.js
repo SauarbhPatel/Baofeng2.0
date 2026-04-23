@@ -2,31 +2,42 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-const OrderBox = () => {
+const STATUS_LABEL = {
+    PENDING: "Your order has been placed successfully.",
+    PROCESSING: "Your order is being prepared for shipment.",
+    SHIPPED: "Your order has been picked up by courier.",
+    IN_TRANSIT: "Package is out for delivery to your address.",
+    DELIVERED: "Package has been delivered to your address.",
+};
+
+const OrderBox = ({ order = {} }) => {
+    const statusText =
+        STATUS_LABEL[order.status] || order.status || "Processing";
+
     return (
         <View style={styles.cardContainer}>
-            {/* Header Info */}
             <View style={styles.topRow}>
                 <View>
                     <Text style={styles.label}>Order Number</Text>
-                    <Text style={styles.orderValue}>BF-2026-0012345</Text>
+                    <Text style={styles.orderValue}>
+                        {order.orderNumber || "—"}
+                    </Text>
                 </View>
                 <View style={styles.alignRight}>
-                    <Text style={styles.label}>Expected Delivery</Text>
-                    <Text style={styles.deliveryValue}>Today, 6:00 PM</Text>
+                    <Text style={styles.label}>Est. Delivery</Text>
+                    <Text style={styles.deliveryValue}>
+                        {order.shipping?.estimatedDeliveryText || "—"}
+                    </Text>
                 </View>
             </View>
 
-            {/* Status Overlay Box */}
             <View style={styles.statusBadge}>
                 <MaterialCommunityIcons
                     name="truck-delivery-outline"
                     size={22}
                     color="#fff"
                 />
-                <Text style={styles.statusText}>
-                    Out for delivery – Your package will arrive soon!
-                </Text>
+                <Text style={styles.statusText}>{statusText}</Text>
             </View>
         </View>
     );
@@ -43,12 +54,13 @@ const styles = StyleSheet.create({
         borderColor: "#EBF7FD",
     },
     topRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
+        // flexDirection: "row",
+        // justifyContent: "space-between",
         marginBottom: 24,
+        // flexWrap: "wrap",
     },
     label: {
-        color: "rgba(255, 255, 255, 0.8)", // Faded white label
+        color: "rgba(255,255,255,0.8)",
         fontSize: 12,
         fontWeight: "500",
         marginBottom: 8,
@@ -56,19 +68,13 @@ const styles = StyleSheet.create({
     orderValue: {
         color: "#fff",
         fontSize: 16,
-        fontWeight: "800", // Bold value
+        fontWeight: "800",
         letterSpacing: 0.5,
     },
-    alignRight: {
-        alignItems: "flex-end",
-    },
-    deliveryValue: {
-        color: "#fff",
-        fontSize: 16,
-        fontWeight: "700",
-    },
+    alignRight: { marginTop: 15 },
+    deliveryValue: { color: "#fff", fontSize: 14, fontWeight: "700" },
     statusBadge: {
-        backgroundColor: "rgba(255, 255, 255, 0.15)",
+        backgroundColor: "rgba(255,255,255,0.15)",
         flexDirection: "row",
         alignItems: "center",
         paddingVertical: 10,
@@ -76,11 +82,6 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         gap: 8,
     },
-    statusText: {
-        color: "#fff",
-        fontSize: 12,
-        flex: 1,
-    },
+    statusText: { color: "#fff", fontSize: 12, flex: 1 },
 });
-
 export default OrderBox;

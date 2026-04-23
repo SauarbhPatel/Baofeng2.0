@@ -386,3 +386,77 @@ response {
     "path": "/address/createAddress"
   }
 }
+
+we have a scrren MyWishlistScreen 
+
+Get 
+https://consumerapi.baofengradios.co.in/wishlist?page=1&limit=10
+
+response {
+    "success": true,
+    "message": "Wishlist retrieved",
+    "data": {
+        "items": [
+            {
+                "wishlistItemId": "69e9bd5e7acf98ca388dc6f8",
+                "addedPrice": 2349,
+                "createdAt": "2026-04-23T06:34:06.374Z",
+                "product": {
+                    "productId": "P00000497",
+                    "name": "BF-358 (pack-1)",
+                    "mainImageUrl": "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775717251049_3eac9f74-9510-4c25-bdc6-39c087dda875.jpg",
+                    "galleryImageUrls": [
+                        "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775717266725_ab57f125-ff03-4620-b309-29af53d5f842.jpg",
+                        "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775717266711_da6b47fb-b4d4-4c0a-9b7a-0d68baeec979.jpg",
+                        "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775717266730_900e59fc-860c-4f15-94a5-4dc91d949e80.jpg",
+                        "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775717266739_1223d3c6-6094-4478-8e32-5617daedadf3.jpg",
+                        "https://baofengradios.s3.ap-south-1.amazonaws.com/image_1775717281255_8cc88d2a-4b3f-451c-9aec-3245bb84c6c9.jpg"
+                    ],
+                    "globalProductId": "GP00000049",
+                    "slug": "bf-358-compact-uhf-handheld-communication-radio-licence-free-walkie-talkie",
+                    "catalogTitle": "BF-358",
+                    "variantCombination": [
+                        {
+                            "attributeName": "pack-of",
+                            "attributeValue": "pack-1"
+                        }
+                    ],
+                    "productType": "VARIABLE"
+                },
+                "listing": {
+                    "price": 2349,
+                    "stock": 17,
+                    "listingId": "L00000497",
+                    "sellerId": "69a1e5514a37a4e1413c74e5",
+                    "isActive": true,
+                    "status": "ACTIVE",
+                    "unitSellingPrice": 2349,
+                    "inventoryByPickup": [
+                        {
+                            "pickupPointId": "69a1e57b1aeed5f800c42ef8",
+                            "quantity": 17,
+                            "pickupPointName": "BAOFENG SURFACE",
+                            "_id": "69e7598542c7cb28ab3bf958"
+                        }
+                    ]
+                },
+                "unavailable": false,
+                "priceChanged": false,
+                "priceDifference": 0,
+                "priceDropped": false
+            }
+        ],
+        "pagination": {
+            "page": 1,
+            "limit": 100,
+            "total": 1,
+            "totalPages": 1,
+            "hasNext": false,
+            "hasPrev": false
+        }
+    },
+    "meta": {
+        "timestamp": "2026-04-23T06:34:10.271Z",
+        "path": "/wishlist?page=1&limit=100"
+    }
+}

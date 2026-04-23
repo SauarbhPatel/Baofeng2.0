@@ -2,31 +2,39 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
-const OrderSummary = () => {
+const OrderSummary = ({ order }) => {
     return (
         <View style={styles.container}>
             <Text style={styles.headerTitle}>Order Summary</Text>
 
             <View style={styles.row}>
                 <Text style={styles.label}>Subtotal</Text>
-                <Text style={styles.value}>₹116.97</Text>
+                <Text style={styles.value}>
+                    ₹{order.subtotal?.toLocaleString("en-IN")}
+                </Text>
             </View>
 
             <View style={styles.row}>
                 <Text style={styles.label}>Shipping</Text>
-                <Text style={styles.value}>₹8.99</Text>
+                <Text style={styles.value}>
+                    ₹{order.shippingFee?.toLocaleString("en-IN")}
+                </Text>
             </View>
 
             <View style={styles.row}>
                 <Text style={styles.label}>Tax</Text>
-                <Text style={styles.value}>₹10.05</Text>
+                <Text style={styles.value}>
+                    ₹{order.taxTotal?.toLocaleString("en-IN")}
+                </Text>
             </View>
 
             <View style={styles.divider} />
 
             <View style={styles.row}>
                 <Text style={styles.totalLabel}>Total</Text>
-                <Text style={styles.totalValue}>₹136.01</Text>
+                <Text style={styles.totalValue}>
+                    ₹{order.grandTotal?.toLocaleString("en-IN")}
+                </Text>
             </View>
 
             <TouchableOpacity style={styles.button}>

@@ -648,7 +648,9 @@ const OrderItem = ({ order, navigation }) => {
                             <ActionButton
                                 label={"Track Shipment"}
                                 primary
-                                onPress={() => navigation.push("OrderTracking")}
+                                onPress={() =>
+                                    navigation.push("OrderTracking", order)
+                                }
                             />
                         </>
                     )}

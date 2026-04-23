@@ -2,35 +2,48 @@ import React from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 
-const OrderItems = () => {
+const OrderItems = ({ items = [] }) => {
     return (
         <View style={styles.container}>
-            {/* Header Section */}
             <View style={styles.headerRow}>
-                {/* <MaterialCommunityIcons
-                    name="package-variant"
-                    size={24}
-                    color="#a16207"
-                /> */}
                 <Text style={styles.headerTitle}>📦 {"  "}Order Items</Text>
             </View>
 
             {/* Item Card */}
-            <View style={styles.itemWrapper}>
-                <View style={styles.imageContainer}>
-                    <Feather name="package" size={32} color="#0071bc" />
-                </View>
+            {items?.map((item, index) => (
+                <View style={styles.itemWrapper} key={item?.listingId + index}>
+                    <View style={styles.imageContainer}>
+                        {item?.mainImageUrl ? (
+                            <Image
+                                source={{ uri: item?.mainImageUrl }}
+                                style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    resizeMode: "contain",
+                                    borderRadius: 12,
+                                }}
+                            />
+                        ) : (
+                            <Feather name="package" size={32} color="#0071bc" />
+                        )}
+                    </View>
 
-                <View style={styles.detailsContainer}>
-                    <Text style={styles.productName} numberOfLines={2}>
-                        Baofeng UV-5R Dual Band Two Way Radio
-                    </Text>
-                    <Text style={styles.quantityText}>
-                        Quantity: <Text style={styles.quantityValue}>2</Text>
-                    </Text>
-                    <Text style={styles.priceText}>₹45.99</Text>
+                    <View style={styles.detailsContainer}>
+                        <Text style={styles.productName} numberOfLines={2}>
+                            {item?.productName}
+                        </Text>
+                        <Text style={styles.quantityText}>
+                            Quantity:{" "}
+                            <Text style={styles.quantityValue}>
+                                {item?.quantity}
+                            </Text>
+                        </Text>
+                        <Text style={styles.priceText}>
+                            ₹{item.lineTotal?.toLocaleString("en-IN")}
+                        </Text>
+                    </View>
                 </View>
-            </View>
+            ))}
         </View>
     );
 };

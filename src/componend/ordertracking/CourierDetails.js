@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-const CourierDetails = () => {
+const CourierDetails = ({ shipping }) => {
     const trackingNumber = "7234567890123456";
 
     const handleTrackingPress = () => {
@@ -31,21 +31,21 @@ const CourierDetails = () => {
             {/* Courier Partner */}
             <View style={styles.infoGroup}>
                 <Text style={styles.label}>Courier Partner</Text>
-                <Text style={styles.value}>FedEx Express</Text>
+                <Text style={styles.value}>{shipping?.shippingMethodName}</Text>
             </View>
 
             {/* Tracking Number */}
             <View style={styles.infoGroup}>
                 <Text style={styles.label}>Tracking Number</Text>
                 <TouchableOpacity onPress={handleTrackingPress}>
-                    <Text style={styles.trackingValue}>{trackingNumber}</Text>
+                    <Text style={styles.trackingValue}>Not assigned yet</Text>
                 </TouchableOpacity>
             </View>
 
             {/* Delivery Agent */}
             <View style={styles.infoGroup}>
                 <Text style={styles.label}>Delivery Agent</Text>
-                <Text style={styles.value}>Michael Rodriguez</Text>
+                <Text style={styles.value}>-</Text>
             </View>
         </View>
     );

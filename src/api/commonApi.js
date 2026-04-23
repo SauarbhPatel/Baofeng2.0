@@ -80,6 +80,10 @@ export const verifyRazorpayPayment = (orderId, payload) =>
 
 export const getOrderListing = (consumerId) =>
     __getApiData(`order/myOrderListing/${consumerId}`);
+export const getOrderTracking = (mobile, orderNumber) =>
+    __getApiData(
+        `order/orderTracking?mobile=${mobile}&orderNumber=${orderNumber}`,
+    );
 
 // ─── Address ──────────────────────────────────────────────────
 export const getShippingAddresses = () =>
@@ -87,6 +91,20 @@ export const getShippingAddresses = () =>
 
 export const getBillingAddresses = () =>
     __getApiData("address/getAllAddress/Billing");
+
+export const createAddress = (payload) =>
+    __postApiData("address/createAddress", payload);
+
+// ─── Jurisdictions ────────────────────────────────────────────
+export const getCountries = () =>
+    __getApiData("jurisdictions/getAllJurisdictionsCountry");
+
+export const getStatesByCountry = (countryId) =>
+    __getApiData(`jurisdictions/getAllStateByCountryId/${countryId}`);
+
+// ─── Wishlist ─────────────────────────────────────────────────
+export const getWishlist = (page = 1, limit = 10) =>
+    __getApiData(`wishlist?page=${page}&limit=${limit}`);
 
 // ─── Documents ────────────────────────────────────────────────
 // Upload file to S3 — payload is FormData with key "files"

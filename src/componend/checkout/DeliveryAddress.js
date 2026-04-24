@@ -30,7 +30,10 @@ const DeliveryAddress = ({
                 style={styles.dashedButton}
                 activeOpacity={0.7}
                 onPress={() =>
-                    navigation.push("AddAddress", { onSaved: reLoad() })
+                    navigation.push("AddAddress", {
+                        onSaved: reLoad(),
+                        addressType: "SHIPPING",
+                    })
                 }
             >
                 <View style={styles.iconCircle}>

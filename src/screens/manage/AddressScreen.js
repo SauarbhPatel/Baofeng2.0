@@ -84,7 +84,7 @@ const AddressScreen = ({ navigation }) => {
                 contentContainerStyle={styles.scrollContent}
                 refreshControl={
                     <RefreshControl
-                        refreshing={refreshing}
+                        refreshing={false}
                         onRefresh={onRefresh}
                         colors={["#0069AF"]}
                         tintColor="#0069AF"
@@ -164,7 +164,11 @@ const AddressScreen = ({ navigation }) => {
                         style={styles.addButton}
                         onPress={() =>
                             navigation.push("AddAddress", {
-                                onSaved: () => {},
+                                onSaved: () => {
+                                    fetchAll();
+                                },
+                                addressType:
+                                    activeTab == 0 ? "BILLING" : "SHIPPING",
                             })
                         }
                     >

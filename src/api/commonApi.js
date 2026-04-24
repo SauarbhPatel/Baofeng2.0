@@ -106,6 +106,9 @@ export const getStatesByCountry = (countryId) =>
 export const getWishlist = (page = 1, limit = 10) =>
     __getApiData(`wishlist?page=${page}&limit=${limit}`);
 
+export const deleteWishlistItem = (listingId) =>
+    __deleteApiData(`wishlist/${listingId}`);
+
 // ─── Documents ────────────────────────────────────────────────
 // Upload file to S3 — payload is FormData with key "files"
 export const uploadFilesToS3 = (formData) =>

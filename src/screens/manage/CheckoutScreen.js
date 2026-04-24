@@ -251,6 +251,9 @@ const CheckoutScreen = ({ navigation, route }) => {
                     selectedAddress={selectedAddress}
                     onSelect={handleAddressSelect}
                     navigation={navigation}
+                    reLoad={() => {
+                        initCheckout();
+                    }}
                 />
                 <ShippingMethod
                     shippingMethods={shippingMethods}

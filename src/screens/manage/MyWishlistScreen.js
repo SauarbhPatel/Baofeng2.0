@@ -15,7 +15,11 @@ import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import MainHeader from "../../componend/common/MainHeader";
 import { SkeletonBox } from "../../componend/common/SkeletonLoader";
-import { getWishlist, addToCart } from "../../api/commonApi";
+import {
+    getWishlist,
+    addToCart,
+    deleteWishlistItem,
+} from "../../api/commonApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CART_TOKEN_KEY = "baofeng_cart_token";
@@ -62,6 +66,7 @@ const MyWishlistScreen = ({ navigation }) => {
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
     const [cartLoadingId, setCartLoadingId] = useState(null);
+    const [removeLoadingId, setRemoveLoadingId] = useState(null);
 
     // Re-fetch every time screen comes into focus
     useFocusEffect(
@@ -150,6 +155,46 @@ const MyWishlistScreen = ({ navigation }) => {
         }
     };
 
+    // ── Remove from Wishlist ───────────────────────────────────
+    const handleRemove = (item) => {
+        Alert.alert(
+            "Remove Item",
+            `Remove "${item.product?.name}" from your wishlist?`,
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Remove",
+                    style: "destructive",
+                    onPress: () => confirmRemove(item),
+                },
+            ],
+        );
+    };
+
+    const confirmRemove = async (item) => {
+        const listingId = item.listing?.listingId;
+        if (!listingId) return;
+        try {
+            setRemoveLoadingId(item.wishlistItemId);
+            const res = await deleteWishlistItem(listingId);
+            if (res?.success) {
+                // Remove from local state immediately
+                setItems((prev) =>
+                    prev.filter(
+                        (i) => i.wishlistItemId !== item.wishlistItemId,
+                    ),
+                );
+            } else {
+                Alert.alert("Error", res?.message || "Failed to remove item.");
+            }
+        } catch (err) {
+            Alert.alert("Error", "Network error. Please try again.");
+            console.error("removeWishlist error:", err);
+        } finally {
+            setRemoveLoadingId(null);
+        }
+    };
+
     // ── Navigate to Product ────────────────────────────────────
     const handleProductPress = (item) => {
         navigation.push("ProjectDetails", {
@@ -170,7 +215,7 @@ const MyWishlistScreen = ({ navigation }) => {
                 contentContainerStyle={styles.scrollContent}
                 refreshControl={
                     <RefreshControl
-                        refreshing={refreshing}
+                        refreshing={false}
                         onRefresh={onRefresh}
                         colors={["#0069AF"]}
                         tintColor="#0069AF"
@@ -190,7 +235,7 @@ const MyWishlistScreen = ({ navigation }) => {
                                 </Text>
                             )}
                         </View>
-                        {/* {!loading && items.length > 0 && (
+                        {!loading && items.length > 0 && (
                             <TouchableOpacity style={styles.shareBtn}>
                                 <MaterialCommunityIcons
                                     name="share-outline"
@@ -198,24 +243,6 @@ const MyWishlistScreen = ({ navigation }) => {
                                     color="#0064a3"
                                 />
                             </TouchableOpacity>
-                        )} */}
-                        {!loading && items.length > 0 && (
-                            <View style={styles.headerActions}>
-                                <TouchableOpacity style={styles.iconBtn}>
-                                    <Feather
-                                        name="trash-2"
-                                        size={20}
-                                        color="#ef4444"
-                                    />
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.shareBtn}>
-                                    <MaterialCommunityIcons
-                                        name="share-outline"
-                                        size={20}
-                                        color="#0064a3"
-                                    />
-                                </TouchableOpacity>
-                            </View>
                         )}
                     </View>
 
@@ -260,8 +287,12 @@ const MyWishlistScreen = ({ navigation }) => {
                                     item={item}
                                     onPress={() => handleProductPress(item)}
                                     onAddToCart={() => handleAddToCart(item)}
+                                    onRemove={() => handleRemove(item)}
                                     cartLoading={
                                         cartLoadingId === item.wishlistItemId
+                                    }
+                                    removeLoading={
+                                        removeLoadingId === item.wishlistItemId
                                     }
                                 />
                             ))}
@@ -274,7 +305,14 @@ const MyWishlistScreen = ({ navigation }) => {
 };
 
 // ── Single Wishlist Item Card ───────────────────────────────────
-const WishlistItem = ({ item, onPress, onAddToCart, cartLoading }) => {
+const WishlistItem = ({
+    item,
+    onPress,
+    onAddToCart,
+    onRemove,
+    cartLoading,
+    removeLoading,
+}) => {
     const { product, listing, unavailable, priceDropped, priceDifference } =
         item;
     const isOutOfStock = !listing?.isActive || listing?.stock === 0;
@@ -392,8 +430,16 @@ const WishlistItem = ({ item, onPress, onAddToCart, cartLoading }) => {
                 </View>
 
                 {/* Remove button */}
-                <TouchableOpacity style={styles.removeBtn}>
-                    <Feather name="trash-2" size={18} color="#cbd5e1" />
+                <TouchableOpacity
+                    style={styles.removeBtn}
+                    onPress={onRemove}
+                    disabled={removeLoading}
+                >
+                    {removeLoading ? (
+                        <ActivityIndicator size="small" color="#ef4444" />
+                    ) : (
+                        <Feather name="trash-2" size={18} color="#ef4444" />
+                    )}
                 </TouchableOpacity>
             </View>
         </TouchableOpacity>

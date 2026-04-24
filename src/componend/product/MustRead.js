@@ -1,17 +1,53 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { AntDesign, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useState } from "react";
 
 const MustRead = ({ bulletPoints }) => {
+    const [isShow, setShow] = useState(false);
     return (
         <View style={styles.container}>
-            <Text style={styles.headerTitle}>Must Read</Text>
+            <Text style={styles.headerTitle}>
+                <MaterialCommunityIcons
+                    name="shield-alert-outline"
+                    size={20}
+                    color="#3A1200"
+                />
+                {"  "}
+                Must Read
+            </Text>
+            <TouchableOpacity
+                style={{
+                    position: "absolute",
+                    top: 10,
+                    right: 10,
+                    backgroundColor: "#fff",
+                    padding: 10,
+                    borderRadius: 10,
+                }}
+                activeOpacity={0.9}
+                onPress={() => setShow(!isShow)}
+            >
+                <AntDesign
+                    name={isShow ? "caret-up" : "caret-down"}
+                    size={18}
+                />
+            </TouchableOpacity>
 
             <View style={styles.contentBox}>
-                {bulletPoints?.map((item) => (
-                    <View style={styles.bulletRow} key={item}>
-                        <Text style={styles.bullet}>•</Text>
-                        <Text style={styles.bulletText}>{item}</Text>
-                    </View>
-                ))}
+                {(isShow ? bulletPoints : bulletPoints?.slice(0, 1))?.map(
+                    (item) => (
+                        <View style={styles.bulletRow} key={item}>
+                            <Text style={styles.bullet}>•</Text>
+                            <Text
+                                style={styles.bulletText}
+                                {...(!isShow && { numberOfLines: 2 })}
+                            >
+                                {item}
+                                {!isShow ? "..." : null}
+                            </Text>
+                        </View>
+                    ),
+                )}
             </View>
         </View>
     );
@@ -19,13 +55,13 @@ const MustRead = ({ bulletPoints }) => {
 
 const styles = StyleSheet.create({
     container: {
-        borderRadius: 24,
+        borderRadius: 10,
         padding: 15,
         marginBottom: 16,
         marginHorizontal: 10,
         borderWidth: 1,
-        borderColor: "#FFA500",
-        backgroundColor: "#FFEDCC",
+        borderColor: "#FF8F73",
+        backgroundColor: "#FF8F73",
     },
     headerTitle: {
         fontSize: 16,

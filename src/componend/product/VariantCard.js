@@ -68,7 +68,6 @@ const VariantCard = ({
 
 const styles = StyleSheet.create({
     scrollContainer: {
-        paddingHorizontal: 10,
         flexDirection: "row",
         alignItems: "center",
         paddingBottom: 15,
@@ -78,9 +77,9 @@ const styles = StyleSheet.create({
         marginRight: 16,
     },
     imageContainer: {
-        width: 50,
-        height: 50,
-        borderRadius: 5,
+        width: 70,
+        height: 70,
+        borderRadius: 10,
         backgroundColor: "#f8fafc",
         justifyContent: "center",
         alignItems: "center",
@@ -93,8 +92,9 @@ const styles = StyleSheet.create({
         borderColor: "#0056b3",
     },
     radioImage: {
-        width: 40,
-        height: 40,
+        width: 62,
+        height: 62,
+        borderRadius: 7,
     },
     label: {
         fontSize: 12,

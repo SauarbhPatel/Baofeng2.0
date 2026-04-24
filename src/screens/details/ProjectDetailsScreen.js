@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
     StyleSheet,
     SafeAreaView,
@@ -6,6 +6,8 @@ import {
     TouchableOpacity,
     Text,
     FlatList,
+    Alert,
+    ActivityIndicator,
 } from "react-native";
 import MainHeader from "../../componend/common/MainHeader";
 import ProductGallery from "../../componend/product/ProductGallary";
@@ -22,10 +24,19 @@ import {
     ProductDetailSkeleton,
     VariantSkeleton,
 } from "../../componend/common/SkeletonLoader";
-import { getProductDetails } from "../../api/commonApi";
+import { addToCart, getProductDetails } from "../../api/commonApi";
+import ProductTabsBox from "../../componend/product/ProductTabsBox";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import {
+    MaterialCommunityIcons,
+    Feather,
+    FontAwesome,
+} from "@expo/vector-icons";
 
 // Default pickup point ID — can be made dynamic later
 const DEFAULT_PICKUP_POINT_ID = "69a1e57b1aeed5f800c42ef8";
+const CART_TOKEN_KEY = "baofeng_cart_token";
 
 const ProjectDetailsScreen = ({ navigation, route }) => {
     const [product, setProduct] = useState(null);
@@ -112,38 +123,38 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
                 case "ProductGallery":
                     return (
                         <>
-                            <ProductGallery
+                            {/* <ProductGallery
                                 mainImageUrl={product?.mainImageUrl}
                                 galleryImageUrls={product?.galleryImageUrls}
-                            />
+                            /> */}
                         </>
                     );
                 case "ProductDetail":
                     return (
                         <>
-                            <ProductDetail
+                            {/* <ProductDetail
                                 product={product}
                                 cartBlocked={needsDocs && !docsReady}
                                 navigation={navigation}
-                            />
-                        </>
-                    );
-                case "VariantCard":
-                    return (
-                        <>
-                            <VariantCard
-                                variantAttributes={product?.variantAttributes}
-                                onVariantSelect={handleVariantSelect}
-                                productVariationSlug={
-                                    product?.productVariationSlug
+                                variantCom={
+                                    <VariantCard
+                                        variantAttributes={
+                                            product?.variantAttributes
+                                        }
+                                        onVariantSelect={handleVariantSelect}
+                                        productVariationSlug={
+                                            product?.productVariationSlug
+                                        }
+                                    />
                                 }
-                            />
+                            /> */}
                         </>
                     );
+
                 case "LicenceNote":
                     return (
                         <>
-                            {product?.complianceDocuments &&
+                            {/* {product?.complianceDocuments &&
                                 product?.complianceDocuments?.length > 0 && (
                                     <LicenceNote
                                         complianceDocuments={
@@ -153,21 +164,21 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
                                             handleDocsStatusChange
                                         }
                                     />
-                                )}
+                                )} */}
                         </>
                     );
                 case "MustRead":
                     return (
                         <>
-                            <MustRead bulletPoints={product?.bulletPoints} />
+                            {/* <MustRead bulletPoints={product?.bulletPoints} /> */}
                         </>
                     );
                 case "ProductTabs":
                     return (
                         <>
-                            <ProductTabs
+                            {/* <ProductTabs
                                 dynamicSection={product?.dynamicSection}
-                            />
+                            /> */}
                         </>
                     );
                 case "SimilarProducts":
@@ -202,11 +213,134 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
         [product, navigation],
     );
 
+    const [sections, setSections] = useState({});
+    const sectionsRef = useRef(sections);
+    sectionsRef.current = sections;
+
+    // Height map for each section
+    const heightsRef = useRef({});
+    const baseTopRef = useRef(0);
+
+    const [isSticky, setIsSticky] = useState(false);
+    const [activeSection, setActiveSection] = useState(0);
+    const handleScroll = (e) => {
+        const { contentOffset, layoutMeasurement } = e.nativeEvent;
+        const scrollY = contentOffset.y;
+        const viewBottom = scrollY + layoutMeasurement.height;
+
+        let bestIndex = null;
+        let bestPercent = 0;
+        let anyVisible = false;
+
+        Object.keys(sectionsRef.current).forEach((key) => {
+            const sec = sectionsRef.current[key];
+            if (!sec) return;
+
+            const visibleTop = Math.max(sec.top, scrollY);
+            const visibleBottom = Math.min(sec.bottom, viewBottom);
+            const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+            const percent = visibleHeight / sec.height;
+            if (visibleHeight > 0) {
+                anyVisible = true;
+            }
+            if (percent > bestPercent) {
+                bestPercent = percent;
+                bestIndex = Number(key);
+            }
+        });
+
+        if (!anyVisible) {
+            if (isSticky) setIsSticky(false);
+            return;
+        } else {
+            if (!isSticky) setIsSticky(true);
+        }
+
+        if (bestIndex !== null && activeSection !== bestIndex) {
+            setActiveSection(bestIndex);
+            //console.log("set", bestIndex);
+        }
+    };
+
+    const [cartLoading, setCartLoading] = useState(false);
+    const [quantity, setQuantity] = useState(1);
+
+    // ── Add to Cart ────────────────────────────────────────────
+    const handleAddToCart = async (isNavigate) => {
+        const { listing = {}, productId = "" } = product;
+        const { listingMongoId = "" } = listing;
+
+        if (!productId || !listingMongoId) {
+            Alert.alert("Error", "Product information missing.");
+            return;
+        }
+        try {
+            setCartLoading(true);
+            // Read existing cart token from AsyncStorage
+            const savedToken = await AsyncStorage.getItem(CART_TOKEN_KEY);
+
+            const payload = {
+                productId,
+                listingId: listingMongoId,
+                quantity,
+                ...(savedToken ? { cartToken: savedToken } : {}),
+            };
+
+            const res = await addToCart(payload);
+
+            if (res?.success && res?.data?.cartToken) {
+                // Persist cart token for subsequent adds
+                await AsyncStorage.setItem(CART_TOKEN_KEY, res.data.cartToken);
+                if (isNavigate)
+                    return navigation.push("HomeNavigator", { screen: "Cart" });
+                Alert.alert(
+                    "Added to Cart ✓",
+                    `${res.data.items?.length || 1} item(s) in your cart.`,
+                    [
+                        {
+                            text: "Go to Cart",
+                            onPress: () =>
+                                navigation.push("HomeNavigator", {
+                                    screen: "Cart",
+                                }),
+                            style: "cancel",
+                        },
+                        {
+                            text: "OK",
+                            onPress: () => console.log("OK Pressed"),
+                        },
+                    ],
+                );
+            } else {
+                Alert.alert("Error", "Could not add to cart. Try again.");
+            }
+        } catch (error) {
+            console.log(error);
+            Alert.alert("Already Added", "Product is already in the cart", [
+                {
+                    text: "Go to Cart",
+                    onPress: () =>
+                        navigation.push("HomeNavigator", { screen: "Cart" }),
+                    style: "cancel",
+                },
+                { text: "OK", onPress: () => console.log("OK Pressed") },
+            ]);
+        } finally {
+            setCartLoading(false);
+        }
+    };
     return (
         <SafeAreaView style={styles.container}>
-            <MainHeader bgColor="#ffffff" />
-
+            <MainHeader />
+            {isSticky && (
+                <ProductTabsBox
+                    list={product?.dynamicSection || []}
+                    activeTab={activeSection}
+                    isSticky={true}
+                />
+            )}
             <FlatList
+                onScroll={handleScroll}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingTop: loading ? 1 : 15 }}
                 windowSize={8}
@@ -253,9 +387,174 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
                                 </TouchableOpacity>
                             </View>
                         ) : null}
+                        {!error && !loading ? (
+                            <>
+                                <ProductGallery
+                                    mainImageUrl={product?.mainImageUrl}
+                                    galleryImageUrls={product?.galleryImageUrls}
+                                />
+                                <ProductDetail
+                                    product={product}
+                                    cartBlocked={needsDocs && !docsReady}
+                                    navigation={navigation}
+                                    quantity={quantity}
+                                    setQuantity={setQuantity}
+                                    variantCom={
+                                        <VariantCard
+                                            variantAttributes={
+                                                product?.variantAttributes
+                                            }
+                                            onVariantSelect={
+                                                handleVariantSelect
+                                            }
+                                            productVariationSlug={
+                                                product?.productVariationSlug
+                                            }
+                                        />
+                                    }
+                                />
+                                {product?.complianceDocuments &&
+                                    product?.complianceDocuments?.length >
+                                        0 && (
+                                        <LicenceNote
+                                            complianceDocuments={
+                                                product?.complianceDocuments
+                                            }
+                                            onDocsStatusChange={
+                                                handleDocsStatusChange
+                                            }
+                                        />
+                                    )}
+                                <MustRead
+                                    bulletPoints={product?.bulletPoints}
+                                />
+                                <View
+                                    style={{}}
+                                    onLayout={(e) => {
+                                        baseTopRef.current =
+                                            e.nativeEvent.layout.y;
+                                    }}
+                                >
+                                    {(product?.dynamicSection || [])?.map(
+                                        (item, index) => (
+                                            <View
+                                                key={item?.sectionTitle}
+                                                onLayout={(e) => {
+                                                    const height =
+                                                        e.nativeEvent.layout
+                                                            .height;
+
+                                                    heightsRef.current[index] =
+                                                        height;
+
+                                                    let top =
+                                                        baseTopRef.current;
+                                                    for (
+                                                        let i = 0;
+                                                        i < index;
+                                                        i++
+                                                    ) {
+                                                        top +=
+                                                            heightsRef.current[
+                                                                i
+                                                            ] || 0;
+                                                    }
+                                                    const bottom = top + height;
+
+                                                    setSections((prev) => {
+                                                        return {
+                                                            ...prev,
+                                                            [index]: {
+                                                                top,
+                                                                bottom,
+                                                                height,
+                                                            },
+                                                        };
+                                                    });
+                                                }}
+                                            >
+                                                <ProductTabs
+                                                    dynamicSection={[item]}
+                                                    isShowTaps={
+                                                        activeSection === index
+                                                    }
+                                                />
+                                            </View>
+                                        ),
+                                    )}
+                                </View>
+                            </>
+                        ) : null}
                     </>
                 }
             />
+
+            {product?.stock && product?.stock != 0 ? (
+                <View style={styles.actionRow}>
+                    <TouchableOpacity
+                        style={[
+                            styles.btn,
+                            styles.buyNowBtn,
+                            // (cartLoading || cartBlocked) && styles.btnDisabled,
+                            cartLoading && styles.btnDisabled,
+                        ]}
+                        onPress={() => {
+                            if (needsDocs && !docsReady) {
+                                Alert.alert(
+                                    "Documents Required",
+                                    "Please upload all required compliance documents before adding to cart.",
+                                );
+                                return;
+                            }
+                            handleAddToCart(true);
+                        }}
+                        disabled={cartLoading}
+                    >
+                        {cartLoading ? (
+                            <ActivityIndicator color="#0066b2" size="small" />
+                        ) : (
+                            <Text style={styles.buyNowText}>
+                                <MaterialCommunityIcons
+                                    name="lightning-bolt"
+                                    size={18}
+                                />{" "}
+                                Buy Now
+                            </Text>
+                        )}
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[
+                            styles.btn,
+                            styles.addToCartBtn,
+                            cartLoading && styles.btnDisabled,
+                            {
+                                borderColor: "#EEF1FF",
+                                backgroundColor: "#EEF1FF",
+                            },
+                        ]}
+                        onPress={() => {
+                            if (needsDocs && !docsReady) {
+                                Alert.alert(
+                                    "Documents Required",
+                                    "Please upload all required compliance documents before adding to cart.",
+                                );
+                                return;
+                            }
+                            handleAddToCart();
+                        }}
+                        disabled={cartLoading}
+                    >
+                        {cartLoading ? (
+                            <ActivityIndicator color="#0066b2" size="small" />
+                        ) : (
+                            <Text style={styles.addToCartText}>
+                                <Feather name="shopping-cart" size={18} /> Add
+                                to Cart
+                            </Text>
+                        )}
+                    </TouchableOpacity>
+                </View>
+            ) : null}
         </SafeAreaView>
     );
 };
@@ -263,7 +562,7 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#D7E9F2",
+        backgroundColor: "#ffffff",
     },
 
     // ── Cart blocked banner ──────────────────────────────────────
@@ -304,6 +603,31 @@ const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: "600",
     },
+
+    // ── Action Buttons ─────────────────────────────────────────────
+
+    actionRow: {
+        flexDirection: "row",
+        gap: 12,
+        // marginBottom: 24,
+        backgroundColor: "#fff",
+        paddingHorizontal: 15,
+        paddingVertical: 15,
+    },
+    btn: {
+        flex: 1,
+        // height: 54,
+        borderRadius: 12,
+        justifyContent: "center",
+        alignItems: "center",
+        borderWidth: 2,
+        paddingVertical: 10,
+    },
+    buyNowBtn: { backgroundColor: "#0066b2", borderColor: "#0066b2" },
+    addToCartBtn: { backgroundColor: "transparent", borderColor: "#0066b2" },
+    btnDisabled: { opacity: 0.6 },
+    buyNowText: { color: "#fff", fontSize: 15, fontWeight: "bold" },
+    addToCartText: { color: "#0066b2", fontSize: 15, fontWeight: "bold" },
 });
 
 export default ProjectDetailsScreen;

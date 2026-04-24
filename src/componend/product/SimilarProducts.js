@@ -92,7 +92,7 @@ const SimilarProducts = ({ categoryId, productId, navigation }) => {
                 resizeMode="contain"
             />
 
-            <Text style={styles.productName} numberOfLines={1}>
+            <Text style={styles.productName} numberOfLines={2}>
                 {item.title}
             </Text>
 
@@ -111,21 +111,20 @@ const SimilarProducts = ({ categoryId, productId, navigation }) => {
             </View>
 
             <View style={styles.actionRow}>
-                <TouchableOpacity>
-                    <MaterialCommunityIcons
-                        name="cart"
-                        size={16}
-                        color="#64748b"
-                    />
-                </TouchableOpacity>
-
-                <TouchableOpacity style={[styles.buyBtn, styles.buyBtnActive]}>
+                <TouchableOpacity
+                    style={[styles.buyBtn, styles.buyBtnActive, { flex: 1 }]}
+                >
                     <Text style={[styles.buyBtnText, styles.buyTextActive]}>
-                        BUY NOW
+                        Add To Cart
                     </Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity>
+                <TouchableOpacity
+                    style={[
+                        styles?.buyBtn,
+                        { paddingHorizontal: 6, borderRadius: 50 },
+                    ]}
+                >
                     <MaterialCommunityIcons
                         name="heart"
                         size={16}
@@ -156,24 +155,23 @@ const SimilarProducts = ({ categoryId, productId, navigation }) => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: "#F3FBFF",
+        // backgroundColor: "#F3FBFF",
         borderRadius: 24,
-        paddingTop: 15,
-        paddingHorizontal: 15,
+        // paddingTop: 15,
+        paddingHorizontal: 5,
         marginHorizontal: 10,
         marginBottom: 15,
-        borderWidth: 1,
-        borderColor: "#EBF7FD",
+        // borderWidth: 1,
+        // borderColor: "#EBF7FD",
     },
     sectionTitle: {
         fontSize: 20,
-        textAlign: "center",
         marginBottom: 15,
         color: "#1e293b",
+        fontWeight: "700",
     },
     blueText: {
         fontWeight: "700",
-        color: "#0284c7",
     },
     // ── Skeleton grid ────────────────────────────────────────
     skeletonGrid: {
@@ -185,15 +183,16 @@ const styles = StyleSheet.create({
     row: { justifyContent: "space-between" },
     card: {
         backgroundColor: "#fff",
-        width: "48%",
+        width: "46%",
         borderRadius: 8,
-        paddingTop: 10,
-        paddingHorizontal: 10,
+        // paddingTop: 10,
+        // paddingHorizontal: 10,
         marginBottom: 15,
-        borderWidth: 1,
-        borderColor: "#e2e8f0",
-        alignItems: "center",
+        // borderWidth: 1,
+        // borderColor: "#e2e8f0",
+        // alignItems: "center",
         position: "relative",
+        overflow: "hidden",
     },
     newBadge: {
         position: "absolute",
@@ -207,16 +206,19 @@ const styles = StyleSheet.create({
     },
     newBadgeText: { color: "#fff", fontSize: 8 },
     productImage: {
-        width: 100,
-        height: 120,
+        width: "100%",
+        height: 140,
         marginBottom: 10,
+        borderRadius: 8,
+        borderWidth: 0.5,
+        borderColor: "#e2e8f0",
+        backgroundColor: "#fff",
     },
     productName: {
-        fontSize: 10,
+        fontSize: 14,
         fontWeight: "700",
         color: "#334155",
         marginBottom: 4,
-        textAlign: "center",
     },
     priceRow: {
         flexDirection: "row",
@@ -225,12 +227,12 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     currentPrice: {
-        fontSize: 10,
+        fontSize: 15,
         fontWeight: "bold",
         color: "#0284c7",
     },
     oldPrice: {
-        fontSize: 9,
+        fontSize: 12,
         color: "#94a3b8",
         textDecorationLine: "line-through",
     },
@@ -239,18 +241,17 @@ const styles = StyleSheet.create({
         alignItems: "center",
         width: "100%",
         justifyContent: "space-between",
-        borderTopWidth: 0.5,
-        borderColor: "#F4F4F4",
+        gap: 8,
     },
     buyBtn: {
         paddingVertical: 6,
         paddingHorizontal: 5,
-        flex: 0.8,
         alignItems: "center",
+        backgroundColor: "#EEF1FF",
     },
-    buyBtnActive: { backgroundColor: "#0284c7" },
-    buyBtnText: { fontSize: 10, fontWeight: "800" },
-    buyTextActive: { color: "#fff" },
+    buyBtnActive: { borderRadius: 10 },
+    buyBtnText: { fontSize: 12, fontWeight: "800" },
+    buyTextActive: { color: "#0069AF" },
 });
 
 export default SimilarProducts;

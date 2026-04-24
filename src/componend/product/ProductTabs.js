@@ -9,7 +9,7 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import AutoHeightWebView from "react-native-autoheight-webview";
 
-const ProductTabs = ({ dynamicSection }) => {
+const ProductTabs = ({ dynamicSection, isShowTaps }) => {
     const tabs = dynamicSection?.map((item) => item?.sectionTitle);
     const [activeTab, setActiveTab] = useState(tabs[0] || "Description");
 
@@ -54,9 +54,9 @@ const ProductTabs = ({ dynamicSection }) => {
 
     return (
         <>
-            <View style={styles.mainContainer}>
+            <View style={[styles.mainContainer]}>
                 {/* Tab Grid */}
-                <View style={styles.tabGrid}>
+                {/* <View style={styles.tabGrid}>
                     {tabs.map((tab) => (
                         <TouchableOpacity
                             key={tab}
@@ -80,7 +80,7 @@ const ProductTabs = ({ dynamicSection }) => {
                             </Text>
                         </TouchableOpacity>
                     ))}
-                </View>
+                </View> */}
 
                 {/* Description Content */}
                 <View style={styles.contentContainer}>

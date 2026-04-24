@@ -8,18 +8,29 @@ import {
     ActivityIndicator,
     Alert,
 } from "react-native";
-import { MaterialCommunityIcons, Feather } from "@expo/vector-icons";
+import {
+    MaterialCommunityIcons,
+    Feather,
+    FontAwesome,
+} from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { checkPincode, addToCart } from "../../api/commonApi";
+import { LinearGradient } from "expo-linear-gradient";
 
 const CART_TOKEN_KEY = "baofeng_cart_token";
 
-const ProductDetail = ({ product = {}, cartBlocked = true, navigation }) => {
-    const [quantity, setQuantity] = useState(1);
+const ProductDetail = ({
+    product = {},
+    cartBlocked = true,
+    navigation,
+    variantCom,
+    quantity,
+    setQuantity,
+}) => {
     const [pincode, setPincode] = useState("");
     const [pincodeLoading, setPincodeLoading] = useState(false);
     const [pincodeResult, setPincodeResult] = useState(null); // { serviceable, codAllowed }
-    const [cartLoading, setCartLoading] = useState(false);
+    const [isShowPinInput, setShowPinInput] = useState(false);
 
     const {
         title = "",
@@ -63,119 +74,18 @@ const ProductDetail = ({ product = {}, cartBlocked = true, navigation }) => {
         }
     };
 
-    // ── Add to Cart ────────────────────────────────────────────
-    const handleAddToCart = async (isNavigate) => {
-        if (!productId || !listingMongoId) {
-            Alert.alert("Error", "Product information missing.");
-            return;
-        }
-        try {
-            setCartLoading(true);
-            // Read existing cart token from AsyncStorage
-            const savedToken = await AsyncStorage.getItem(CART_TOKEN_KEY);
-
-            const payload = {
-                productId,
-                listingId: listingMongoId,
-                quantity,
-                ...(savedToken ? { cartToken: savedToken } : {}),
-            };
-
-            const res = await addToCart(payload);
-
-            if (res?.success && res?.data?.cartToken) {
-                // Persist cart token for subsequent adds
-                await AsyncStorage.setItem(CART_TOKEN_KEY, res.data.cartToken);
-                if (isNavigate)
-                    return navigation.push("HomeNavigator", { screen: "Cart" });
-                Alert.alert(
-                    "Added to Cart ✓",
-                    `${res.data.items?.length || 1} item(s) in your cart.`,
-                );
-            } else {
-                Alert.alert("Error", "Could not add to cart. Try again.");
-            }
-        } catch (error) {
-            console.log(error);
-            Alert.alert("Already Added", "Product is already in the cart", [
-                {
-                    text: "Go to Cart",
-                    onPress: () =>
-                        navigation.push("HomeNavigator", { screen: "Cart" }),
-                    style: "cancel",
-                },
-                { text: "OK", onPress: () => console.log("OK Pressed") },
-            ]);
-        } finally {
-            setCartLoading(false);
-        }
-    };
-
     return (
         <View style={styles.container}>
-            {/* Top Action Buttons */}
-            <View style={styles.actionRow}>
-                <TouchableOpacity
-                    style={[
-                        styles.btn,
-                        styles.buyNowBtn,
-                        (cartLoading || cartBlocked) && styles.btnDisabled,
-                    ]}
-                    onPress={() => {
-                        if (cartBlocked) {
-                            Alert.alert(
-                                "Documents Required",
-                                "Please upload all required compliance documents before adding to cart.",
-                            );
-                            return;
-                        }
-                        handleAddToCart(true);
-                    }}
-                    disabled={cartLoading}
-                >
-                    {cartLoading ? (
-                        <ActivityIndicator color="#0066b2" size="small" />
-                    ) : (
-                        <Text style={styles.buyNowText}>Buy Now</Text>
-                    )}
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[
-                        styles.btn,
-                        styles.addToCartBtn,
-                        (cartLoading || cartBlocked) && styles.btnDisabled,
-                    ]}
-                    onPress={() => {
-                        if (cartBlocked) {
-                            Alert.alert(
-                                "Documents Required",
-                                "Please upload all required compliance documents before adding to cart.",
-                            );
-                            return;
-                        }
-                        handleAddToCart();
-                    }}
-                    disabled={cartLoading}
-                >
-                    {cartLoading ? (
-                        <ActivityIndicator color="#0066b2" size="small" />
-                    ) : (
-                        <Text style={styles.addToCartText}>Add to Cart</Text>
-                    )}
-                </TouchableOpacity>
+            <FontAwesome
+                name="heart-o"
+                style={{ position: "absolute", right: 8, top: 6 }}
+                size={25}
+                color={"heart-o"}
+            />
+            <View style={styles.brandTag}>
+                <Text style={styles.brandLabel}>Brand : </Text>
+                <Text style={styles.brandName}>{brandName}</Text>
             </View>
-            {cartBlocked ? (
-                <Text
-                    style={{
-                        fontSize: 11,
-                        color: "red",
-                        marginTop: -15,
-                        marginBottom: 15,
-                    }}
-                >
-                    Note: You Needs to Upload WPC User Licence
-                </Text>
-            ) : null}
 
             {/* Product Title */}
             <Text style={styles.productTitle}>{title}</Text>
@@ -186,49 +96,109 @@ const ProductDetail = ({ product = {}, cartBlocked = true, navigation }) => {
                 {[1, 2, 3, 4, 5].map((star) => (
                     <MaterialCommunityIcons
                         key={star}
-                        name="star"
-                        size={24}
+                        name="star-outline"
+                        size={20}
                         color="#FFC107"
                     />
                 ))}
             </View>
-
-            {/* Brand Tag */}
-            <View style={styles.brandTag}>
-                <Text style={styles.brandLabel}>Brand : </Text>
-                <Text style={styles.brandName}>{brandName}</Text>
-            </View>
-
-            <View style={styles.divider} />
+            <Text style={styles.productDescription}>
+                4.8/5 • 1,240 ratings • 88 review photos
+            </Text>
 
             {/* Price Row */}
-            <View style={styles.priceRow}>
-                <Text style={styles.mrpText}>
-                    MRP: ₹{" "}
-                    <Text style={{ textDecorationLine: "line-through" }}>
-                        {unitMrp}
-                    </Text>{" "}
-                    {discountPercent > 0 && (
-                        <Text style={styles.discountText}>
-                            (Discount {discountPercent}%)
+            <LinearGradient
+                colors={["#FFF2EE", "#F0F3FF"]}
+                style={{ padding: 15, borderRadius: 10, gap: 5 }}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+            >
+                <Text style={styles.mrpText}>Special sale price</Text>
+                <View style={styles.priceRow}>
+                    <Text style={styles.mrpText}>
+                        <Text style={styles.finalPrice}>
+                            ₹{unitSellingPrice}
                         </Text>
-                    )}
+                        {"   "}
+                        <Text style={{ textDecorationLine: "line-through" }}>
+                            ₹{unitMrp}
+                        </Text>{" "}
+                        {discountPercent > 0 && (
+                            <Text style={styles.discountText}>
+                                {discountPercent}% off
+                            </Text>
+                        )}
+                    </Text>
+                </View>
+                <Text style={styles.taxInfo}>
+                    Tax Inclusive. Shipping calculated at checkout
                 </Text>
-                <Text style={styles.separator}> | </Text>
-                <Text style={styles.saleText}>Sale</Text>
-            </View>
-            <Text style={styles.finalPrice}>
-                <Text style={styles.saleText}>Price:</Text> ₹ {unitSellingPrice}
-            </Text>
+            </LinearGradient>
 
-            <View style={styles.divider} />
-            <Text style={styles.taxInfo}>
-                Tax Inclusive. Shipping calculated at checkout
-            </Text>
+            <View style={{ flexDirection: "row", gap: 10, marginVertical: 15 }}>
+                {[
+                    { lable: "Fast dispatch", desc: "Ships in 24 hrs" },
+                    { lable: "Secure pay", desc: "UPI, cards, COD" },
+                    { lable: "Support", desc: "Chat in 2 mins" },
+                ]?.map((info) => (
+                    <View
+                        key={info?.lable}
+                        style={{
+                            backgroundColor: "#F7FAFF",
+                            borderRadius: 6,
+                            flex: 1,
+                            padding: 10,
+                            gap: 5,
+                        }}
+                    >
+                        <Text
+                            style={{
+                                color: "#000",
+                                fontWeight: "700",
+                                fontSize: 13,
+                            }}
+                        >
+                            {info?.lable}
+                        </Text>
+                        <Text
+                            style={{
+                                color: "#6B7280",
+                                fontSize: 11,
+                            }}
+                        >
+                            {info?.desc}
+                        </Text>
+                    </View>
+                ))}
+            </View>
+            {variantCom}
+
+            <View
+                style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                }}
+            >
+                <Text style={styles.deliveryLabel}>Delivery & quantity</Text>
+                <TouchableOpacity
+                    style={{
+                        backgroundColor: "#EAEEFF",
+                        borderRadius: 15,
+                        padding: 5,
+                        paddingHorizontal: 12,
+                    }}
+                    activeOpacity={0.9}
+                    onPress={() => setShowPinInput(!isShowPinInput)}
+                >
+                    <Text style={{ color: "#0069AF", fontWeight: "600" }}>
+                        Check serviceability
+                    </Text>
+                </TouchableOpacity>
+            </View>
 
             {/* ── COD Delivery Check ────────────────────────── */}
-            <View style={styles.deliveryRow}>
-                <Text style={styles.deliveryLabel}>COD Delivery:</Text>
+            {isShowPinInput ? (
                 <View style={styles.inputWrapper}>
                     <TextInput
                         placeholder="Enter Pincode"
@@ -251,13 +221,13 @@ const ProductDetail = ({ product = {}, cartBlocked = true, navigation }) => {
                         disabled={pincodeLoading}
                     >
                         {pincodeLoading ? (
-                            <ActivityIndicator color="#fff" size="small" />
+                            <ActivityIndicator color="#FF7A59" size="small" />
                         ) : (
                             <Text style={styles.checkText}>Check</Text>
                         )}
                     </TouchableOpacity>
                 </View>
-            </View>
+            ) : null}
 
             {/* Pincode result badge */}
             {pincodeResult && (
@@ -295,36 +265,60 @@ const ProductDetail = ({ product = {}, cartBlocked = true, navigation }) => {
                 </View>
             )}
 
-            <View style={styles.divider} />
-
             {/* Quantity and Stock */}
             <View style={styles.stockRow}>
-                <View style={styles.quantityContainer}>
+                <Text style={{ color: "#6B7280" }}>
+                    Quantity{" "}
+                    <Text style={styles.stockText}>
+                        ({stock}{" "}
+                        <Text
+                            style={
+                                isInStock
+                                    ? styles.instockText
+                                    : styles.outofstockText
+                            }
+                        >
+                            {isInStock ? "Instock" : "Out of Stock"}
+                        </Text>
+                        )
+                    </Text>
+                </Text>
+
+                <View
+                    style={[
+                        styles.quantityContainer,
+                        stock == 0 && { opacity: 0.4 },
+                    ]}
+                >
                     <TouchableOpacity
                         onPress={() => setQuantity(Math.max(1, quantity - 1))}
                         style={styles.qtyBtn}
+                        disabled={stock == 0}
                     >
                         <MaterialCommunityIcons
                             name="minus"
                             size={24}
-                            color="#000"
+                            color="#0069AF"
                         />
                     </TouchableOpacity>
-                    <Text style={styles.qtyText}>{quantity}</Text>
+                    <Text style={styles.qtyText}>
+                        {stock == 0 ? 0 : quantity}
+                    </Text>
                     <TouchableOpacity
                         onPress={() =>
                             setQuantity(Math.min(stock, quantity + 1))
                         }
                         style={styles.qtyBtn}
+                        disabled={stock == 0}
                     >
                         <MaterialCommunityIcons
                             name="plus"
                             size={24}
-                            color="#000"
+                            color="#0069AF"
                         />
                     </TouchableOpacity>
                 </View>
-                <Text style={styles.stockText}>
+                {/* <Text style={styles.stockText}>
                     {stock}{" "}
                     <Text
                         style={
@@ -335,7 +329,43 @@ const ProductDetail = ({ product = {}, cartBlocked = true, navigation }) => {
                     >
                         {isInStock ? "Instock" : "Out of Stock"}
                     </Text>
-                </Text>
+                </Text> */}
+            </View>
+            <View style={{ flexDirection: "row", gap: 10, marginVertical: 15 }}>
+                {[
+                    { lable: "Replacement", desc: "7-day easy replacement" },
+                    { lable: "Warranty", desc: "1-year seller warranty" },
+                ]?.map((info) => (
+                    <View
+                        key={info?.lable}
+                        style={{
+                            backgroundColor: "#F7FAFF",
+                            borderRadius: 6,
+                            flex: 1,
+                            padding: 10,
+                            gap: 5,
+                        }}
+                    >
+                        <Text
+                            style={{
+                                color: "#0069AF",
+                                fontWeight: "700",
+                                fontSize: 11,
+                            }}
+                        >
+                            {info?.lable}
+                        </Text>
+                        <Text
+                            style={{
+                                color: "#000000",
+                                fontSize: 13,
+                                fontWeight: "700",
+                            }}
+                        >
+                            {info?.desc}
+                        </Text>
+                    </View>
+                ))}
             </View>
         </View>
     );
@@ -346,6 +376,7 @@ const styles = StyleSheet.create({
         borderRadius: 32,
         marginBottom: 15,
         marginHorizontal: 10,
+        position: "relative",
     },
     actionRow: { flexDirection: "row", gap: 12, marginBottom: 24 },
     btn: {
@@ -369,23 +400,23 @@ const styles = StyleSheet.create({
     },
     productDescription: {
         fontSize: 15,
-        color: "#64748b",
+        color: "#6B7280",
         lineHeight: 22,
-        fontWeight: "600",
         marginBottom: 12,
     },
-    ratingRow: { flexDirection: "row", marginBottom: 16 },
+    ratingRow: { flexDirection: "row", marginBottom: 5, marginTop: 5 },
     brandTag: {
-        backgroundColor: "#fff",
+        backgroundColor: "#EAEEFF",
         alignSelf: "flex-start",
         flexDirection: "row",
         paddingHorizontal: 16,
         paddingVertical: 10,
         borderRadius: 15,
         alignItems: "center",
+        marginBottom: 10,
     },
-    brandLabel: { color: "#64748b", fontSize: 16 },
-    brandName: { color: "#0066b2", fontWeight: "900", fontStyle: "italic" },
+    brandLabel: { color: "#0069AF", fontSize: 16, fontWeight: "700" },
+    brandName: { color: "#0069AF", fontWeight: "900" },
     divider: {
         height: 1,
         backgroundColor: "#cbd5e1",
@@ -397,8 +428,8 @@ const styles = StyleSheet.create({
     discountText: { color: "#22c55e", fontWeight: "bold" },
     separator: { color: "#64748b", marginHorizontal: 8 },
     saleText: { fontSize: 15, color: "#64748b", fontWeight: "600" },
-    finalPrice: { fontSize: 20, fontWeight: "800", color: "#000" },
-    taxInfo: { fontSize: 13, color: "#4DA0ED", fontWeight: "500" },
+    finalPrice: { fontSize: 30, fontWeight: "800", color: "#000" },
+    taxInfo: { fontSize: 13, color: "#6B7280" },
     // ── Delivery row ──────────────────────────────────────────
     deliveryRow: {
         marginTop: 10,
@@ -410,24 +441,24 @@ const styles = StyleSheet.create({
     inputWrapper: {
         flexDirection: "row",
         flex: 1,
-        marginLeft: 10,
         alignItems: "center",
         paddingLeft: 15,
         height: 48,
         borderWidth: 1,
         borderColor: "#E2E2E2",
-        borderRadius: 25,
+        borderRadius: 7,
+        marginTop: 15,
     },
     deliveryInput: { flex: 1, fontSize: 14, color: "#000" },
     checkBtn: {
-        backgroundColor: "#0066b2",
+        backgroundColor: "#FFECE8",
         height: "80%",
         paddingHorizontal: 20,
-        borderRadius: 25,
+        borderRadius: 12,
         justifyContent: "center",
         margin: 5,
     },
-    checkText: { color: "#fff", fontWeight: "600", fontSize: 13 },
+    checkText: { color: "#FF7A59", fontWeight: "600", fontSize: 13 },
     // ── Pincode result badge ───────────────────────────────────
     pincodeBadge: {
         flexDirection: "row",
@@ -455,28 +486,33 @@ const styles = StyleSheet.create({
     stockRow: {
         flexDirection: "row",
         alignItems: "center",
-        borderRadius: 20,
-        padding: 12,
-        borderWidth: 1,
-        borderColor: "#E2E2E2",
+        marginTop: 15,
+        justifyContent: "space-between",
     },
     quantityContainer: {
         flexDirection: "row",
-        backgroundColor: "#fff",
-        borderRadius: 12,
+        backgroundColor: "#F7FAFF",
+        borderRadius: 5,
+        alignItems: "center",
+        height: 45,
+        // flex: 1,
+        justifyContent: "space-between",
+        overflow: "hidden",
+        alignSelf: "flex-end",
+    },
+    qtyBtn: {
+        padding: 5,
+        backgroundColor: "#EEF1FF",
+        height: "100%",
+        justifyContent: "center",
         alignItems: "center",
         paddingHorizontal: 10,
-        height: 45,
-        flex: 1,
-        justifyContent: "space-between",
     },
-    qtyBtn: { padding: 5 },
-    qtyText: { fontSize: 20, fontWeight: "bold" },
+    qtyText: { fontSize: 20, fontWeight: "bold", paddingHorizontal: 20 },
     stockText: {
-        flex: 1,
-        textAlign: "center",
-        fontSize: 20,
         fontWeight: "bold",
+        flex: 1,
+        color: "#000",
     },
     instockText: { color: "#22c55e" },
     outofstockText: { color: "#ef4444" },

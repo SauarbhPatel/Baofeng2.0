@@ -1,2 +1,69 @@
-this is a api to delete product from wishlist 
-delete https://consumerapi.baofengradios.co.in/wishlist/{listingId}
+in OrderList Screen we have a button for Cancel Order , when user click make a model to open and there should be some common resion to cancel order and give one for other , where you open a input box to user can type
+
+Post https://consumerapi.baofengradios.co.in/order/cancel
+
+Payload {
+"orderId": "string",
+"notes": "string"
+}
+
+in Address screen er have delete buttons
+Delete
+https://consumerapi.baofengradios.co.in/address/deleteAddressById/69ea12db8c94b94a6b0d9693
+
+response
+{
+"success": true,
+"message": "Request successful",
+"meta": {
+"timestamp": "2026-04-24T12:13:25.944Z",
+"path": "/address/deleteAddressById/69ea12db8c94b94a6b0d9693"
+}
+}
+
+for edit address (you can use same screen or make new screen for this , as you wish)
+Patch -
+https://consumerapi.baofengradios.co.in/address/updateAddressById/69ea12b48c94b94a6b0d968a
+
+payload {"addressData":{"firstName":"Fggg","lastName":"Fggg","phone":"+919876543210","email":"saurabh@gmail.com","addressLine1":"Fg","addressLine2":"","area":"Fgg","city":"Test","state":{"stateId":"69ca6bc90587aefb7a245b06","name":"Delhi"},"country":{"countryId":"69ca6b070587aefb7a245ae0","name":"India"},"postalCode":"100001","addressType":"BILLING","isDefault":false},"alsoSaveAsBilling":false}
+
+response
+{
+"success": true,
+"message": "Request successful",
+"data": {
+"\_id": "69ea12b48c94b94a6b0d968a",
+"consumerId": "69e1cc190ecd2a715dd68ddd",
+"addressType": "BILLING",
+"firstName": "Fggg",
+"lastName": "Fggg",
+"fullName": "Fggg Fggg",
+"phone": "+919876543210",
+"email": "saurabh@gmail.com",
+"addressLine1": "Fg",
+"addressLine2": "",
+"area": "Fgg",
+"city": "Test",
+"state": {
+"stateId": "69ca6bc90587aefb7a245b06",
+"name": "Delhi",
+"\_id": "69eb5ebb69deecfa3f9c4d93"
+},
+"country": {
+"countryId": "69ca6b070587aefb7a245ae0",
+"name": "India",
+"\_id": "69eb5ebb69deecfa3f9c4d92"
+},
+"postalCode": "100001",
+"gstNumber": "",
+"isDefault": false,
+"companyId": "695f53ac419fb9b375867a1b",
+"\_\_v": 0,
+"createdAt": "2026-04-23T12:38:12.341Z",
+"updatedAt": "2026-04-24T12:14:51.791Z"
+},
+"meta": {
+"timestamp": "2026-04-24T12:14:51.797Z",
+"path": "/address/updateAddressById/69ea12b48c94b94a6b0d968a"
+}
+}

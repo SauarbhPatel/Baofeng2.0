@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -12,56 +12,48 @@ import {
     Alert,
     KeyboardAvoidingView,
     Platform,
+    SafeAreaView,
 } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native";
 import MainHeader from "../../componend/common/MainHeader";
 import { SkeletonBox } from "../../componend/common/SkeletonLoader";
 import {
     getCountries,
     getStatesByCountry,
+    updateAddress,
     checkPincode,
-    createAddress,
 } from "../../api/commonApi";
 
-// ── Dropdown Modal ─────────────────────────────────────────────
-const DropdownModal = ({
-    visible,
-    onClose,
-    title,
-    data,
-    onSelect,
-    keyField = "_id",
-    labelField = "name",
-}) => (
+// ─────────────────────────────────────────────────────────────
+// Dropdown modal — reused for Country & State pickers
+// ─────────────────────────────────────────────────────────────
+const DropdownModal = ({ visible, onClose, title, data, onSelect }) => (
     <Modal
         visible={visible}
         transparent
-        animationType="fade"
+        animationType="slide"
         onRequestClose={onClose}
     >
-        <View style={styles.modalOverlay}>
-            <View style={styles.modalSheet}>
-                <View style={styles.modalHeader}>
-                    <Text style={styles.modalTitle}>{title}</Text>
+        <View style={styles.dropOverlay}>
+            <View style={styles.dropSheet}>
+                <View style={styles.dropHeader}>
+                    <Text style={styles.dropTitle}>{title}</Text>
                     <TouchableOpacity onPress={onClose}>
-                        <Ionicons name="close" size={24} color="#64748b" />
+                        <Ionicons name="close" size={22} color="#64748b" />
                     </TouchableOpacity>
                 </View>
                 <FlatList
                     data={data}
-                    keyExtractor={(item) => item[keyField]}
+                    keyExtractor={(item) => item._id}
                     renderItem={({ item }) => (
                         <TouchableOpacity
-                            style={styles.modalItem}
+                            style={styles.dropItem}
                             onPress={() => {
                                 onSelect(item);
                                 onClose();
                             }}
                         >
-                            <Text style={styles.modalItemText}>
-                                {item[labelField]}
-                            </Text>
+                            <Text style={styles.dropItemText}>{item.name}</Text>
                             <Ionicons
                                 name="chevron-forward"
                                 size={16}
@@ -70,7 +62,7 @@ const DropdownModal = ({
                         </TouchableOpacity>
                     )}
                     ItemSeparatorComponent={() => (
-                        <View style={styles.separator} />
+                        <View style={styles.dropSep} />
                     )}
                     showsVerticalScrollIndicator={false}
                 />
@@ -79,10 +71,40 @@ const DropdownModal = ({
     </Modal>
 );
 
-const AddAddress = ({ navigation, route }) => {
-    const onSaved = route?.params?.onSaved;
+// ─────────────────────────────────────────────────────────────
+// Reusable labeled text input
+// ─────────────────────────────────────────────────────────────
+const FormField = ({
+    label,
+    value,
+    onChangeText,
+    placeholder = "",
+    ...rest
+}) => (
+    <View>
+        <Text style={styles.label}>{label}</Text>
+        <TextInput
+            style={styles.input}
+            value={value}
+            onChangeText={onChangeText}
+            placeholder={placeholder}
+            placeholderTextColor="#94a3b8"
+            {...rest}
+        />
+    </View>
+);
 
-    // ── Form state ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// EditAddress screen
+//
+// Route params expected:
+//   address  — the full address object to pre-fill
+//   onSaved  — callback fired after a successful update
+// ─────────────────────────────────────────────────────────────
+const EditAddress = ({ navigation, route }) => {
+    const { address, onSaved } = route?.params || {};
+
+    // ── Form state ──────────────────────────────────────────
     const [form, setForm] = useState({
         firstName: "",
         lastName: "",
@@ -97,65 +119,24 @@ const AddAddress = ({ navigation, route }) => {
     });
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [selectedState, setSelectedState] = useState(null);
-    const [isDefault, setIsDefault] = useState(false);
-    const [alsoSaveAsBilling, setAlsoSaveAsBilling] = useState(true);
 
-    // ── Data state ─────────────────────────────────────────────
+    // ── Data state ──────────────────────────────────────────
     const [countries, setCountries] = useState([]);
     const [states, setStates] = useState([]);
     const [loadingCountries, setLoadingCountries] = useState(true);
     const [loadingStates, setLoadingStates] = useState(false);
 
-    // ── Pincode state ──────────────────────────────────────────
+    // ── Picker visibility ───────────────────────────────────
+    const [countryModal, setCountryModal] = useState(false);
+    const [stateModal, setStateModal] = useState(false);
+
+    // ── Save state ──────────────────────────────────────────
+    const [saving, setSaving] = useState(false);
+
+    // ── Pincode check state ─────────────────────────────────
     const [pincodeLoading, setPincodeLoading] = useState(false);
     const [pincodeResult, setPincodeResult] = useState(null);
 
-    // ── UI state ───────────────────────────────────────────────
-    const [countryModal, setCountryModal] = useState(false);
-    const [stateModal, setStateModal] = useState(false);
-    const [saving, setSaving] = useState(false);
-
-    // ── Fetch countries on mount ───────────────────────────────
-    useEffect(() => {
-        fetchCountries();
-    }, []);
-
-    const fetchCountries = async () => {
-        try {
-            setLoadingCountries(true);
-            const res = await getCountries();
-            if (res?.success && res?.data?.records) {
-                setCountries(res.data.records);
-                // Auto-select if only one country
-                if (res.data.records.length === 1) {
-                    handleCountrySelect(res.data.records[0]);
-                }
-            }
-        } catch (err) {
-            console.error("fetchCountries error:", err);
-        } finally {
-            setLoadingCountries(false);
-        }
-    };
-
-    const handleCountrySelect = async (country) => {
-        setSelectedCountry(country);
-        setSelectedState(null);
-        setStates([]);
-        try {
-            setLoadingStates(true);
-            const res = await getStatesByCountry(country._id);
-            if (res?.success && Array.isArray(res?.data)) {
-                setStates(res.data);
-            }
-        } catch (err) {
-            console.error("fetchStates error:", err);
-        } finally {
-            setLoadingStates(false);
-        }
-    };
-
-    // ── Pincode check ──────────────────────────────────────────
     const handlePincodeCheck = async (pin) => {
         if (pin.length !== 6) return;
         try {
@@ -170,10 +151,90 @@ const AddAddress = ({ navigation, route }) => {
         }
     };
 
+    // ── Pre-fill from route param ───────────────────────────
+    useEffect(() => {
+        if (!address) return;
+        setForm({
+            firstName: address.firstName || "",
+            lastName: address.lastName || "",
+            phone: address.phone || "",
+            email: address.email || "",
+            addressLine1: address.addressLine1 || "",
+            addressLine2: address.addressLine2 || "",
+            area: address.area || "",
+            city: address.city || "",
+            postalCode: address.postalCode || "",
+            gstNumber: address.gstNumber || "",
+        });
+        // Pre-select country & state stored on the address
+        if (address.country) {
+            setSelectedCountry({
+                _id: address.country.countryId,
+                name: address.country.name,
+            });
+        }
+        if (address.state) {
+            setSelectedState({
+                _id: address.state.stateId,
+                name: address.state.name,
+            });
+        }
+    }, [address]);
+
+    // ── Fetch countries on mount ────────────────────────────
+    useEffect(() => {
+        fetchCountries();
+    }, []);
+
+    // When a country is already pre-selected, also fetch its states
+    useEffect(() => {
+        if (address.country.countryId) {
+            fetchStates(address.country.countryId);
+        }
+        if (address.postalCode) {
+            handlePincodeCheck(address.postalCode);
+        }
+    }, [address]);
+
+    const fetchCountries = async () => {
+        try {
+            setLoadingCountries(true);
+            const res = await getCountries();
+            if (res?.success && res?.data?.records) {
+                setCountries(res.data.records);
+            }
+        } catch (err) {
+            console.error("fetchCountries error:", err);
+        } finally {
+            setLoadingCountries(false);
+        }
+    };
+
+    const fetchStates = async (countryId) => {
+        try {
+            setLoadingStates(true);
+            const res = await getStatesByCountry(countryId);
+            if (res?.success && Array.isArray(res?.data)) {
+                setStates(res.data);
+            }
+        } catch (err) {
+            console.error("fetchStates error:", err);
+        } finally {
+            setLoadingStates(false);
+        }
+    };
+
+    const handleCountrySelect = (country) => {
+        setSelectedCountry(country);
+        setSelectedState(null);
+        setStates([]);
+        fetchStates(country._id);
+    };
+
     const setField = (key, value) =>
         setForm((prev) => ({ ...prev, [key]: value }));
 
-    // ── Validate & Save ────────────────────────────────────────
+    // ── Validate & submit ───────────────────────────────────
     const handleSave = async () => {
         if (!form.firstName.trim())
             return Alert.alert("Required", "Please enter first name.");
@@ -196,7 +257,7 @@ const AddAddress = ({ navigation, route }) => {
                 addressData: {
                     firstName: form.firstName.trim(),
                     lastName: form.lastName.trim(),
-                    phone: "+91" + form.phone.trim(),
+                    phone: form.phone.trim(),
                     email: form.email.trim(),
                     addressLine1: form.addressLine1.trim(),
                     addressLine2: form.addressLine2.trim(),
@@ -212,17 +273,16 @@ const AddAddress = ({ navigation, route }) => {
                     },
                     postalCode: form.postalCode.trim(),
                     gstNumber: form.gstNumber.trim(),
-                    addressType: route?.params?.addressType,
-                    isDefault,
+                    addressType: address?.addressType || "SHIPPING",
+                    isDefault: address?.isDefault || false,
                 },
-                alsoSaveAsBilling,
+                alsoSaveAsBilling: false,
             };
 
-            console.log(payload);
+            const res = await updateAddress(address._id, payload);
 
-            const res = await createAddress(payload);
             if (res?.success) {
-                Alert.alert("Saved ✓", "Address saved successfully.", [
+                Alert.alert("Updated ✓", "Address updated successfully.", [
                     {
                         text: "OK",
                         onPress: () => {
@@ -232,11 +292,14 @@ const AddAddress = ({ navigation, route }) => {
                     },
                 ]);
             } else {
-                Alert.alert("Error", res?.message || "Failed to save address.");
+                Alert.alert(
+                    "Error",
+                    res?.message || "Failed to update address.",
+                );
             }
         } catch (err) {
             Alert.alert("Error", "Network error. Please try again.");
-            console.error("createAddress error:", err);
+            console.error("updateAddress error:", err);
         } finally {
             setSaving(false);
         }
@@ -245,21 +308,22 @@ const AddAddress = ({ navigation, route }) => {
     return (
         <SafeAreaView style={styles.container}>
             <MainHeader bgColor="#ffffff" navigation={navigation} />
+
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : undefined}
                 style={{ flex: 1 }}
             >
                 <ScrollView
-                    contentContainerStyle={styles.content}
-                    keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}
+                    contentContainerStyle={styles.scrollContent}
+                    keyboardShouldPersistTaps="handled"
                 >
                     <View style={styles.card}>
-                        <Text style={styles.title}>Add Address</Text>
+                        <Text style={styles.screenTitle}>Edit Address</Text>
 
                         <View style={styles.formContainer}>
-                            {/* Name Row */}
-                            <View style={styles.row}>
+                            {/* ── Name row ── */}
+                            <View style={styles.nameRow}>
                                 <View style={{ flex: 1 }}>
                                     <FormField
                                         label="First Name *"
@@ -267,7 +331,6 @@ const AddAddress = ({ navigation, route }) => {
                                         onChangeText={(v) =>
                                             setField("firstName", v)
                                         }
-                                        placeholder=""
                                     />
                                 </View>
                                 <View style={{ flex: 1 }}>
@@ -277,7 +340,6 @@ const AddAddress = ({ navigation, route }) => {
                                         onChangeText={(v) =>
                                             setField("lastName", v)
                                         }
-                                        placeholder=""
                                     />
                                 </View>
                             </View>
@@ -286,24 +348,20 @@ const AddAddress = ({ navigation, route }) => {
                                 label="Phone *"
                                 value={form.phone}
                                 onChangeText={(v) => setField("phone", v)}
-                                placeholder=""
                                 keyboardType="phone-pad"
-                                maxLength={10}
                             />
+
                             <FormField
                                 label="Email"
                                 value={form.email}
                                 onChangeText={(v) => setField("email", v)}
-                                placeholder=""
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                             />
 
-                            {/* Country Dropdown */}
+                            {/* ── Country ── */}
                             <View>
-                                <Text style={styles.label}>
-                                    Select Country *
-                                </Text>
+                                <Text style={styles.label}>Country *</Text>
                                 {loadingCountries ? (
                                     <SkeletonBox
                                         width="100%"
@@ -334,9 +392,9 @@ const AddAddress = ({ navigation, route }) => {
                                 )}
                             </View>
 
-                            {/* State Dropdown */}
+                            {/* ── State ── */}
                             <View>
-                                <Text style={styles.label}>Select State *</Text>
+                                <Text style={styles.label}>State *</Text>
                                 {loadingStates ? (
                                     <SkeletonBox
                                         width="100%"
@@ -347,8 +405,9 @@ const AddAddress = ({ navigation, route }) => {
                                     <TouchableOpacity
                                         style={[
                                             styles.dropdown,
-                                            !selectedCountry &&
-                                                styles.dropdownDisabled,
+                                            !selectedCountry && {
+                                                opacity: 0.5,
+                                            },
                                         ]}
                                         onPress={() =>
                                             selectedCountry &&
@@ -380,32 +439,31 @@ const AddAddress = ({ navigation, route }) => {
                                 label="City *"
                                 value={form.city}
                                 onChangeText={(v) => setField("city", v)}
-                                placeholder=""
                             />
+
                             <FormField
                                 label="Area"
                                 value={form.area}
                                 onChangeText={(v) => setField("area", v)}
-                                placeholder=""
                             />
+
                             <FormField
                                 label="Address Line 1 *"
                                 value={form.addressLine1}
                                 onChangeText={(v) =>
                                     setField("addressLine1", v)
                                 }
-                                placeholder=""
                             />
+
                             <FormField
                                 label="Address Line 2"
                                 value={form.addressLine2}
                                 onChangeText={(v) =>
                                     setField("addressLine2", v)
                                 }
-                                placeholder=""
                             />
 
-                            {/* Postal Code with inline check */}
+                            {/* ── Postal Code + serviceability check ── */}
                             <View>
                                 <Text style={styles.label}>
                                     Zip / Postal Code *
@@ -413,7 +471,7 @@ const AddAddress = ({ navigation, route }) => {
                                 <View style={styles.pincodeRow}>
                                     <TextInput
                                         style={[
-                                            styles.inputWrapper,
+                                            styles.input,
                                             { flex: 1, marginRight: 8 },
                                         ]}
                                         value={form.postalCode}
@@ -423,7 +481,7 @@ const AddAddress = ({ navigation, route }) => {
                                             if (v.length === 6)
                                                 handlePincodeCheck(v);
                                         }}
-                                        placeholder=""
+                                        placeholder="560066"
                                         placeholderTextColor="#94a3b8"
                                         keyboardType="number-pad"
                                         maxLength={6}
@@ -479,27 +537,11 @@ const AddAddress = ({ navigation, route }) => {
                                 label="GST Number (optional)"
                                 value={form.gstNumber}
                                 onChangeText={(v) => setField("gstNumber", v)}
-                                placeholder=""
                                 autoCapitalize="characters"
                             />
-
-                            {/* Options */}
-                            <View style={styles.optionsCard}>
-                                <CheckRow
-                                    label="Set as default address"
-                                    checked={isDefault}
-                                    onToggle={() => setIsDefault(!isDefault)}
-                                />
-                                <CheckRow
-                                    label={`Also save as ${route?.params?.addressType.toLocaleLowerCase()} address`}
-                                    checked={alsoSaveAsBilling}
-                                    onToggle={() =>
-                                        setAlsoSaveAsBilling(!alsoSaveAsBilling)
-                                    }
-                                />
-                            </View>
                         </View>
 
+                        {/* ── Save button ── */}
                         <TouchableOpacity
                             style={[
                                 styles.saveButton,
@@ -515,7 +557,7 @@ const AddAddress = ({ navigation, route }) => {
                                 <ActivityIndicator color="#fff" />
                             ) : (
                                 <Text style={styles.saveButtonText}>
-                                    Save Address
+                                    Save Changes
                                 </Text>
                             )}
                         </TouchableOpacity>
@@ -523,7 +565,7 @@ const AddAddress = ({ navigation, route }) => {
                 </ScrollView>
             </KeyboardAvoidingView>
 
-            {/* Country Modal */}
+            {/* Country picker */}
             <DropdownModal
                 visible={countryModal}
                 onClose={() => setCountryModal(false)}
@@ -532,7 +574,7 @@ const AddAddress = ({ navigation, route }) => {
                 onSelect={handleCountrySelect}
             />
 
-            {/* State Modal */}
+            {/* State picker */}
             <DropdownModal
                 visible={stateModal}
                 onClose={() => setStateModal(false)}
@@ -544,33 +586,10 @@ const AddAddress = ({ navigation, route }) => {
     );
 };
 
-// ── Reusable components ────────────────────────────────────────
-const FormField = ({ label, value, onChangeText, placeholder, ...rest }) => (
-    <View>
-        <Text style={styles.label}>{label}</Text>
-        <TextInput
-            style={styles.inputWrapper}
-            value={value}
-            onChangeText={onChangeText}
-            placeholder={placeholder}
-            placeholderTextColor="#94a3b8"
-            {...rest}
-        />
-    </View>
-);
-
-const CheckRow = ({ label, checked, onToggle }) => (
-    <TouchableOpacity style={styles.checkRow} onPress={onToggle}>
-        <View style={[styles.checkBox, checked && styles.checkBoxActive]}>
-            {checked && <Ionicons name="checkmark" size={13} color="#fff" />}
-        </View>
-        <Text style={styles.checkLabel}>{label}</Text>
-    </TouchableOpacity>
-);
-
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: "#D7E9F2" },
-    content: { paddingTop: 15, paddingBottom: 30 },
+    scrollContent: { paddingTop: 15, paddingBottom: 30 },
+
     card: {
         backgroundColor: "#F3FBFF",
         borderRadius: 24,
@@ -580,14 +599,19 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#EBF7FD",
     },
-    title: {
+
+    screenTitle: {
         fontSize: 18,
         fontWeight: "700",
         color: "#0f172a",
         marginBottom: 20,
     },
+
     formContainer: { gap: 16 },
-    row: { flexDirection: "row", gap: 10 },
+
+    nameRow: { flexDirection: "row", gap: 10 },
+
+    // ── Field label + input ─────────────────────────────────
     label: {
         fontSize: 12,
         fontWeight: "600",
@@ -596,7 +620,7 @@ const styles = StyleSheet.create({
         textTransform: "uppercase",
         letterSpacing: 0.5,
     },
-    inputWrapper: {
+    input: {
         height: 50,
         backgroundColor: "#ffffff",
         borderWidth: 1.5,
@@ -607,6 +631,8 @@ const styles = StyleSheet.create({
         color: "#0f172a",
         fontWeight: "500",
     },
+
+    // ── Dropdown trigger ────────────────────────────────────
     dropdown: {
         height: 50,
         backgroundColor: "#ffffff",
@@ -618,9 +644,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
     },
-    dropdownDisabled: { opacity: 0.5 },
     dropdownText: { fontSize: 15, color: "#0f172a", fontWeight: "500" },
     placeholder: { color: "#94a3b8" },
+
     pincodeRow: { flexDirection: "row", alignItems: "center" },
     pincodeBadge: {
         flexDirection: "row",
@@ -642,50 +668,32 @@ const styles = StyleSheet.create({
         borderColor: "#fecaca",
     },
     pincodeText: { fontSize: 12, fontWeight: "600", flex: 1 },
-    optionsCard: {
-        backgroundColor: "#fff",
-        borderRadius: 14,
-        padding: 14,
-        borderWidth: 1,
-        borderColor: "#e2e8f0",
-        gap: 12,
-    },
-    checkRow: { flexDirection: "row", alignItems: "center", gap: 10 },
-    checkBox: {
-        width: 20,
-        height: 20,
-        borderRadius: 5,
-        borderWidth: 1.5,
-        borderColor: "#cbd5e1",
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    checkBoxActive: { backgroundColor: "#0069AF", borderColor: "#0069AF" },
-    checkLabel: { fontSize: 14, color: "#334155", fontWeight: "500", flex: 1 },
+    // ── Save button ─────────────────────────────────────────
     saveButton: {
         backgroundColor: "#0064a3",
         height: 52,
         borderRadius: 14,
         justifyContent: "center",
         alignItems: "center",
-        marginTop: 20,
+        marginTop: 24,
     },
     btnDisabled: { opacity: 0.6 },
     saveButtonText: { color: "#ffffff", fontSize: 15, fontWeight: "700" },
-    // Modal
-    modalOverlay: {
+
+    // ── Dropdown modal ──────────────────────────────────────
+    dropOverlay: {
         flex: 1,
         backgroundColor: "rgba(0,0,0,0.45)",
         justifyContent: "flex-end",
     },
-    modalSheet: {
+    dropSheet: {
         backgroundColor: "#fff",
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
         maxHeight: "60%",
         paddingBottom: 30,
     },
-    modalHeader: {
+    dropHeader: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
@@ -693,16 +701,16 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: "#f1f5f9",
     },
-    modalTitle: { fontSize: 17, fontWeight: "700", color: "#0f172a" },
-    modalItem: {
+    dropTitle: { fontSize: 17, fontWeight: "700", color: "#0f172a" },
+    dropItem: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
         paddingHorizontal: 20,
         paddingVertical: 15,
     },
-    modalItemText: { fontSize: 15, color: "#1e293b", fontWeight: "500" },
-    separator: { height: 1, backgroundColor: "#f1f5f9", marginHorizontal: 20 },
+    dropItemText: { fontSize: 15, color: "#1e293b", fontWeight: "500" },
+    dropSep: { height: 1, backgroundColor: "#f1f5f9", marginHorizontal: 20 },
 });
 
-export default AddAddress;
+export default EditAddress;

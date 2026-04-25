@@ -16,6 +16,9 @@ import AddAddress from "../screens/form/AddAddress";
 import MyWishlistScreen from "../screens/manage/MyWishlistScreen";
 import FollowedSellersScreen from "../screens/manage/FollowedSellersScreen";
 import SellerDetailsScreen from "../screens/details/SellerDetailsScreen";
+import SupportTicketsScreen from "../screens/manage/SupportTicketsScreen";
+import AddSupportTickets from "../screens/form/AddSupportTickets";
+import EditAddress from "../screens/form/EditAddress";
 const Stack = createNativeStackNavigator();
 
 export default function MainStackNavigator() {
@@ -76,9 +79,19 @@ export default function MainStackNavigator() {
                 name="FollowedSellers"
                 component={FollowedSellersScreen}
             />
+            <Stack.Screen
+                name="SupportTickets"
+                component={SupportTicketsScreen}
+            />
 
             {/* Form */}
             <Stack.Screen name="AddAddress" component={AddAddress} />
+            <Stack.Screen name="EditAddress" component={EditAddress} />
+
+            <Stack.Screen
+                name="AddSupportTickets"
+                component={AddSupportTickets}
+            />
         </Stack.Navigator>
     );
 }

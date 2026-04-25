@@ -438,7 +438,7 @@
 //     stepText: { fontSize: 13, color: "#4A7B9D", marginTop: -3 },
 // });
 
-import React from "react";
+import React, { useState } from "react";
 import {
     View,
     Text,
@@ -446,9 +446,15 @@ import {
     Image,
     TouchableOpacity,
     FlatList,
+    TextInput,
+    Modal,
+    Alert,
+    ScrollView,
+    ActivityIndicator,
 } from "react-native";
 import { MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 import { SkeletonBox } from "../common/SkeletonLoader";
+import { cancelOrder } from "../../api/commonApi";
 
 // ── Tab → status mapping ───────────────────────────────────────
 const TAB_STATUS = {
@@ -500,6 +506,15 @@ const STATUS_THEME = {
     },
 };
 
+const CANCEL_REASONS = [
+    "Changed my mind",
+    "Found a better price elsewhere",
+    "Ordered by mistake",
+    "Delivery time too long",
+    "Payment issue",
+    "Other",
+];
+
 const formatDate = (dateStr) => {
     if (!dateStr) return "—";
     return new Date(dateStr).toLocaleDateString("en-IN", {
@@ -529,6 +544,193 @@ const OrderSkeleton = () => (
     </View>
 );
 
+// ── Cancel Order Modal ─────────────────────────────────────────
+const CancelOrderModal = ({ visible, order, onClose, onCancelled }) => {
+    const [selectedReason, setSelectedReason] = useState("");
+    const [customNote, setCustomNote] = useState("");
+    const [cancelling, setCancelling] = useState(false);
+
+    const isOther = selectedReason === "Other";
+    const notes = isOther ? customNote.trim() : selectedReason;
+
+    const handleCancel = async () => {
+        if (!notes) {
+            Alert.alert("Required", "Please select or enter a reason.");
+            return;
+        }
+        try {
+            setCancelling(true);
+            console.log({ orderId: order._id, notes });
+            const res = await cancelOrder({ orderId: order._id, notes });
+            if (res?.success) {
+                Alert.alert(
+                    "Order Cancelled",
+                    "Your order has been cancelled successfully.",
+                );
+                onCancelled();
+                onClose();
+            } else {
+                Alert.alert(
+                    "Error",
+                    res?.message || "Could not cancel order. Please try again.",
+                );
+            }
+        } catch (error) {
+            console.log(error.status);
+            if (error.status == 400) {
+                return Alert.alert(
+                    "Error",
+                    "This order already has a shipping label and can no longer be cancelled.",
+                );
+            }
+            if (error.status == 404) {
+                return Alert.alert("Error", "Order not found");
+            }
+            Alert.alert("Error", "Network error. Please try again.");
+        } finally {
+            setCancelling(false);
+        }
+    };
+
+    const handleClose = () => {
+        setSelectedReason("");
+        setCustomNote("");
+        onClose();
+    };
+
+    return (
+        <Modal
+            visible={visible}
+            transparent
+            animationType="slide"
+            onRequestClose={handleClose}
+        >
+            <View style={modal.overlay}>
+                <View style={modal.sheet}>
+                    {/* Header */}
+                    <View style={modal.header}>
+                        <View>
+                            <Text style={modal.title}>Cancel Order</Text>
+                            {order?.orderNumber && (
+                                <Text style={modal.subtitle}>
+                                    #{order.orderNumber}
+                                </Text>
+                            )}
+                        </View>
+                        <TouchableOpacity
+                            onPress={handleClose}
+                            style={modal.closeBtn}
+                        >
+                            <Feather name="x" size={20} color="#64748b" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <ScrollView
+                        showsVerticalScrollIndicator={false}
+                        style={{ flex: 1 }}
+                    >
+                        <Text style={modal.sectionLabel}>Select a reason</Text>
+
+                        {/* Reason chips */}
+                        {CANCEL_REASONS.map((reason) => {
+                            const isSelected = selectedReason === reason;
+                            return (
+                                <TouchableOpacity
+                                    key={reason}
+                                    style={[
+                                        modal.reasonRow,
+                                        isSelected && modal.reasonRowSelected,
+                                    ]}
+                                    onPress={() => setSelectedReason(reason)}
+                                >
+                                    <View
+                                        style={[
+                                            modal.radio,
+                                            isSelected && modal.radioSelected,
+                                        ]}
+                                    >
+                                        {isSelected && (
+                                            <View style={modal.radioInner} />
+                                        )}
+                                    </View>
+                                    <Text
+                                        style={[
+                                            modal.reasonText,
+                                            isSelected &&
+                                                modal.reasonTextSelected,
+                                        ]}
+                                    >
+                                        {reason}
+                                    </Text>
+                                </TouchableOpacity>
+                            );
+                        })}
+
+                        {/* Custom input for "Other" */}
+                        {isOther && (
+                            <View style={modal.inputWrapper}>
+                                <Text style={modal.inputLabel}>
+                                    Please describe your reason
+                                </Text>
+                                <TextInput
+                                    style={modal.textArea}
+                                    placeholder="Type your reason here..."
+                                    placeholderTextColor="#94a3b8"
+                                    multiline
+                                    numberOfLines={4}
+                                    value={customNote}
+                                    onChangeText={setCustomNote}
+                                    textAlignVertical="top"
+                                />
+                            </View>
+                        )}
+
+                        {/* Warning note */}
+                        <View style={modal.warningBox}>
+                            <Feather
+                                name="alert-circle"
+                                size={14}
+                                color="#f97316"
+                            />
+                            <Text style={modal.warningText}>
+                                This action cannot be undone. Your refund (if
+                                applicable) will be processed within 3–5
+                                business days.
+                            </Text>
+                        </View>
+                    </ScrollView>
+
+                    {/* Actions */}
+                    <View style={modal.actions}>
+                        <TouchableOpacity
+                            style={modal.keepBtn}
+                            onPress={handleClose}
+                        >
+                            <Text style={modal.keepBtnText}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[
+                                modal.cancelBtn,
+                                (!notes || cancelling) && modal.btnDisabled,
+                            ]}
+                            onPress={handleCancel}
+                            disabled={!notes || cancelling}
+                        >
+                            {cancelling ? (
+                                <ActivityIndicator color="#fff" size="small" />
+                            ) : (
+                                <Text style={modal.cancelBtnText}>
+                                    Cancel Order
+                                </Text>
+                            )}
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        </Modal>
+    );
+};
+
 // ── Main component ─────────────────────────────────────────────
 export default function OrderListing({
     activeTab,
@@ -536,6 +738,8 @@ export default function OrderListing({
     loading,
     navigation,
 }) {
+    const [cancelModalOrder, setCancelModalOrder] = useState(null);
+
     if (loading) {
         return (
             <View style={{ gap: 15 }}>
@@ -561,20 +765,33 @@ export default function OrderListing({
     }
 
     return (
-        <FlatList
-            data={filtered}
-            renderItem={({ item }) => (
-                <OrderItem order={item} navigation={navigation} />
-            )}
-            keyExtractor={(item) => item._id}
-            scrollEnabled={false}
-            contentContainerStyle={{ gap: 15 }}
-        />
+        <>
+            <FlatList
+                data={filtered}
+                renderItem={({ item }) => (
+                    <OrderItem
+                        order={item}
+                        navigation={navigation}
+                        onCancelPress={() => setCancelModalOrder(item)}
+                    />
+                )}
+                keyExtractor={(item) => item._id}
+                scrollEnabled={false}
+                contentContainerStyle={{ gap: 15 }}
+            />
+
+            <CancelOrderModal
+                visible={!!cancelModalOrder}
+                order={cancelModalOrder}
+                onClose={() => setCancelModalOrder(null)}
+                onCancelled={() => onRefresh?.()}
+            />
+        </>
     );
 }
 
 // ── Single order card ──────────────────────────────────────────
-const OrderItem = ({ order, navigation }) => {
+const OrderItem = ({ order, navigation, onCancelPress }) => {
     const theme = STATUS_THEME[order.status] || STATUS_THEME.PENDING;
     const firstItem = order.items?.[0];
 
@@ -644,7 +861,10 @@ const OrderItem = ({ order, navigation }) => {
                     {["PENDING", "PROCESSING"].includes(order.status) && (
                         <>
                             <ActionButton label="Customer Support" />
-                            <ActionButton label="Cancel Order" />
+                            <ActionButton
+                                label="Cancel Order"
+                                onPress={onCancelPress}
+                            />
                             <ActionButton
                                 label={"Track Shipment"}
                                 primary
@@ -654,26 +874,41 @@ const OrderItem = ({ order, navigation }) => {
                             />
                         </>
                     )}
+                    {["SHIPPED"].includes(order.status) && (
+                        <>
+                            <ActionButton
+                                label={"Track Shipment"}
+                                onPress={() =>
+                                    navigation.push("OrderTracking", order)
+                                }
+                            />
+                            <ActionButton label="Customer Support" primary />
+                        </>
+                    )}
                     {order.status === "DELIVERED" && (
                         <ActionButton label="10 Days Left to return" success />
                     )}
                 </View>
-                <View style={styles.buttonRow}>
-                    {order.status === "Delivered" && (
-                        <>
+                {order.status === "DELIVERED" && (
+                    <>
+                        <View style={[styles.buttonRow]}>
                             <ActionButton
                                 label="Return / Exchange"
                                 onPress={() => {
-                                    navigation.push("RefundRequest");
+                                    navigation.push("RefundRequest", {
+                                        orderId: order._id,
+                                        orderNumber: order.orderNumber,
+                                    });
                                 }}
                             />
+
                             <ActionButton label="Leave a Review" warning />
                             <ActionButton label="Reorder" primary />
                             <ActionButton label="Customer Support" primary />
                             <ActionButton label="Invoice" />
-                        </>
-                    )}
-                </View>
+                        </View>
+                    </>
+                )}
             </View>
         </View>
     );
@@ -773,8 +1008,9 @@ const styles = StyleSheet.create({
         borderRadius: 13,
         borderWidth: 1,
         borderColor: "#EBEBEB",
+        gap: 8,
     },
-    totalText: { color: "#8A7E72", marginBottom: 15 },
+    totalText: { color: "#8A7E72", marginBottom: 7 },
     totalAmount: { fontWeight: "800", color: "#1e293b" },
     buttonRow: { flexDirection: "row", gap: 8, flexWrap: "wrap" },
     btn: {
@@ -798,4 +1034,130 @@ const styles = StyleSheet.create({
     emptyBox: { alignItems: "center", paddingVertical: 40, gap: 10 },
     emptyText: { fontSize: 15, color: "#94a3b8", fontWeight: "500" },
     productDetails: { flex: 1 },
+});
+
+const modal = StyleSheet.create({
+    overlay: {
+        flex: 1,
+        backgroundColor: "rgba(0,0,0,0.5)",
+        justifyContent: "flex-end",
+    },
+    sheet: {
+        backgroundColor: "#fff",
+        borderTopLeftRadius: 28,
+        borderTopRightRadius: 28,
+        paddingHorizontal: 20,
+        paddingTop: 20,
+        paddingBottom: 20,
+        // maxHeight: "80%",
+        minHeight: "75%",
+    },
+    header: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "flex-start",
+        marginBottom: 20,
+    },
+    title: { fontSize: 18, fontWeight: "800", color: "#0f172a" },
+    subtitle: { fontSize: 13, color: "#64748b", marginTop: 3 },
+    closeBtn: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: "#f1f5f9",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    sectionLabel: {
+        fontSize: 14,
+        fontWeight: "700",
+        color: "#475569",
+        marginBottom: 12,
+        textTransform: "uppercase",
+        letterSpacing: 0.5,
+    },
+    reasonRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingVertical: 13,
+        paddingHorizontal: 14,
+        borderRadius: 12,
+        borderWidth: 1.5,
+        borderColor: "#e2e8f0",
+        marginBottom: 10,
+        backgroundColor: "#f8fafc",
+        gap: 12,
+    },
+    reasonRowSelected: {
+        borderColor: "#0069AF",
+        backgroundColor: "#f0f7ff",
+    },
+    radio: {
+        width: 18,
+        height: 18,
+        borderRadius: 9,
+        borderWidth: 1.5,
+        borderColor: "#cbd5e1",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    radioSelected: { borderColor: "#0069AF" },
+    radioInner: {
+        width: 9,
+        height: 9,
+        borderRadius: 5,
+        backgroundColor: "#0069AF",
+    },
+    reasonText: { fontSize: 14, color: "#475569", fontWeight: "500", flex: 1 },
+    reasonTextSelected: { color: "#0069AF", fontWeight: "700" },
+    inputWrapper: { marginBottom: 14 },
+    inputLabel: {
+        fontSize: 13,
+        fontWeight: "600",
+        color: "#64748b",
+        marginBottom: 8,
+    },
+    textArea: {
+        backgroundColor: "#f8fafc",
+        borderWidth: 1.5,
+        borderColor: "#e2e8f0",
+        borderRadius: 12,
+        padding: 14,
+        height: 100,
+        fontSize: 14,
+        color: "#1e293b",
+    },
+    warningBox: {
+        flexDirection: "row",
+        alignItems: "flex-start",
+        gap: 8,
+        backgroundColor: "#fff7ed",
+        borderRadius: 10,
+        padding: 12,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: "#fed7aa",
+    },
+    warningText: { fontSize: 12, color: "#9a3412", flex: 1, lineHeight: 18 },
+    actions: { flexDirection: "row", gap: 12, marginTop: 8 },
+    keepBtn: {
+        flex: 1,
+        height: 50,
+        borderRadius: 14,
+        justifyContent: "center",
+        alignItems: "center",
+        borderWidth: 1.5,
+        borderColor: "#0069AF",
+    },
+    keepBtnText: { color: "#0069AF", fontWeight: "700", fontSize: 15 },
+    cancelBtn: {
+        flex: 1,
+        height: 50,
+        borderRadius: 14,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#dc2626",
+    },
+    btnDisabled: { opacity: 0.5 },
+    cancelBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
 });

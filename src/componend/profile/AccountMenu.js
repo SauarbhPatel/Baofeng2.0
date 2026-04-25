@@ -15,7 +15,8 @@ const AccountMenu = ({ navigation }) => {
         { id: "4", title: "Wishlist", path: "MyWishlist" },
         { id: "5", title: "Followed Sellers", path: "FollowedSellers" },
         { id: "6", title: "My Returns" },
-        { id: "7", title: "Logout", isDestructive: true },
+        { id: "8", title: "Support", path: "SupportTickets" },
+        { id: "9", title: "Logout", isDestructive: true },
     ];
 
     const handleLogout = () => {

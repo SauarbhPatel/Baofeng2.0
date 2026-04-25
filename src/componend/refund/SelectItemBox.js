@@ -1,88 +1,90 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-const SelectItemBox = () => {
+const SelectItemBox = ({ order, selectedIndex, setSelectedIndex }) => {
+    const items = order?.items || [];
+
+    if (!items.length) return null;
+
     return (
         <View style={styles.container}>
-            {/* Header Section */}
             <View style={styles.headerRow}>
-                {/* <MaterialCommunityIcons
-                    name="package-variant"
-                    size={24}
-                    color="#a16207"
-                /> */}
                 <Text style={styles.headerTitle}>
                     📦 {"  "}Select Item to Refund
                 </Text>
             </View>
 
-            {/* Selected Item Card */}
-            <TouchableOpacity style={[styles.itemCard, styles.selectedCard]}>
-                <View style={styles.imagePlaceholder}>
-                    <MaterialCommunityIcons
-                        name="radio"
-                        size={32}
-                        color="#a16207"
-                    />
-                </View>
+            {items.map((item, index) => {
+                const isSelected = selectedIndex === index;
+                const deliveredDate = order?.deliveredAt
+                    ? new Date(order.deliveredAt).toLocaleDateString("en-IN", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                      })
+                    : null;
 
-                <View style={styles.detailsContainer}>
-                    <Text style={styles.productName}>
-                        Baofeng UV-5R Dual Band Radio
-                    </Text>
-                    <Text style={styles.orderInfo}>
-                        Order #BF-20251102 · Qty: 1
-                    </Text>
+                return (
+                    <TouchableOpacity
+                        key={item.listingId || index}
+                        style={[
+                            styles.itemCard,
+                            isSelected && styles.selectedCard,
+                        ]}
+                        onPress={() => setSelectedIndex(index)}
+                    >
+                        <View style={styles.imagePlaceholder}>
+                            {item.mainImageUrl ? (
+                                <Image
+                                    source={{ uri: item.mainImageUrl }}
+                                    style={styles.itemImage}
+                                    resizeMode="contain"
+                                />
+                            ) : (
+                                <MaterialCommunityIcons
+                                    name="radio"
+                                    size={32}
+                                    color="#a16207"
+                                />
+                            )}
+                        </View>
 
-                    <View style={styles.statusBadge}>
-                        <View style={styles.dot} />
-                        <Text style={styles.statusText}>
-                            Delivered 3 days ago
-                        </Text>
-                    </View>
+                        <View style={styles.detailsContainer}>
+                            <Text style={styles.productName} numberOfLines={2}>
+                                {item.productName}
+                            </Text>
+                            <Text style={styles.orderInfo}>
+                                Order #{order?.orderNumber} · Qty:{" "}
+                                {item.quantity}
+                            </Text>
 
-                    <Text style={styles.priceText}>₹2,499</Text>
-                </View>
+                            {deliveredDate && (
+                                <View style={styles.statusBadge}>
+                                    <View style={styles.dot} />
+                                    <Text style={styles.statusText}>
+                                        Delivered {deliveredDate}
+                                    </Text>
+                                </View>
+                            )}
 
-                {/* Checkmark Indicator */}
-                <View style={styles.checkCircle}>
-                    <MaterialCommunityIcons
-                        name="check"
-                        size={16}
-                        color="#fff"
-                    />
-                </View>
-            </TouchableOpacity>
+                            <Text style={styles.priceText}>
+                                ₹{item.unitPrice?.toLocaleString("en-IN")}
+                            </Text>
+                        </View>
 
-            {/* Unselected Item Card */}
-            <TouchableOpacity style={styles.itemCard}>
-                <View style={styles.imagePlaceholder}>
-                    <MaterialCommunityIcons
-                        name="radio"
-                        size={30}
-                        color="#a16207"
-                    />
-                </View>
-
-                <View style={styles.detailsContainer}>
-                    <Text style={styles.productName}>
-                        Baofeng UV-5R Dual Band Radio
-                    </Text>
-                    <Text style={styles.orderInfo}>
-                        Order #BF-20251102 · Qty: 1
-                    </Text>
-
-                    <View style={styles.statusBadge}>
-                        <View style={styles.dot} />
-                        <Text style={styles.statusText}>
-                            Delivered 3 days ago
-                        </Text>
-                    </View>
-
-                    <Text style={styles.priceText}>₹2,499</Text>
-                </View>
-            </TouchableOpacity>
+                        {isSelected && (
+                            <View style={styles.checkCircle}>
+                                <MaterialCommunityIcons
+                                    name="check"
+                                    size={16}
+                                    color="#fff"
+                                />
+                            </View>
+                        )}
+                    </TouchableOpacity>
+                );
+            })}
         </View>
     );
 };
@@ -109,16 +111,16 @@ const styles = StyleSheet.create({
         color: "#0f172a",
     },
     itemCard: {
-        backgroundColor: "#f8fbff", // Suble blue background for items
+        backgroundColor: "#f8fbff",
         borderRadius: 20,
         padding: 16,
         flexDirection: "row",
-        marginBottom: 16,
+        marginBottom: 12,
         borderWidth: 2,
         borderColor: "transparent",
     },
     selectedCard: {
-        borderColor: "#0071bc", // Blue border for selected state
+        borderColor: "#0071bc",
     },
     imagePlaceholder: {
         width: 65,
@@ -128,6 +130,11 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         marginRight: 16,
+        overflow: "hidden",
+    },
+    itemImage: {
+        width: "100%",
+        height: "100%",
     },
     detailsContainer: {
         flex: 1,
@@ -146,7 +153,7 @@ const styles = StyleSheet.create({
     statusBadge: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#fff7ed", // Light orange badge
+        backgroundColor: "#fff7ed",
         alignSelf: "flex-start",
         paddingHorizontal: 8,
         paddingVertical: 4,
@@ -172,12 +179,12 @@ const styles = StyleSheet.create({
     },
     checkCircle: {
         position: "absolute",
-        bottom: 16,
+        bottom: 12,
         right: 16,
         width: 24,
         height: 24,
         borderRadius: 12,
-        backgroundColor: "#0071bc", // Blue check indicator
+        backgroundColor: "#0071bc",
         justifyContent: "center",
         alignItems: "center",
     },

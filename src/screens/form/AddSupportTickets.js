@@ -79,7 +79,7 @@ const DropdownModal = ({
     </Modal>
 );
 
-const AddAddress = ({ navigation, route }) => {
+const AddSupportTickets = ({ navigation, route }) => {
     const onSaved = route?.params?.onSaved;
 
     // ── Form state ─────────────────────────────────────────────
@@ -103,7 +103,7 @@ const AddAddress = ({ navigation, route }) => {
     // ── Data state ─────────────────────────────────────────────
     const [countries, setCountries] = useState([]);
     const [states, setStates] = useState([]);
-    const [loadingCountries, setLoadingCountries] = useState(true);
+    const [loadingCountries, setLoadingCountries] = useState(false);
     const [loadingStates, setLoadingStates] = useState(false);
 
     // ── Pincode state ──────────────────────────────────────────
@@ -115,132 +115,8 @@ const AddAddress = ({ navigation, route }) => {
     const [stateModal, setStateModal] = useState(false);
     const [saving, setSaving] = useState(false);
 
-    // ── Fetch countries on mount ───────────────────────────────
-    useEffect(() => {
-        fetchCountries();
-    }, []);
-
-    const fetchCountries = async () => {
-        try {
-            setLoadingCountries(true);
-            const res = await getCountries();
-            if (res?.success && res?.data?.records) {
-                setCountries(res.data.records);
-                // Auto-select if only one country
-                if (res.data.records.length === 1) {
-                    handleCountrySelect(res.data.records[0]);
-                }
-            }
-        } catch (err) {
-            console.error("fetchCountries error:", err);
-        } finally {
-            setLoadingCountries(false);
-        }
-    };
-
-    const handleCountrySelect = async (country) => {
-        setSelectedCountry(country);
-        setSelectedState(null);
-        setStates([]);
-        try {
-            setLoadingStates(true);
-            const res = await getStatesByCountry(country._id);
-            if (res?.success && Array.isArray(res?.data)) {
-                setStates(res.data);
-            }
-        } catch (err) {
-            console.error("fetchStates error:", err);
-        } finally {
-            setLoadingStates(false);
-        }
-    };
-
-    // ── Pincode check ──────────────────────────────────────────
-    const handlePincodeCheck = async (pin) => {
-        if (pin.length !== 6) return;
-        try {
-            setPincodeLoading(true);
-            setPincodeResult(null);
-            const res = await checkPincode(pin);
-            if (res?.success) setPincodeResult(res.data);
-        } catch {
-            // silent fail
-        } finally {
-            setPincodeLoading(false);
-        }
-    };
-
     const setField = (key, value) =>
         setForm((prev) => ({ ...prev, [key]: value }));
-
-    // ── Validate & Save ────────────────────────────────────────
-    const handleSave = async () => {
-        if (!form.firstName.trim())
-            return Alert.alert("Required", "Please enter first name.");
-        if (!form.phone.trim())
-            return Alert.alert("Required", "Please enter phone number.");
-        if (!form.addressLine1.trim())
-            return Alert.alert("Required", "Please enter address line 1.");
-        if (!form.city.trim())
-            return Alert.alert("Required", "Please enter city.");
-        if (!selectedCountry)
-            return Alert.alert("Required", "Please select a country.");
-        if (!selectedState)
-            return Alert.alert("Required", "Please select a state.");
-        if (!form.postalCode.trim())
-            return Alert.alert("Required", "Please enter postal code.");
-
-        try {
-            setSaving(true);
-            const payload = {
-                addressData: {
-                    firstName: form.firstName.trim(),
-                    lastName: form.lastName.trim(),
-                    phone: "+91" + form.phone.trim(),
-                    email: form.email.trim(),
-                    addressLine1: form.addressLine1.trim(),
-                    addressLine2: form.addressLine2.trim(),
-                    area: form.area.trim(),
-                    city: form.city.trim(),
-                    state: {
-                        stateId: selectedState._id,
-                        name: selectedState.name,
-                    },
-                    country: {
-                        countryId: selectedCountry._id,
-                        name: selectedCountry.name,
-                    },
-                    postalCode: form.postalCode.trim(),
-                    gstNumber: form.gstNumber.trim(),
-                    addressType: route?.params?.addressType,
-                    isDefault,
-                },
-                alsoSaveAsBilling,
-            };
-
-            console.log(payload);
-
-            const res = await createAddress(payload);
-            if (res?.success) {
-                Alert.alert("Saved ✓", "Address saved successfully.", [
-                    {
-                        text: "OK",
-                        onPress: () => {
-                            onSaved?.();
-                            navigation.goBack();
-                        },
-                    },
-                ]);
-            } else {
-                Alert.alert("Error", res?.message || "Failed to save address.");
-            }
-        } catch (err) {
-            Alert.alert("Error", "Network error. Please try again.");
-            console.error("createAddress error:", err);
-        } finally {
-            setSaving(false);
-        }
-    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -255,14 +131,14 @@ const AddAddress = ({ navigation, route }) => {
                     showsVerticalScrollIndicator={false}
                 >
                     <View style={styles.card}>
-                        <Text style={styles.title}>Add Address</Text>
+                        <Text style={styles.title}>Open Ticket</Text>
 
                         <View style={styles.formContainer}>
                             {/* Name Row */}
                             <View style={styles.row}>
                                 <View style={{ flex: 1 }}>
                                     <FormField
-                                        label="First Name *"
+                                        label="Name *"
                                         value={form.firstName}
                                         onChangeText={(v) =>
                                             setField("firstName", v)
@@ -270,7 +146,7 @@ const AddAddress = ({ navigation, route }) => {
                                         placeholder=""
                                     />
                                 </View>
-                                <View style={{ flex: 1 }}>
+                                {/* <View style={{ flex: 1 }}>
                                     <FormField
                                         label="Last Name"
                                         value={form.lastName}
@@ -279,9 +155,16 @@ const AddAddress = ({ navigation, route }) => {
                                         }
                                         placeholder=""
                                     />
-                                </View>
+                                </View> */}
                             </View>
-
+                            <FormField
+                                label="Email *"
+                                value={form.email}
+                                onChangeText={(v) => setField("email", v)}
+                                placeholder=""
+                                keyboardType="email-address"
+                                autoCapitalize="none"
+                            />
                             <FormField
                                 label="Phone *"
                                 value={form.phone}
@@ -290,8 +173,9 @@ const AddAddress = ({ navigation, route }) => {
                                 keyboardType="phone-pad"
                                 maxLength={10}
                             />
+
                             <FormField
-                                label="Email"
+                                label="Subject"
                                 value={form.email}
                                 onChangeText={(v) => setField("email", v)}
                                 placeholder=""
@@ -301,9 +185,7 @@ const AddAddress = ({ navigation, route }) => {
 
                             {/* Country Dropdown */}
                             <View>
-                                <Text style={styles.label}>
-                                    Select Country *
-                                </Text>
+                                <Text style={styles.label}>Department *</Text>
                                 {loadingCountries ? (
                                     <SkeletonBox
                                         width="100%"
@@ -323,7 +205,7 @@ const AddAddress = ({ navigation, route }) => {
                                             ]}
                                         >
                                             {selectedCountry?.name ||
-                                                "Select country"}
+                                                "Select department"}
                                         </Text>
                                         <Ionicons
                                             name="chevron-down"
@@ -333,10 +215,10 @@ const AddAddress = ({ navigation, route }) => {
                                     </TouchableOpacity>
                                 )}
                             </View>
-
-                            {/* State Dropdown */}
                             <View>
-                                <Text style={styles.label}>Select State *</Text>
+                                <Text style={styles.label}>
+                                    Related Service *
+                                </Text>
                                 {loadingStates ? (
                                     <SkeletonBox
                                         width="100%"
@@ -364,8 +246,49 @@ const AddAddress = ({ navigation, route }) => {
                                         >
                                             {selectedState?.name ||
                                                 (selectedCountry
-                                                    ? "Select state"
-                                                    : "Select country first")}
+                                                    ? "Select Related Service"
+                                                    : "Select Related Service")}
+                                        </Text>
+                                        <Ionicons
+                                            name="chevron-down"
+                                            size={20}
+                                            color="#64748b"
+                                        />
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+                            {/* State Dropdown */}
+                            <View>
+                                <Text style={styles.label}>Priority *</Text>
+                                {loadingStates ? (
+                                    <SkeletonBox
+                                        width="100%"
+                                        height={50}
+                                        borderRadius={12}
+                                    />
+                                ) : (
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.dropdown,
+                                            !selectedCountry &&
+                                                styles.dropdownDisabled,
+                                        ]}
+                                        onPress={() =>
+                                            selectedCountry &&
+                                            setStateModal(true)
+                                        }
+                                    >
+                                        <Text
+                                            style={[
+                                                styles.dropdownText,
+                                                !selectedState &&
+                                                    styles.placeholder,
+                                            ]}
+                                        >
+                                            {selectedState?.name ||
+                                                (selectedCountry
+                                                    ? "Select Priority"
+                                                    : "Select Priority")}
                                         </Text>
                                         <Ionicons
                                             name="chevron-down"
@@ -377,126 +300,36 @@ const AddAddress = ({ navigation, route }) => {
                             </View>
 
                             <FormField
-                                label="City *"
-                                value={form.city}
-                                onChangeText={(v) => setField("city", v)}
-                                placeholder=""
-                            />
-                            <FormField
-                                label="Area"
-                                value={form.area}
-                                onChangeText={(v) => setField("area", v)}
-                                placeholder=""
-                            />
-                            <FormField
-                                label="Address Line 1 *"
-                                value={form.addressLine1}
-                                onChangeText={(v) =>
-                                    setField("addressLine1", v)
-                                }
-                                placeholder=""
-                            />
-                            <FormField
-                                label="Address Line 2"
+                                label="Message"
                                 value={form.addressLine2}
                                 onChangeText={(v) =>
                                     setField("addressLine2", v)
                                 }
                                 placeholder=""
-                            />
-
-                            {/* Postal Code with inline check */}
-                            <View>
-                                <Text style={styles.label}>
-                                    Zip / Postal Code *
-                                </Text>
-                                <View style={styles.pincodeRow}>
-                                    <TextInput
-                                        style={[
-                                            styles.inputWrapper,
-                                            { flex: 1, marginRight: 8 },
-                                        ]}
-                                        value={form.postalCode}
-                                        onChangeText={(v) => {
-                                            setField("postalCode", v);
-                                            setPincodeResult(null);
-                                            if (v.length === 6)
-                                                handlePincodeCheck(v);
-                                        }}
-                                        placeholder=""
-                                        placeholderTextColor="#94a3b8"
-                                        keyboardType="number-pad"
-                                        maxLength={6}
-                                    />
-                                    {pincodeLoading && (
-                                        <ActivityIndicator
-                                            size="small"
-                                            color="#0069AF"
-                                        />
-                                    )}
-                                </View>
-                                {pincodeResult && (
-                                    <View
-                                        style={[
-                                            styles.pincodeBadge,
-                                            pincodeResult.serviceable
-                                                ? styles.badgeSuccess
-                                                : styles.badgeFail,
-                                        ]}
-                                    >
-                                        <Feather
-                                            name={
-                                                pincodeResult.serviceable
-                                                    ? "check-circle"
-                                                    : "x-circle"
-                                            }
-                                            size={14}
-                                            color={
-                                                pincodeResult.serviceable
-                                                    ? "#16a34a"
-                                                    : "#dc2626"
-                                            }
-                                        />
-                                        <Text
-                                            style={[
-                                                styles.pincodeText,
-                                                {
-                                                    color: pincodeResult.serviceable
-                                                        ? "#16a34a"
-                                                        : "#dc2626",
-                                                },
-                                            ]}
-                                        >
-                                            {pincodeResult.serviceable
-                                                ? `Delivery available${pincodeResult.codAllowed ? " · COD allowed" : " · Prepaid only"}`
-                                                : "Delivery not available for this pincode"}
-                                        </Text>
-                                    </View>
-                                )}
-                            </View>
-
-                            <FormField
-                                label="GST Number (optional)"
-                                value={form.gstNumber}
-                                onChangeText={(v) => setField("gstNumber", v)}
-                                placeholder=""
-                                autoCapitalize="characters"
+                                multiline={true}
+                                numberOfLines={6}
                             />
 
                             {/* Options */}
                             <View style={styles.optionsCard}>
-                                <CheckRow
-                                    label="Set as default address"
-                                    checked={isDefault}
-                                    onToggle={() => setIsDefault(!isDefault)}
-                                />
-                                <CheckRow
-                                    label={`Also save as ${route?.params?.addressType.toLocaleLowerCase()} address`}
-                                    checked={alsoSaveAsBilling}
-                                    onToggle={() =>
-                                        setAlsoSaveAsBilling(!alsoSaveAsBilling)
-                                    }
-                                />
+                                <View
+                                    style={{
+                                        backgroundColor: "#E0F2FE",
+                                        padding: 12,
+                                        paddingHorizontal: 16,
+                                        borderRadius: 10,
+                                        alignSelf: "center",
+                                    }}
+                                >
+                                    <Text
+                                        style={{
+                                            color: "#0284C7",
+                                            fontWeight: "700",
+                                        }}
+                                    >
+                                        Choose File
+                                    </Text>
+                                </View>
                             </View>
                         </View>
 
@@ -504,18 +337,16 @@ const AddAddress = ({ navigation, route }) => {
                             style={[
                                 styles.saveButton,
                                 saving && styles.btnDisabled,
-                                !pincodeResult?.serviceable &&
-                                    styles.btnDisabled,
                             ]}
-                            onPress={handleSave}
-                            disabled={!pincodeResult?.serviceable || saving}
+                            // onPress={handleSave}
+                            disabled={saving}
                             activeOpacity={0.8}
                         >
                             {saving ? (
                                 <ActivityIndicator color="#fff" />
                             ) : (
                                 <Text style={styles.saveButtonText}>
-                                    Save Address
+                                    Submit
                                 </Text>
                             )}
                         </TouchableOpacity>
@@ -529,7 +360,7 @@ const AddAddress = ({ navigation, route }) => {
                 onClose={() => setCountryModal(false)}
                 title="Select Country"
                 data={countries}
-                onSelect={handleCountrySelect}
+                // onSelect={handleCountrySelect}
             />
 
             {/* State Modal */}
@@ -538,22 +369,30 @@ const AddAddress = ({ navigation, route }) => {
                 onClose={() => setStateModal(false)}
                 title="Select State"
                 data={states}
-                onSelect={setSelectedState}
+                // onSelect={setSelectedState}
             />
         </SafeAreaView>
     );
 };
 
 // ── Reusable components ────────────────────────────────────────
-const FormField = ({ label, value, onChangeText, placeholder, ...rest }) => (
+const FormField = ({
+    label,
+    value,
+    onChangeText,
+    placeholder,
+    multiline = false,
+    ...rest
+}) => (
     <View>
         <Text style={styles.label}>{label}</Text>
         <TextInput
-            style={styles.inputWrapper}
+            style={[styles.inputWrapper, multiline && { height: 120 }]}
             value={value}
             onChangeText={onChangeText}
             placeholder={placeholder}
             placeholderTextColor="#94a3b8"
+            multiline={multiline}
             {...rest}
         />
     </View>
@@ -647,8 +486,9 @@ const styles = StyleSheet.create({
         borderRadius: 14,
         padding: 14,
         borderWidth: 1,
-        borderColor: "#e2e8f0",
+        borderColor: "#CBD5E1",
         gap: 12,
+        borderStyle: "dashed",
     },
     checkRow: { flexDirection: "row", alignItems: "center", gap: 10 },
     checkBox: {
@@ -705,4 +545,4 @@ const styles = StyleSheet.create({
     separator: { height: 1, backgroundColor: "#f1f5f9", marginHorizontal: 20 },
 });
 
-export default AddAddress;
+export default AddSupportTickets;

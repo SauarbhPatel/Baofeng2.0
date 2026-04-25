@@ -20,8 +20,13 @@ const DeliveryAddress = ({
                     address={addr}
                     isSelected={selectedAddress?._id === addr._id}
                     onSelect={() => onSelect(addr)}
-                    onEdit={() => {}}
-                    onDelete={() => {}}
+                    onEdit={() => {
+                        navigation.push("EditAddress", {
+                            address: addr,
+                            onSaved: reLoad(),
+                        });
+                    }}
+                    onDelete={() => reLoad()}
                 />
             ))}
 

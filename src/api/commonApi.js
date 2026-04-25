@@ -85,6 +85,10 @@ export const getOrderTracking = (mobile, orderNumber) =>
         `order/orderTracking?mobile=${mobile}&orderNumber=${orderNumber}`,
     );
 
+export const cancelOrder = (payload) => __postApiData("order/cancel", payload);
+
+export const getOrderById = (orderId) => __getApiData(`order/${orderId}`);
+
 // ─── Address ──────────────────────────────────────────────────
 export const getShippingAddresses = () =>
     __getApiData("address/getAllAddress/shipping");
@@ -94,6 +98,11 @@ export const getBillingAddresses = () =>
 
 export const createAddress = (payload) =>
     __postApiData("address/createAddress", payload);
+export const deleteAddress = (addressId) =>
+    __deleteApiData(`address/deleteAddressById/${addressId}`);
+
+export const updateAddress = (addressId, payload) =>
+    __patchApiData(`address/updateAddressById/${addressId}`, payload);
 
 // ─── Jurisdictions ────────────────────────────────────────────
 export const getCountries = () =>
@@ -120,3 +129,15 @@ export const saveUploadedDoc = (payload) =>
 
 // Get all uploaded docs for current consumer
 export const getUploadedDocs = () => __getApiData("consumer/uploadedDocs");
+
+// ─── Return / Exchange ────────────────────────────────────────
+export const getReasons = (reasonType) =>
+    __getApiData(`reason/getAllReasons?reasonType=${reasonType}`);
+
+export const createReturnExchange = (payload) =>
+    __postApiData("returnExchange/create", payload);
+
+export const getAllReturnExchanges = (page = 1, limit = 25) =>
+    __getApiData(
+        `returnExchange/findAll?page=${page}&limit=${limit}&sortBy=createdAt&sortOrder=desc`,
+    );

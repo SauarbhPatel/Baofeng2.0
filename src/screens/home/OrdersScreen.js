@@ -38,6 +38,7 @@ const OrdersScreen = ({ navigation }) => {
             const raw = await AsyncStorage.getItem(AUTH_USER_KEY);
             const user = raw ? JSON.parse(raw) : null;
             const consumerId = user?.id;
+            console.log(consumerId);
             if (!consumerId) {
                 setLoading(false);
                 return;

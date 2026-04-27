@@ -19,6 +19,8 @@ import SellerDetailsScreen from "../screens/details/SellerDetailsScreen";
 import SupportTicketsScreen from "../screens/manage/SupportTicketsScreen";
 import AddSupportTickets from "../screens/form/AddSupportTickets";
 import EditAddress from "../screens/form/EditAddress";
+import MyReturnsScreen from "../screens/manage/MyReturnsScreen";
+import ReturnDetailsScreen from "../screens/details/ReturnDetailsScreen";
 const Stack = createNativeStackNavigator();
 
 export default function MainStackNavigator() {
@@ -82,6 +84,11 @@ export default function MainStackNavigator() {
             <Stack.Screen
                 name="SupportTickets"
                 component={SupportTicketsScreen}
+            />
+            <Stack.Screen name="MyReturns" component={MyReturnsScreen} />
+            <Stack.Screen
+                name="ReturnDetails"
+                component={ReturnDetailsScreen}
             />
 
             {/* Form */}

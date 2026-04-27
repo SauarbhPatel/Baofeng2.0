@@ -14,7 +14,7 @@ const AccountMenu = ({ navigation }) => {
         { id: "3", title: "Address Book", path: "Address" },
         { id: "4", title: "Wishlist", path: "MyWishlist" },
         { id: "5", title: "Followed Sellers", path: "FollowedSellers" },
-        { id: "6", title: "My Returns" },
+        { id: "6", title: "My Returns", path: "MyReturns" },
         { id: "8", title: "Support", path: "SupportTickets" },
         { id: "9", title: "Logout", isDestructive: true },
     ];

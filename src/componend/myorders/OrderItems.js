@@ -3,26 +3,7 @@ import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 
 const OrderItems = ({ items = [] }) => {
     // Mock data structure based on your UI requirements
-    const defaultItems = [
-        {
-            id: "ITM-2602-00104",
-            name: "Sony WH-1000XM5 Wireless Noise Canceling Headphones",
-            variant: "Standard",
-            quantity: 1,
-            price: "₹ 21,177.96",
-            delivery: "Home Delivery",
-            image: "https://via.placeholder.com/100",
-        },
-        {
-            id: "ITM-2602-00105",
-            name: "Rechargeable Battery Pack",
-            variant: "1500mAh",
-            quantity: 1,
-            price: "₹ 1,499.00",
-            delivery: "Home Delivery",
-            image: "https://via.placeholder.com/100",
-        },
-    ];
+    const defaultItems = [];
 
     const displayItems = items.length > 0 ? items : defaultItems;
 

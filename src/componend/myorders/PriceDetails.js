@@ -2,14 +2,14 @@ import React from "react";
 import { StyleSheet, View, Text } from "react-native";
 
 const PriceDetails = ({
-    basePrice = "21,016.10",
+    basePrice = "0",
     coupon = "0",
     discount = "0",
     shipping = "0",
     igst = "0.00",
-    sgst = "1,891.45",
-    cgst = "1,891.45",
-    grandTotal = "24,799",
+    sgst = "0",
+    cgst = "0",
+    grandTotal = "0",
 }) => {
     return (
         <View style={styles.container}>

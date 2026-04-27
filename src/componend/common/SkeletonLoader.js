@@ -184,13 +184,6 @@ export const ProductListingSkeleton = () => (
         />
         {/* Title line 1 */}
         <SkeletonBox width="95%" height={13} borderRadius={6} />
-        {/* Title line 2 */}
-        {/* <SkeletonBox
-            width="70%"
-            height={13}
-            borderRadius={6}
-            style={styles.mt6}
-        /> */}
         {/* Stars row */}
         <SkeletonBox
             width="55%"
@@ -365,7 +358,7 @@ export const SimilarProductSkeleton = () => (
             <SkeletonBox width="45%" height={12} borderRadius={5} />
             <SkeletonBox width="30%" height={10} borderRadius={5} />
         </View>
-        {/* Action row — cart | BUY NOW | heart */}
+        {/* Action row */}
         <SkeletonBox
             width="100%"
             height={28}
@@ -382,30 +375,184 @@ export const CategoryGridSkeleton = () => (
     </View>
 );
 
+// ─── Order Details skeleton ────────────────────────────────────
+// Mirrors: OrderSummaryCard + OrderItems + PriceDetails + Addresses
+
+const OD_Card = ({ children }) => <View style={styles.odCard}>{children}</View>;
+
+const OD_InnerBox = ({ children, style }) => (
+    <View style={[styles.odInnerBox, style]}>{children}</View>
+);
+
+const OD_Grid2 = ({ children, style }) => (
+    <View style={[styles.odGrid2, style]}>{children}</View>
+);
+
+const OD_GridItem = ({ children }) => (
+    <View style={{ flex: 1 }}>{children}</View>
+);
+
+const SK = ({ w = "100%", h = 12, r = 6, style, white = false }) => (
+    <SkeletonBox
+        width={w}
+        height={h}
+        borderRadius={r}
+        style={[white && styles.odWhiteSk, style]}
+    />
+);
+
+const OrderSummaryCardSkeleton = () => (
+    <OD_Card>
+        {/* Header: title + status pill + qr btn */}
+        <View style={styles.odHeaderRow}>
+            <View>
+                <SK w={130} h={18} style={{ marginBottom: 10 }} />
+                <SK w={90} h={26} r={20} />
+            </View>
+            <SkeletonBox width={44} height={44} borderRadius={12} />
+        </View>
+        {/* Details inner box */}
+        <OD_InnerBox>
+            <OD_Grid2>
+                <OD_GridItem>
+                    <SK w="75%" h={10} style={{ marginBottom: 8 }} />
+                    <SK w="90%" h={15} />
+                </OD_GridItem>
+                <OD_GridItem>
+                    <SK w="65%" h={10} style={{ marginBottom: 8 }} />
+                    <SK w="85%" h={15} />
+                </OD_GridItem>
+            </OD_Grid2>
+            <OD_Grid2 style={{ marginTop: 16 }}>
+                <OD_GridItem>
+                    <SK w="55%" h={10} style={{ marginBottom: 8 }} />
+                    <SK w="90%" h={15} />
+                </OD_GridItem>
+                <OD_GridItem>
+                    <SK w="60%" h={10} style={{ marginBottom: 8 }} />
+                    <SK w="80%" h={15} />
+                </OD_GridItem>
+            </OD_Grid2>
+        </OD_InnerBox>
+        {/* Financial inner box */}
+        <OD_InnerBox style={{ marginTop: 10 }}>
+            <OD_Grid2>
+                <OD_GridItem>
+                    <SK w="75%" h={10} style={{ marginBottom: 8 }} />
+                    <SK w="80%" h={15} />
+                </OD_GridItem>
+                <OD_GridItem>
+                    <SK w="45%" h={10} style={{ marginBottom: 8 }} />
+                    <SK w="70%" h={15} />
+                </OD_GridItem>
+            </OD_Grid2>
+            <OD_Grid2 style={{ marginTop: 16 }}>
+                <OD_GridItem>
+                    <SK w="60%" h={10} style={{ marginBottom: 8 }} />
+                    <SK w="75%" h={15} />
+                </OD_GridItem>
+                <OD_GridItem>
+                    <SK w="85%" h={10} style={{ marginBottom: 8 }} />
+                    <SK w="60%" h={15} />
+                </OD_GridItem>
+            </OD_Grid2>
+        </OD_InnerBox>
+    </OD_Card>
+);
+
+const OrderItemsSkeleton = () => (
+    <OD_Card>
+        <SK w={80} h={18} style={{ marginBottom: 18 }} />
+        {[0, 1].map((i) => (
+            <View key={i} style={i === 1 ? styles.odItemSeparator : {}}>
+                {/* Image + name row */}
+                <View style={styles.odItemRow}>
+                    <SkeletonBox width={65} height={65} borderRadius={12} />
+                    <View style={{ flex: 1 }}>
+                        <SK w="90%" h={14} style={{ marginBottom: 6 }} />
+                        <SK w="55%" h={12} />
+                    </View>
+                </View>
+                {/* Detail grid */}
+                <OD_InnerBox>
+                    <OD_Grid2 style={{ marginBottom: 14 }}>
+                        <OD_GridItem>
+                            <SK w="55%" h={10} style={{ marginBottom: 6 }} />
+                            <SK w="80%" h={13} />
+                        </OD_GridItem>
+                        <OD_GridItem>
+                            <SK w="65%" h={10} style={{ marginBottom: 6 }} />
+                            <SK w="40%" h={13} />
+                        </OD_GridItem>
+                    </OD_Grid2>
+                    <OD_Grid2>
+                        <OD_GridItem>
+                            <SK w="65%" h={10} style={{ marginBottom: 6 }} />
+                            <SK w="75%" h={13} />
+                        </OD_GridItem>
+                        <OD_GridItem>
+                            <SK w="60%" h={10} style={{ marginBottom: 6 }} />
+                            <SK w="85%" h={13} />
+                        </OD_GridItem>
+                    </OD_Grid2>
+                </OD_InnerBox>
+            </View>
+        ))}
+    </OD_Card>
+);
+
+const PriceDetailsSkeleton = () => (
+    <View style={[styles.odCard, styles.odBlueCard]}>
+        <SK w={110} h={18} white style={{ marginBottom: 20 }} />
+        {[60, 45, 70, 50, 70, 40].map((w, i) => (
+            <View key={i} style={styles.odPriceRow}>
+                <SK w={`${w}%`} h={13} white />
+                <SK w={60} h={13} white />
+            </View>
+        ))}
+        <View style={styles.odPriceDivider} />
+        <View style={styles.odPriceRow}>
+            <SK w={90} h={17} white />
+            <SK w={80} h={17} white />
+        </View>
+    </View>
+);
+
+const AddressesSkeleton = () => (
+    <OD_Card>
+        <SK w={90} h={18} style={{ marginBottom: 16 }} />
+        {[0, 1, 2].map((i) => (
+            <OD_InnerBox key={i} style={{ marginBottom: 12 }}>
+                <View style={[styles.odItemRow, { marginBottom: 14 }]}>
+                    <SkeletonBox width={36} height={36} borderRadius={10} />
+                    <SK w={110} h={14} />
+                </View>
+                <SK w={120} h={14} style={{ marginBottom: 8 }} />
+                <SK w="90%" h={13} style={{ marginBottom: 6 }} />
+                <SK w="70%" h={13} style={{ marginBottom: 8 }} />
+                <SK w={100} h={12} />
+            </OD_InnerBox>
+        ))}
+    </OD_Card>
+);
+
+export const OrderDetailsSkeleton = () => (
+    <View style={styles.odWrapper}>
+        <OrderSummaryCardSkeleton />
+        <OrderItemsSkeleton />
+        <PriceDetailsSkeleton />
+        <AddressesSkeleton />
+    </View>
+);
+
+// ─── Styles ────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-    // Category
-    categoryCard: {
-        alignItems: "center",
-        marginHorizontal: 8,
-        width: 90,
-    },
-    categoryCircle: {
-        width: 90,
-        height: 90,
-        aspectRatio: 1,
-    },
-    categoryLabel: {
-        marginTop: 10,
-        alignSelf: "center",
-    },
+    // ── Category ───────────────────────────────────────────────
+    categoryCard: { alignItems: "center", marginHorizontal: 8, width: 90 },
+    categoryCircle: { width: 90, height: 90, aspectRatio: 1 },
+    categoryLabel: { marginTop: 10, alignSelf: "center" },
 
-    // Accessory
-    accessoryCard: {
-        width: "48%",
-        marginBottom: 20,
-    },
-
-    // Horizontal product
+    // ── Horizontal product ─────────────────────────────────────
     hCard: {
         width: width * 0.65,
         backgroundColor: "#F1F5F9",
@@ -414,38 +561,27 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
 
-    // Grid product
+    // ── Grid product ───────────────────────────────────────────
     gridCard: {
         width: "48%",
-        // backgroundColor: "#F1F5F9",
         borderRadius: 15,
-        // padding: 10,
         marginBottom: 15,
     },
 
-    // Banner
-    bannerSkeleton: {
-        marginHorizontal: 10,
-        marginBottom: 15,
-    },
+    // ── Banner ─────────────────────────────────────────────────
+    bannerSkeleton: { marginHorizontal: 10, marginBottom: 15 },
 
-    // Order card
+    // ── Order card ─────────────────────────────────────────────
     orderCard: {
         backgroundColor: "#F1F5F9",
         borderRadius: 16,
         padding: 15,
         marginBottom: 12,
     },
-    orderRow: {
-        flexDirection: "row",
-        gap: 12,
-    },
-    orderDetails: {
-        flex: 1,
-        justifyContent: "center",
-    },
+    orderRow: { flexDirection: "row", gap: 12 },
+    orderDetails: { flex: 1, justifyContent: "center" },
 
-    // Product Listing card
+    // ── Product Listing card ───────────────────────────────────
     listingCard: {
         width: "48%",
         backgroundColor: "#fff",
@@ -462,7 +598,7 @@ const styles = StyleSheet.create({
         marginTop: 8,
     },
 
-    // Product Gallery
+    // ── Product Gallery ────────────────────────────────────────
     gallerySkeleton: { marginHorizontal: 10, marginBottom: 15 },
     thumbRow: {
         flexDirection: "row",
@@ -471,11 +607,11 @@ const styles = StyleSheet.create({
         paddingRight: 20,
     },
 
-    // Product Detail
+    // ── Product Detail ─────────────────────────────────────────
     detailSkeleton: { marginHorizontal: 10, marginBottom: 15 },
     btnRow: { flexDirection: "row", justifyContent: "space-between" },
 
-    // Variant
+    // ── Variant ────────────────────────────────────────────────
     variantRow: {
         flexDirection: "row",
         paddingHorizontal: 10,
@@ -484,7 +620,7 @@ const styles = StyleSheet.create({
     },
     variantItem: { alignItems: "center" },
 
-    // Similar product card
+    // ── Similar product ────────────────────────────────────────
     similarCard: {
         width: "48%",
         backgroundColor: "#fff",
@@ -504,7 +640,7 @@ const styles = StyleSheet.create({
         marginTop: 6,
     },
 
-    // Category grid card
+    // ── Category grid card ─────────────────────────────────────
     categoryGridCard: {
         width: "48%",
         height: 180,
@@ -513,9 +649,53 @@ const styles = StyleSheet.create({
         overflow: "hidden",
     },
 
-    // Spacing helpers
+    // ── Spacing helpers ────────────────────────────────────────
     mb10: { marginBottom: 10 },
     mt6: { marginTop: 6 },
     mt8: { marginTop: 8 },
     mt10: { marginTop: 10 },
+    mt15: { marginTop: 15 },
+
+    // ── OrderDetailsSkeleton ───────────────────────────────────
+    odWrapper: { paddingHorizontal: 10, paddingTop: 12, paddingBottom: 30 },
+    odCard: {
+        backgroundColor: "#fff",
+        borderRadius: 20,
+        padding: 15,
+        marginBottom: 14,
+        borderWidth: 1,
+        borderColor: "#EDF1FA",
+    },
+    odBlueCard: { backgroundColor: "#0070ba", borderWidth: 0 },
+    odHeaderRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "flex-start",
+        marginBottom: 20,
+    },
+    odInnerBox: {
+        backgroundColor: "#F8FAFF",
+        borderRadius: 14,
+        padding: 14,
+        marginTop: 12,
+    },
+    odGrid2: { flexDirection: "row", gap: 12 },
+    odItemRow: { flexDirection: "row", gap: 12, marginBottom: 14 },
+    odItemSeparator: {
+        borderTopWidth: 1,
+        borderTopColor: "#F1F5F9",
+        paddingTop: 18,
+        marginTop: 4,
+    },
+    odPriceRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginBottom: 10,
+    },
+    odPriceDivider: {
+        height: 1,
+        backgroundColor: "rgba(255,255,255,0.2)",
+        marginVertical: 14,
+    },
+    odWhiteSk: { backgroundColor: "rgba(255,255,255,0.25)" },
 });

@@ -18,6 +18,7 @@ import ReturnTimeline from "../../componend/myreturn/ReturnTimeline";
 import RefundDetailsBox from "../../componend/myreturn/RefundDetailsBox";
 import PickupAddressBox from "../../componend/myreturn/PickupAddressBox";
 import { getReturnById } from "../../api/commonApi";
+import { ReturnDetailsSkeleton } from "../../componend/common/ReturnSkeletonLoader";
 
 // ── Status color map ───────────────────────────────────────────
 const STATUS_COLORS = {
@@ -68,15 +69,14 @@ const ReturnDetailsScreen = ({ navigation, route }) => {
         fetchDetail();
     }, [fetchDetail]);
 
-    // ── Loading ────────────────────────────────────────────────
+    // ── Skeleton ───────────────────────────────────────────────
     if (loading) {
         return (
             <SafeAreaView style={styles.container}>
                 <MainHeader bgColor="#ffffff" navigation={navigation} />
-                <View style={styles.centerBox}>
-                    <ActivityIndicator size="large" color="#0069AF" />
-                    <Text style={styles.loadingText}>Loading details...</Text>
-                </View>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                    <ReturnDetailsSkeleton />
+                </ScrollView>
             </SafeAreaView>
         );
     }

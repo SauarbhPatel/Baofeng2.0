@@ -2,6 +2,43 @@ import React from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
+// ── Status config map ──────────────────────────────────────────
+const STATUS_CONFIG = {
+    APPROVED: {
+        icon: "check-circle-outline",
+        color: "#00c853",
+        bg: "#f0fff4",
+        border: "#00c853",
+    },
+    PROCESSING: {
+        icon: "clock-outline",
+        color: "#2196f3",
+        bg: "#e3f2fd",
+        border: "#2196f3",
+    },
+    REJECTED: {
+        icon: "close-circle-outline",
+        color: "#f43f5e",
+        bg: "#fff1f2",
+        border: "#f43f5e",
+    },
+    COMPLETED: {
+        icon: "check-decagram-outline",
+        color: "#3B82F6",
+        bg: "#eff6ff",
+        border: "#3B82F6",
+    },
+    CANCELLED: {
+        icon: "cancel",
+        color: "#94a3b8",
+        bg: "#f1f5f9",
+        border: "#94a3b8",
+    },
+};
+
+const getStatusConfig = (status) =>
+    STATUS_CONFIG[status?.toUpperCase()] || STATUS_CONFIG.PROCESSING;
+
 const ReturnDetailsBox = ({
     returnId = "RET-20391",
     orderId = "#ILM-20391",
@@ -10,28 +47,42 @@ const ReturnDetailsBox = ({
     reason = "Product not as described",
     comments = "The product specifications don't match what was shown in the listing. Requesting a full refund.",
 }) => {
+    const statusCfg = getStatusConfig(status);
+
     return (
         <View style={styles.container}>
             {/* Header Section */}
             <View style={styles.header}>
                 <View>
                     <Text style={styles.title}>Return Details</Text>
-                    <Text style={styles.metaText}>
-                        {returnId} • Order: {orderId}
-                    </Text>
                     <Text style={styles.metaText}>{date}</Text>
                 </View>
 
-                {/* Status Badge */}
-                <View style={styles.statusBadge}>
+                {/* Status Badge — dynamic */}
+                <View
+                    style={[
+                        styles.statusBadge,
+                        {
+                            backgroundColor: statusCfg.bg,
+                            borderColor: statusCfg.border,
+                        },
+                    ]}
+                >
                     <MaterialCommunityIcons
-                        name="check-circle-outline"
+                        name={statusCfg.icon}
                         size={14}
-                        color="#00c853"
+                        color={statusCfg.color}
                     />
-                    <Text style={styles.statusText}>{status}</Text>
+                    <Text
+                        style={[styles.statusText, { color: statusCfg.color }]}
+                    >
+                        {status}
+                    </Text>
                 </View>
             </View>
+            <Text style={[styles.metaText, { marginTop: 5, marginBottom: 15 }]}>
+                {returnId} • Order: {orderId}
+            </Text>
 
             {/* Information Box */}
             <View style={styles.infoBox}>
@@ -63,7 +114,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "flex-start",
-        marginBottom: 20,
     },
     title: {
         fontSize: 18,
@@ -80,8 +130,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         borderWidth: 1,
-        borderColor: "#00c853",
-        backgroundColor: "#f0fff4",
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderRadius: 15,
@@ -90,10 +138,9 @@ const styles = StyleSheet.create({
     statusText: {
         fontSize: 12,
         fontWeight: "800",
-        color: "#00c853",
     },
     infoBox: {
-        backgroundColor: "#f0f9ff", // Light blue background
+        backgroundColor: "#f0f9ff",
         borderRadius: 18,
         padding: 16,
     },

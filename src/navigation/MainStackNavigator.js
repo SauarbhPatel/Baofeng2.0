@@ -21,6 +21,7 @@ import AddSupportTickets from "../screens/form/AddSupportTickets";
 import EditAddress from "../screens/form/EditAddress";
 import MyReturnsScreen from "../screens/manage/MyReturnsScreen";
 import ReturnDetailsScreen from "../screens/details/ReturnDetailsScreen";
+import OrderDetailsScreen from "../screens/details/OrderDetailsScreen";
 const Stack = createNativeStackNavigator();
 
 export default function MainStackNavigator() {
@@ -90,6 +91,7 @@ export default function MainStackNavigator() {
                 name="ReturnDetails"
                 component={ReturnDetailsScreen}
             />
+            <Stack.Screen name="OrderDetails" component={OrderDetailsScreen} />
 
             {/* Form */}
             <Stack.Screen name="AddAddress" component={AddAddress} />

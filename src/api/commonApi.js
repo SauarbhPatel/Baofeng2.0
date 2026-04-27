@@ -141,3 +141,11 @@ export const getAllReturnExchanges = (page = 1, limit = 25) =>
     __getApiData(
         `returnExchange/findAll?page=${page}&limit=${limit}&sortBy=createdAt&sortOrder=desc`,
     );
+
+export const getReturnListing = (page = 1, limit = 10) =>
+    __getApiData(
+        `returnExchange/findAll?page=${page}&limit=${limit}&sortBy=createdAt&sortOrder=desc`,
+    );
+
+export const getReturnById = (returnId) =>
+    __getApiData(`returnExchange/findOne/${returnId}`);

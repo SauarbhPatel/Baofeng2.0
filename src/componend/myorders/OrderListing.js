@@ -808,7 +808,17 @@ const OrderItem = ({ order, navigation, onCancelPress }) => {
                     </Text>
                 </View>
                 {order.orderNumber ? (
-                    <Text style={styles.orderIdText}>{order.orderNumber}</Text>
+                    <Text
+                        style={styles.orderIdText}
+                        onPress={() =>
+                            navigation.push("OrderDetails", {
+                                orderId: order._id,
+                                orderNumber: order.orderNumber,
+                            })
+                        }
+                    >
+                        {order.orderNumber}
+                    </Text>
                 ) : null}
             </View>
 

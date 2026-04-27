@@ -2,11 +2,19 @@ import React from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
-const PickupAddressBox = ({
-    name = "Chand Miyan Khan",
-    address = "123 Main Street, Apartment 4B\nMumbai, Maharashtra 400001",
-    phone = "+91 81022267",
-}) => {
+const PickupAddressBox = ({ pickupAddress }) => {
+    const name =
+        [pickupAddress?.firstName, pickupAddress?.lastName]
+            .filter(Boolean)
+            .join(" ") || "—";
+
+    const address =
+        [pickupAddress?.addressLine1, pickupAddress?.addressLine2]
+            .filter(Boolean)
+            .join(", ") || "—";
+
+    const phone = pickupAddress?.phone || "—";
+
     return (
         <View style={styles.container}>
             {/* Section Header with Icon */}
@@ -46,17 +54,14 @@ const styles = StyleSheet.create({
         fontWeight: "800",
         color: "#0f172a",
     },
-    content: {
-        gap: 8,
-    },
+    content: { gap: 0 },
     nameText: {
         fontSize: 15,
         fontWeight: "600",
         color: "#1e293b",
-        marginBottom: 2,
     },
     addressText: {
-        fontSize: 14,
+        fontSize: 13,
         color: "#64748b",
         lineHeight: 22,
     },

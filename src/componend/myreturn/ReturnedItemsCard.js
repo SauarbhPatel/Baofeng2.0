@@ -1,58 +1,37 @@
 import React from "react";
-import { StyleSheet, View, Text, Image, ScrollView } from "react-native";
+import { StyleSheet, View, Text, Image } from "react-native";
 
-const ReturnedItemsCard = () => {
-    // Data modeled from
-    const items = [
-        {
-            id: "1",
-            name: "Baofeng BF-888s Licence Free Walkie Talkie",
-            category: "Licence Free",
-            sku: "BF888S-001",
-            qty: 1,
-            price: "₹3,299",
-            image: "https://via.placeholder.com/80", // Replace with your asset
-        },
-        {
-            id: "2",
-            name: "Rechargeable Battery Pack",
-            category: "1500mAh",
-            sku: "BAT-1500-001",
-            qty: 1,
-            price: "₹1,499",
-            image: "https://via.placeholder.com/80", // Replace with your asset
-        },
-    ];
+const ReturnedItemsCard = ({
+    productName = "—",
+    quantity = 1,
+    sellingPrice = 0,
+    imgUrls = [],
+}) => {
+    const image = imgUrls?.[0] || "https://via.placeholder.com/80";
+    const price = `₹${Number(sellingPrice).toLocaleString("en-IN")}`;
 
     return (
         <View style={styles.mainContainer}>
             <View style={styles.card}>
                 <Text style={styles.title}>Returned Items</Text>
 
-                {items.map((item) => (
-                    <View key={item.id} style={styles.itemContainer}>
-                        <Image
-                            source={{ uri: item.image }}
-                            style={styles.productImage}
-                        />
-                        <View style={styles.detailsContainer}>
-                            <Text style={styles.productName} numberOfLines={2}>
-                                {item.name}
-                            </Text>
-                            <Text style={styles.skuText}>
-                                {item.category} • SKU: {item.sku}
-                            </Text>
-                            <View style={styles.priceRow}>
-                                <Text style={styles.qtyText}>
-                                    Qty: {item.qty}
-                                </Text>
-                                <Text style={styles.priceText}>
-                                    {item.price}
-                                </Text>
-                            </View>
+                <View style={styles.itemContainer}>
+                    <Image
+                        source={{ uri: image }}
+                        style={styles.productImage}
+                        resizeMode="contain"
+                    />
+                    <View style={styles.detailsContainer}>
+                        <Text style={styles.productName} numberOfLines={2}>
+                            {productName}
+                        </Text>
+                        <Text style={styles.skuText}>Qty: {quantity}</Text>
+                        <View style={styles.priceRow}>
+                            <Text style={styles.qtyText}>× {quantity}</Text>
+                            <Text style={styles.priceText}>{price}</Text>
                         </View>
                     </View>
-                ))}
+                </View>
             </View>
         </View>
     );
@@ -76,7 +55,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     itemContainer: {
-        backgroundColor: "#f8fafc", // Light-blue tinted inner box
+        backgroundColor: "#f8fafc",
         borderRadius: 20,
         padding: 12,
         flexDirection: "row",

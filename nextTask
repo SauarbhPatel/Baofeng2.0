@@ -1,112 +1,186 @@
-In Order List We have a button Called "Return / Exchange" , when we click on it navigate to "RefundRequestScreen" screen
-
-we have a select input make it "RETURN,EXCHANGE" based on this select a resion input will dynamic
-Get -
-https://consumerapi.baofengradios.co.in/reason/getAllReasons?reasonType=RETURN
-
-Get
-https://consumerapi.baofengradios.co.in/reason/getAllReasons?reasonType=EXCHANGE
+check latest code , we have a screen MyReturnsScreen 
+Get 
+https://consumerapi.baofengradios.co.in/returnExchange/findAll?page=1&limit=10&sortBy=createdAt&sortOrder=desc
+thi is api for get listing of Return  (use SkeletonLoader and also use pagination when we go down then load new Data )
 
 response {
-"success": true,
-"message": "Request successful",
-"data": [
-{
-"id": "69e9d393a8fd00b0cf033ae4",
-"companyId": "695f53ac419fb9b375867a1b",
-"reasonType": "RETURN",
-"reason": "Customer changed mind",
-"createdAt": "2026-04-23T08:08:51.072Z",
-"updatedAt": "2026-04-23T08:08:51.072Z"
+    "success": true,
+    "message": "Request successful",
+    "data": {
+        "records": [
+            {
+                "_id": "69ec676bd2457e874d0a8160",
+                "companyId": "695f53ac419fb9b375867a1b",
+                "consumer": {
+                    "consumerId": "69b7961d0ecd2a715da648a6",
+                    "consumerName": "Testing Page"
+                },
+                "returnNumber": "RET-11352664",
+                "reason": {
+                    "reasonId": "69e9d393a8fd00b0cf033ae4",
+                    "reasonName": "Customer changed mind"
+                },
+                "order": {
+                    "orderId": "69e9f5c29158a970c4a61bbf",
+                    "orderNumber": "ORD20260400054"
+                },
+                "returnExchangeWorkflow": {
+                    "returnExchangeWorkflowId": "69dcdb9059f31047b812aa79",
+                    "returnExchangeWorkflowName": "Standard refund path"
+                },
+                "product": {
+                    "productId": "69dcd648b096799f19ff2879",
+                    "productName": "Baofeng MP31 (pack-1)",
+                    "sellingPrice": 3499,
+                    "quantity": 1
+                },
+                "returnExchangeStatus": "PROCESSING",
+                "description": "test",
+                "requestFor": "RETURN",
+                "refundMethod": "UPI",
+                "pickupAddress": {
+                    "firstName": "Mohammad",
+                    "lastName": "Shyan",
+                    "addressLine1": "Gurugram",
+                    "addressLine2": "Spaze IT Park, U-Block-90, Sohna Road",
+                    "phone": "+919012826262"
+                },
+                "bankDetails": null,
+                "upi": "7894561230@ybl",
+                "media": {
+                    "imgUrls": [
+                        "https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69b7961d0ecd2a715da648a6/image_1777100650737_00f52ab6-1066-490d-a76e-902588cac4ae.webp"
+                    ],
+                    "videoUrls": []
+                },
+                "createdAt": "2026-04-25T07:04:11.147Z",
+                "updatedAt": "2026-04-25T07:04:11.147Z",
+                "__v": 0
+            },
+        
+            {
+                "_id": "69e87a68506775270ee454c6",
+                "companyId": "695f53ac419fb9b375867a1b",
+                "returnNumber": "RET-82598888",
+                "reason": {
+                    "reasonId": "69da3b9e9474961768b26a23",
+                    "reasonName": "Ordered wrong item"
+                },
+                "order": {
+                    "orderId": "69e85b8b7accd0845a01a517",
+                    "orderNumber": "ORD20260400042"
+                },
+                "consumer": {
+                    "consumerId": "69b7961d0ecd2a715da648a6",
+                    "consumerName": "Testing Page"
+                },
+                "returnExchangeWorkflow": {
+                    "returnExchangeWorkflowId": "69dcdb9059f31047b812aa79",
+                    "returnExchangeWorkflowName": "Standard refund path"
+                },
+                "product": {
+                    "productId": "69dce5e85c533d896a46ca3e",
+                    "productName": "BF-88ST (pack-1)",
+                    "sellingPrice": 100,
+                    "quantity": 2
+                },
+                "pickupAddress": {
+                    "firstName": "string",
+                    "lastName": "string",
+                    "addressLine1": "string",
+                    "addressLine2": "string",
+                    "phone": "string"
+                },
+                "bankDetails": {
+                    "accountNumber": "Testing Page",
+                    "accountName": "Testing Page",
+                    "ifscCode": "SBIN0001234"
+                },
+                "upi": null,
+                "refundMethod": "BANK",
+                "returnExchangeStatus": "APPROVED",
+                "description": "string",
+                "imgUrls": [
+                    "https://cdn.example.com/return-photo-1.jpg"
+                ],
+                "requestFor": "RETURN",
+                "createdAt": "2026-04-22T07:36:08.261Z",
+                "updatedAt": "2026-04-22T07:36:08.261Z",
+                "__v": 0
+            }
+        ],
+        "pagination": {
+            "total": 5,
+            "page": 1,
+            "limit": 10,
+            "totalPages": 1
+        }
+    },
+    "meta": {
+        "timestamp": "2026-04-27T06:16:44.374Z",
+        "path": "/returnExchange/findAll?page=1&limit=10&sortBy=createdAt&sortOrder=desc"
+    }
 }
-],
-"meta": {
-"timestamp": "2026-04-25T06:49:10.011Z",
-"path": "/reason/getAllReasons?reasonType=RETURN"
-}
-}
-and we have Refund Method \* (it will show if user select type return)
-if user click on Back Transfer
 
-show input filds (lable or card -Bank details for refund(Account number _ ,Account holder name \*,IFSC code _))
+ReturnDetailsScreen 
+Get - https://consumerapi.baofengradios.co.in/returnExchange/findOne/69ec676bd2457e874d0a8160
 
-if user click on Upi wallet
-show input filds (UPI ID \*)
-
-https://consumerapi.baofengradios.co.in/returnExchange/create
-
-payload {"reason":{"reasonId":"69e9d393a8fd00b0cf033ae4","reasonName":"Customer changed mind"},"order":{"orderId":"69e9f5c29158a970c4a61bbf","orderNumber":"ORD20260400054"},"refundMethod":"UPI","returnExchangeWorkflow":{"returnExchangeWorkflowId":"69dcdb9059f31047b812aa79","returnExchangeWorkflowName":"Standard refund path"},"product":{"productId":"69dcd648b096799f19ff2879","productName":"Baofeng MP31 (pack-1)","sellingPrice":3499,"quantity":1},"description":"test","requestFor":"RETURN","pickupAddress":{"firstName":"Mohammad","lastName":"Shyan","addressLine1":"Gurugram","addressLine2":"Spaze IT Park, U-Block-90, Sohna Road","phone":"+919012826262"},"media":{"imgUrls":["https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69b7961d0ecd2a715da648a6/image_1777100650737_00f52ab6-1066-490d-a76e-902588cac4ae.webp"],"videoUrls":[]},"upi":"7894561230@ybl"}
-
-for bankaccount replace upi to "bankDetails": {
-"accountNumber": "string",
-"accountName": "string",
-"ifscCode": "SBIN0001234"
-},
-
-for echange remove upi and bankDetails
-
-respose {
-"success": true,
-"message": "Request successful",
-"data": {
-"companyId": "695f53ac419fb9b375867a1b",
-"consumer": {
-"consumerId": "69b7961d0ecd2a715da648a6",
-"consumerName": "Testing Page"
-},
-"returnNumber": "RET-11352664",
-"reason": {
-"reasonId": "69e9d393a8fd00b0cf033ae4",
-"reasonName": "Customer changed mind"
-},
-"order": {
-"orderId": "69e9f5c29158a970c4a61bbf",
-"orderNumber": "ORD20260400054"
-},
-"returnExchangeWorkflow": {
-"returnExchangeWorkflowId": "69dcdb9059f31047b812aa79",
-"returnExchangeWorkflowName": "Standard refund path"
-},
-"product": {
-"productId": "69dcd648b096799f19ff2879",
-"productName": "Baofeng MP31 (pack-1)",
-"sellingPrice": 3499,
-"quantity": 1
-},
-"returnExchangeStatus": "PROCESSING",
-"description": "test",
-"requestFor": "RETURN",
-"refundMethod": "UPI",
-"pickupAddress": {
-"firstName": "Mohammad",
-"lastName": "Shyan",
-"addressLine1": "Gurugram",
-"addressLine2": "Spaze IT Park, U-Block-90, Sohna Road",
-"phone": "+919012826262"
-},
-"bankDetails": null,
-"upi": "7894561230@ybl",
-"media": {
-"imgUrls": [
-"https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69b7961d0ecd2a715da648a6/image_1777100650737_00f52ab6-1066-490d-a76e-902588cac4ae.webp"
-],
-"videoUrls": []
-},
-"\_id": "69ec676bd2457e874d0a8160",
-"createdAt": "2026-04-25T07:04:11.147Z",
-"updatedAt": "2026-04-25T07:04:11.147Z",
-"\_\_v": 0
-},
-"meta": {
-"timestamp": "2026-04-25T07:04:11.151Z",
-"path": "/returnExchange/create"
-}
+response {
+    "success": true,
+    "message": "Request successful",
+    "data": {
+        "_id": "69ec676bd2457e874d0a8160",
+        "companyId": "695f53ac419fb9b375867a1b",
+        "consumer": {
+            "consumerId": "69b7961d0ecd2a715da648a6",
+            "consumerName": "Testing Page"
+        },
+        "returnNumber": "RET-11352664",
+        "reason": {
+            "reasonId": "69e9d393a8fd00b0cf033ae4",
+            "reasonName": "Customer changed mind"
+        },
+        "order": {
+            "orderId": "69e9f5c29158a970c4a61bbf",
+            "orderNumber": "ORD20260400054"
+        },
+        "returnExchangeWorkflow": {
+            "returnExchangeWorkflowId": "69dcdb9059f31047b812aa79",
+            "returnExchangeWorkflowName": "Standard refund path"
+        },
+        "product": {
+            "productId": "69dcd648b096799f19ff2879",
+            "productName": "Baofeng MP31 (pack-1)",
+            "sellingPrice": 3499,
+            "quantity": 1
+        },
+        "returnExchangeStatus": "PROCESSING",
+        "description": "test",
+        "requestFor": "RETURN",
+        "refundMethod": "UPI",
+        "pickupAddress": {
+            "firstName": "Mohammad",
+            "lastName": "Shyan",
+            "addressLine1": "Gurugram",
+            "addressLine2": "Spaze IT Park, U-Block-90, Sohna Road",
+            "phone": "+919012826262"
+        },
+        "bankDetails": null,
+        "upi": "7894561230@ybl",
+        "media": {
+            "imgUrls": [
+                "https://baofengradios.s3.ap-south-1.amazonaws.com/consumers/69b7961d0ecd2a715da648a6/image_1777100650737_00f52ab6-1066-490d-a76e-902588cac4ae.webp"
+            ],
+            "videoUrls": []
+        },
+        "createdAt": "2026-04-25T07:04:11.147Z",
+        "updatedAt": "2026-04-25T07:04:11.147Z",
+        "__v": 0
+    },
+    "meta": {
+        "timestamp": "2026-04-27T06:21:02.815Z",
+        "path": "/returnExchange/findOne/69ec676bd2457e874d0a8160"
+    }
 }
 
----
-
-https://consumerapi.baofengradios.co.in/order/69d64b3ddadbc1c070026cfe
-
-this is a api to get order Details
-
-and https://consumerapi.baofengradios.co.in/returnExchange/findAll?page=1&limit=25&sortBy=createdAt&sortOrder=desc this is a api where all return comes , so first check here if order avilable in this then navigate to ReturnDetails(this pages not made currentyle bui i will make , just add navigation for now )
+use that scrren componend to show Data 

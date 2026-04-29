@@ -51,8 +51,8 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
     const { slug, listingId, pickupPointId } = route?.params?.product || {};
 
     useEffect(() => {
+        console.log({ slug, listingId, pickupPointId });
         if (slug && listingId) {
-            console.log(slug, listingId, pickupPointId);
             fetchProduct(slug, listingId, pickupPointId);
         }
     }, [slug, listingId, pickupPointId]);
@@ -107,12 +107,12 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
     };
 
     const HOME_SECTIONS = [
-        { id: "ProductGallery", type: "ProductGallery" },
-        { id: "ProductDetail", type: "ProductDetail" },
-        { id: "VariantCard", type: "VariantCard" },
-        { id: "LicenceNote", type: "LicenceNote" },
-        { id: "MustRead", type: "MustRead" },
-        { id: "ProductTabs", type: "ProductTabs" },
+        // { id: "ProductGallery", type: "ProductGallery" },
+        // { id: "ProductDetail", type: "ProductDetail" },
+        // { id: "VariantCard", type: "VariantCard" },
+        // { id: "LicenceNote", type: "LicenceNote" },
+        // { id: "MustRead", type: "MustRead" },
+        // { id: "ProductTabs", type: "ProductTabs" },
         { id: "SimilarProducts", type: "SimilarProducts" },
         { id: "CustomerReviews", type: "CustomerReviews" },
         { id: "HomeBanner1", type: "HomeBanner1" },
@@ -121,67 +121,6 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
     const renderItem = useCallback(
         ({ item }) => {
             switch (item.type) {
-                case "ProductGallery":
-                    return (
-                        <>
-                            {/* <ProductGallery
-                                mainImageUrl={product?.mainImageUrl}
-                                galleryImageUrls={product?.galleryImageUrls}
-                            /> */}
-                        </>
-                    );
-                case "ProductDetail":
-                    return (
-                        <>
-                            {/* <ProductDetail
-                                product={product}
-                                cartBlocked={needsDocs && !docsReady}
-                                navigation={navigation}
-                                variantCom={
-                                    <VariantCard
-                                        variantAttributes={
-                                            product?.variantAttributes
-                                        }
-                                        onVariantSelect={handleVariantSelect}
-                                        productVariationSlug={
-                                            product?.productVariationSlug
-                                        }
-                                    />
-                                }
-                            /> */}
-                        </>
-                    );
-
-                case "LicenceNote":
-                    return (
-                        <>
-                            {/* {product?.complianceDocuments &&
-                                product?.complianceDocuments?.length > 0 && (
-                                    <LicenceNote
-                                        complianceDocuments={
-                                            product?.complianceDocuments
-                                        }
-                                        onDocsStatusChange={
-                                            handleDocsStatusChange
-                                        }
-                                    />
-                                )} */}
-                        </>
-                    );
-                case "MustRead":
-                    return (
-                        <>
-                            {/* <MustRead bulletPoints={product?.bulletPoints} /> */}
-                        </>
-                    );
-                case "ProductTabs":
-                    return (
-                        <>
-                            {/* <ProductTabs
-                                dynamicSection={product?.dynamicSection}
-                            /> */}
-                        </>
-                    );
                 case "SimilarProducts":
                     return (
                         <>

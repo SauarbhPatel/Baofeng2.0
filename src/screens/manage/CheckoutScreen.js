@@ -30,6 +30,7 @@ const CheckoutScreen = ({ navigation, route }) => {
 
     // ── State ──────────────────────────────────────────────────
     const [loading, setLoading] = useState(true);
+    const [loadingAbendent, setLoadingAbendent] = useState(true);
     const [orderData, setOrderData] = useState(null);
     const [addresses, setAddresses] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);
@@ -79,6 +80,20 @@ const CheckoutScreen = ({ navigation, route }) => {
         }
     };
 
+    // ── Re-fetch order after coupon applied ────────────────────
+    const refreshOrderData = async () => {
+        try {
+            setLoadingAbendent(true);
+            const res = await getAbundantOrder(abundantId);
+            if (res?.success && res?.data) {
+                setOrderData(res.data);
+            }
+            setLoadingAbendent(false);
+        } catch {
+            // silent — billing summary will reflect on next refresh
+        }
+    };
+
     const fetchShippingMethods = async (pincode) => {
         try {
             const res = await getShippingMethods(pincode);
@@ -121,7 +136,6 @@ const CheckoutScreen = ({ navigation, route }) => {
             const payload = {
                 shippingAddressId: selectedAddress._id,
                 shippingMethodId: selectedShipping.id,
-                shippingFee: selectedShipping.charges?.codFee || 0,
                 paymentMethodId: selectedPayment._id,
                 estimatedDeliveryText: selectedShipping.shippingMethodName,
             };
@@ -266,12 +280,21 @@ const CheckoutScreen = ({ navigation, route }) => {
                     onSelect={setSelectedPayment}
                 />
                 <OrderReviewHeader orderData={orderData} />
-                <DiscountCodes />
+                <DiscountCodes
+                    abundantId={abundantId}
+                    shippingMethodId={
+                        selectedShipping?.id || selectedShipping?._id || ""
+                    }
+                    paymentMethodId={selectedPayment?._id || ""}
+                    onCouponApplied={refreshOrderData}
+                    setLoadingAbendent={setLoadingAbendent}
+                />
                 <BillingSummary
                     orderData={orderData}
                     selectedShipping={selectedShipping}
                     onPlaceOrder={handlePlaceOrder}
                     placingOrder={placingOrder}
+                    loadingAbendent={loadingAbendent}
                 />
             </ScrollView>
         </SafeAreaView>

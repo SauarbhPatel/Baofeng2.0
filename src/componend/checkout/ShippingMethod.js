@@ -194,7 +194,9 @@ const ShippingMethod = ({
                                 {isActive && <View style={styles.radioInner} />}
                             </View>
                             <Text style={styles.priceText}>
-                                ₹{method.charges?.codFee || 0}
+                                ₹
+                                {method.charges?.perKgCharge +
+                                    method.charges?.remoteAreaSurcharge}
                             </Text>
                             <View style={styles.logoContainer}>
                                 {method.image ? (

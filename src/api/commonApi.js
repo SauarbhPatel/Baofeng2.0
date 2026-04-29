@@ -80,6 +80,14 @@ export const placeOrder = (orderId, payload) =>
 export const verifyRazorpayPayment = (orderId, payload) =>
     __postApiData(`order/${orderId}/verify-razorpay-payment`, payload);
 
+export const getAllCoupons = (page = 1, limit = 10) =>
+    __getApiData(
+        `coupon/getAllCoupons?sortBy=createdAt&sortOrder=desc&page=${page}&limit=${limit}`,
+    );
+
+export const syncCheckout = (payload) =>
+    __postApiData("checkout/sync", payload);
+
 export const getOrderListing = (consumerId) =>
     __getApiData(`order/myOrderListing/${consumerId}`);
 export const getOrderTracking = (mobile, orderNumber) =>

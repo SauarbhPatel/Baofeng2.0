@@ -42,6 +42,7 @@ const CartScreen = ({ navigation }) => {
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingTop: 15 }}
+                keyboardShouldPersistTaps="handled"
                 refreshControl={
                     <RefreshControl
                         refreshing={false}
@@ -62,7 +63,7 @@ const CartScreen = ({ navigation }) => {
                 {/* Only show coupon + summary when there are items */}
                 {!isEmpty && !loading && (
                     <>
-                        <CouponInput />
+                        {/* <CouponInput /> */}
                         <CartSummary
                             navigation={navigation}
                             cartItems={cartItems}

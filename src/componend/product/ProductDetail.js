@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
     View,
     Text,
@@ -49,6 +49,7 @@ const ProductDetail = ({
         stock = 0,
         isInStock = false,
         productId = "",
+        reviews,
     } = product;
 
     const { unitSellingPrice = 0, unitMrp = 0, listingMongoId = "" } = listing;
@@ -115,6 +116,10 @@ const ProductDetail = ({
                 }
             } else {
                 // Add to wishlist
+                console.log({
+                    listingId: listingBusinessId,
+                    productId: productBusinessId,
+                });
                 const res = await addToWishlist({
                     listingId: listingBusinessId,
                     productId: productBusinessId,
@@ -160,6 +165,29 @@ const ProductDetail = ({
         }
     };
 
+    // ── reviews ───────────────────────────────────────────
+    const summary = useMemo(() => {
+        if (!reviews.length) return { avg: 0, total: 0 };
+        const total = reviews.length;
+        const sum = reviews.reduce((acc, r) => acc + (r.rating || 0), 0);
+        const avg = (sum / total).toFixed(1);
+
+        return { avg, total };
+    }, [reviews]);
+
+    const StarRow = ({ rating, size = 16 }) => (
+        <>
+            {[1, 2, 3, 4, 5].map((s) => (
+                <MaterialCommunityIcons
+                    key={s}
+                    name={s <= rating ? "star" : "star-outline"}
+                    size={size}
+                    color={s <= rating ? "#FFC107" : "#E5E7EB"}
+                />
+            ))}
+        </>
+    );
+
     return (
         <View style={styles.container}>
             {/* ── Wishlist Heart Button ── */}
@@ -200,18 +228,11 @@ const ProductDetail = ({
 
             {/* Ratings */}
             <View style={styles.ratingRow}>
-                {[1, 2, 3, 4, 5].map((star) => (
-                    <MaterialCommunityIcons
-                        key={star}
-                        name="star-outline"
-                        size={20}
-                        color="#FFC107"
-                    />
-                ))}
+                <StarRow rating={summary?.avg} size={20} />
+                <Text style={styles.productDescription}>
+                    {"  "} {summary?.avg}/5 • {summary?.total} ratings
+                </Text>
             </View>
-            <Text style={styles.productDescription}>
-                4.8/5 • 1,240 ratings • 88 review photos
-            </Text>
 
             {/* Price Row */}
             <LinearGradient

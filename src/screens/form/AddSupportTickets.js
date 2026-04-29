@@ -1,10 +1,641 @@
+// import React, { useState, useEffect } from "react";
+// import {
+//     StyleSheet,
+//     ScrollView,
+//     SafeAreaView,
+//     View,
+//     Text,
+//     TextInput,
+//     TouchableOpacity,
+//     Modal,
+//     FlatList,
+//     ActivityIndicator,
+//     Alert,
+//     KeyboardAvoidingView,
+//     Platform,
+// } from "react-native";
+// import { Feather, Ionicons } from "@expo/vector-icons";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
+// import * as ImagePicker from "expo-image-picker";
+// import * as DocumentPicker from "expo-document-picker";
+// import MainHeader from "../../componend/common/MainHeader";
+// import { createSupportTicket, uploadFilesToS3 } from "../../api/commonApi";
+
+// const AUTH_USER_KEY = "baofeng_auth_user";
+
+// const DEPARTMENTS = [
+//     { label: "Support", value: "SUPPORT" },
+//     { label: "Billing", value: "BILLING" },
+//     { label: "Technical", value: "TECHNICAL" },
+// ];
+// const PRIORITIES = [
+//     { label: "High", value: "HIGH" },
+//     { label: "Medium", value: "MEDIUM" },
+//     { label: "Low", value: "LOW" },
+// ];
+
+// // ── Dropdown Modal ─────────────────────────────────────────────
+// const DropdownModal = ({
+//     visible,
+//     onClose,
+//     title,
+//     items,
+//     selected,
+//     onSelect,
+// }) => (
+//     <Modal
+//         visible={visible}
+//         transparent
+//         animationType="fade"
+//         onRequestClose={onClose}
+//     >
+//         <View style={s.modalOverlay}>
+//             <View style={s.modalSheet}>
+//                 <View style={s.modalHeader}>
+//                     <Text style={s.modalTitle}>{title}</Text>
+//                     <TouchableOpacity onPress={onClose}>
+//                         <Ionicons name="close" size={24} color="#64748b" />
+//                     </TouchableOpacity>
+//                 </View>
+//                 <FlatList
+//                     data={items}
+//                     keyExtractor={(item) => item.value}
+//                     renderItem={({ item }) => (
+//                         <TouchableOpacity
+//                             style={s.modalItem}
+//                             onPress={() => {
+//                                 onSelect(item);
+//                                 onClose();
+//                             }}
+//                         >
+//                             <Text style={s.modalItemText}>{item.label}</Text>
+//                             {selected === item.value && (
+//                                 <Ionicons
+//                                     name="checkmark"
+//                                     size={18}
+//                                     color="#0069AF"
+//                                 />
+//                             )}
+//                         </TouchableOpacity>
+//                     )}
+//                     ItemSeparatorComponent={() => <View style={s.separator} />}
+//                 />
+//             </View>
+//         </View>
+//     </Modal>
+// );
+
+// // ── Label + field wrapper ──────────────────────────────────────
+// const Field = ({ label, children }) => (
+//     <View style={s.fieldWrap}>
+//         <Text style={s.label}>{label}</Text>
+//         {children}
+//     </View>
+// );
+
+// const AddSupportTickets = ({ navigation, route }) => {
+//     const onSaved = route?.params?.onSaved;
+
+//     const [form, setForm] = useState({
+//         name: "",
+//         email: "",
+//         phone: "",
+//         subject: "",
+//         message: "",
+//         department: "",
+//         priority: "",
+//     });
+//     const [deptModal, setDeptModal] = useState(false);
+//     const [prioModal, setPrioModal] = useState(false);
+//     const [attachment, setAttachment] = useState(null); // { name, uri, type }
+//     const [uploading, setUploading] = useState(false);
+//     const [saving, setSaving] = useState(false);
+
+//     // ── Load user from AsyncStorage ────────────────────────────
+//     useEffect(() => {
+//         (async () => {
+//             try {
+//                 const raw = await AsyncStorage.getItem(AUTH_USER_KEY);
+//                 if (!raw) return;
+//                 const user = JSON.parse(raw);
+//                 const fullName = [user.firstName, user.lastName]
+//                     .filter(Boolean)
+//                     .join(" ");
+//                 setForm((p) => ({
+//                     ...p,
+//                     name: fullName || p.name,
+//                     email: user.email || p.email,
+//                     phone: user.phoneNumber || p.phone,
+//                 }));
+//             } catch {}
+//         })();
+//     }, []);
+
+//     const set = (key, val) => setForm((p) => ({ ...p, [key]: val }));
+
+//     // ── Pick file / image ──────────────────────────────────────
+//     const pickFile = async () => {
+//         Alert.alert("Attach File", "Choose source", [
+//             {
+//                 text: "Camera",
+//                 onPress: async () => {
+//                     const { status } =
+//                         await ImagePicker.requestCameraPermissionsAsync();
+//                     if (status !== "granted")
+//                         return Alert.alert("Permission denied");
+//                     const res = await ImagePicker.launchCameraAsync({
+//                         quality: 0.8,
+//                     });
+//                     if (!res.canceled && res.assets?.[0]) {
+//                         const a = res.assets[0];
+//                         setAttachment({
+//                             uri: a.uri,
+//                             name: a.fileName || "photo.jpg",
+//                             type: a.mimeType || "image/jpeg",
+//                         });
+//                     }
+//                 },
+//             },
+//             {
+//                 text: "Gallery",
+//                 onPress: async () => {
+//                     const { status } =
+//                         await ImagePicker.requestMediaLibraryPermissionsAsync();
+//                     if (status !== "granted")
+//                         return Alert.alert("Permission denied");
+//                     const res = await ImagePicker.launchImageLibraryAsync({
+//                         quality: 0.8,
+//                     });
+//                     if (!res.canceled && res.assets?.[0]) {
+//                         const a = res.assets[0];
+//                         setAttachment({
+//                             uri: a.uri,
+//                             name: a.fileName || "photo.jpg",
+//                             type: a.mimeType || "image/jpeg",
+//                         });
+//                     }
+//                 },
+//             },
+//             {
+//                 text: "Document",
+//                 onPress: async () => {
+//                     const res = await DocumentPicker.getDocumentAsync({
+//                         type: "*/*",
+//                         copyToCacheDirectory: true,
+//                     });
+//                     if (!res.canceled && res.assets?.[0]) {
+//                         const a = res.assets[0];
+//                         setAttachment({
+//                             uri: a.uri,
+//                             name: a.name,
+//                             type: a.mimeType,
+//                         });
+//                     }
+//                 },
+//             },
+//             { text: "Cancel", style: "cancel" },
+//         ]);
+//     };
+
+//     // ── Upload attachment → return filename ────────────────────
+//     const uploadAttachment = async () => {
+//         if (!attachment) return "";
+//         try {
+//             setUploading(true);
+//             const fd = new FormData();
+//             fd.append("files", {
+//                 uri: attachment.uri,
+//                 name: attachment.name,
+//                 type: attachment.type,
+//             });
+//             const res = await uploadFilesToS3(fd);
+//             if (res?.success && res?.data?.[0]) return res.data[0];
+//             return "";
+//         } catch {
+//             return "";
+//         } finally {
+//             setUploading(false);
+//         }
+//     };
+
+//     // ── Validate & Submit ──────────────────────────────────────
+//     const handleSubmit = async () => {
+//         if (!form.name.trim())
+//             return Alert.alert("Required", "Name is required.");
+//         if (!form.subject.trim())
+//             return Alert.alert("Required", "Subject is required.");
+//         if (!form.message.trim())
+//             return Alert.alert("Required", "Message is required.");
+//         if (!form.department)
+//             return Alert.alert("Required", "Please select a department.");
+//         if (!form.priority)
+//             return Alert.alert("Required", "Please select a priority.");
+
+//         try {
+//             setSaving(true);
+//             const docUrl = await uploadAttachment();
+//             const payload = {
+//                 name: form.name.trim(),
+//                 email: form.email.trim(),
+//                 phone: form.phone.trim(),
+//                 subject: form.subject.trim(),
+//                 department: form.department,
+//                 priority: form.priority,
+//                 message: form.message.trim(),
+//                 document: docUrl,
+//                 status: "OPEN",
+//             };
+//             const res = await createSupportTicket(payload);
+//             if (res?.success) {
+//                 Alert.alert(
+//                     "Success ✓",
+//                     `Ticket ${res.data?.ticketNumber} created.`,
+//                     [
+//                         {
+//                             text: "OK",
+//                             onPress: () => {
+//                                 onSaved?.();
+//                                 navigation.goBack();
+//                             },
+//                         },
+//                     ],
+//                 );
+//             } else {
+//                 Alert.alert(
+//                     "Error",
+//                     res?.message || "Failed to create ticket.",
+//                 );
+//             }
+//         } catch {
+//             Alert.alert("Error", "Network error. Please try again.");
+//         } finally {
+//             setSaving(false);
+//         }
+//     };
+
+//     const selectedDept = DEPARTMENTS.find((d) => d.value === form.department);
+//     const selectedPrio = PRIORITIES.find((p) => p.value === form.priority);
+
+//     return (
+//         <SafeAreaView style={s.container}>
+//             <MainHeader bgColor="#ffffff" navigation={navigation} />
+//             {/* <KeyboardAvoidingView
+//                 behavior={Platform.OS === "ios" ? "padding" : undefined}
+//                 style={{ flex: 1 }}
+//             > */}
+//             <ScrollView
+//                 contentContainerStyle={s.content}
+//                 keyboardShouldPersistTaps="handled"
+//                 showsVerticalScrollIndicator={false}
+//             >
+//                 <View style={s.card}>
+//                     <Text style={s.cardTitle}>Open Ticket</Text>
+
+//                     {/* Name */}
+//                     <Field label="Your Name">
+//                         <TextInput
+//                             style={s.input}
+//                             value={form.name}
+//                             onChangeText={(v) => set("name", v)}
+//                             placeholder="Full name"
+//                             placeholderTextColor="#94a3b8"
+//                         />
+//                     </Field>
+
+//                     {/* Email + Phone row */}
+//                     <View style={s.row}>
+//                         <View style={{ flex: 1 }}>
+//                             <Field label="Email">
+//                                 <TextInput
+//                                     style={s.input}
+//                                     value={form.email}
+//                                     onChangeText={(v) => set("email", v)}
+//                                     placeholder="Email"
+//                                     keyboardType="email-address"
+//                                     autoCapitalize="none"
+//                                     placeholderTextColor="#94a3b8"
+//                                 />
+//                             </Field>
+//                         </View>
+//                         <View style={{ flex: 1 }}>
+//                             <Field label="Phone">
+//                                 <TextInput
+//                                     style={s.input}
+//                                     value={form.phone}
+//                                     onChangeText={(v) => set("phone", v)}
+//                                     placeholder="Phone"
+//                                     keyboardType="phone-pad"
+//                                     placeholderTextColor="#94a3b8"
+//                                 />
+//                             </Field>
+//                         </View>
+//                     </View>
+
+//                     {/* Subject */}
+//                     <Field label="Subject">
+//                         <TextInput
+//                             style={s.input}
+//                             value={form.subject}
+//                             onChangeText={(v) => set("subject", v)}
+//                             placeholder="Brief description of the issue"
+//                             placeholderTextColor="#94a3b8"
+//                         />
+//                     </Field>
+
+//                     {/* Department + Priority row */}
+//                     <View style={s.row}>
+//                         <View style={{ flex: 1 }}>
+//                             <Field label="Department">
+//                                 <TouchableOpacity
+//                                     style={s.dropdown}
+//                                     onPress={() => setDeptModal(true)}
+//                                 >
+//                                     <Text
+//                                         style={[
+//                                             s.dropdownText,
+//                                             !form.department && s.placeholder,
+//                                         ]}
+//                                     >
+//                                         {selectedDept?.label || "Select"}
+//                                     </Text>
+//                                     <Feather
+//                                         name="chevron-down"
+//                                         size={16}
+//                                         color="#94a3b8"
+//                                     />
+//                                 </TouchableOpacity>
+//                             </Field>
+//                         </View>
+//                         <View style={{ flex: 1 }}>
+//                             <Field label="Priority">
+//                                 <TouchableOpacity
+//                                     style={s.dropdown}
+//                                     onPress={() => setPrioModal(true)}
+//                                 >
+//                                     <Text
+//                                         style={[
+//                                             s.dropdownText,
+//                                             !form.priority && s.placeholder,
+//                                         ]}
+//                                     >
+//                                         {selectedPrio?.label || "Select"}
+//                                     </Text>
+//                                     <Feather
+//                                         name="chevron-down"
+//                                         size={16}
+//                                         color="#94a3b8"
+//                                     />
+//                                 </TouchableOpacity>
+//                             </Field>
+//                         </View>
+//                     </View>
+
+//                     {/* Message */}
+//                     <Field label="Message">
+//                         <TextInput
+//                             style={s.textarea}
+//                             value={form.message}
+//                             onChangeText={(v) => set("message", v)}
+//                             placeholder="Describe your issue in detail..."
+//                             placeholderTextColor="#94a3b8"
+//                             multiline
+//                             numberOfLines={5}
+//                             textAlignVertical="top"
+//                         />
+//                     </Field>
+
+//                     {/* Attachment */}
+//                     <Field label="Attachment (optional)">
+//                         {attachment ? (
+//                             <View style={s.attachedRow}>
+//                                 <Feather
+//                                     name="paperclip"
+//                                     size={14}
+//                                     color="#0069AF"
+//                                 />
+//                                 <Text style={s.attachedName} numberOfLines={1}>
+//                                     {attachment.name}
+//                                 </Text>
+//                                 <TouchableOpacity
+//                                     onPress={() => setAttachment(null)}
+//                                 >
+//                                     <Feather
+//                                         name="x"
+//                                         size={16}
+//                                         color="#ef4444"
+//                                     />
+//                                 </TouchableOpacity>
+//                             </View>
+//                         ) : (
+//                             <TouchableOpacity
+//                                 style={s.attachBtn}
+//                                 onPress={pickFile}
+//                             >
+//                                 <Feather
+//                                     name="upload"
+//                                     size={16}
+//                                     color="#0069AF"
+//                                 />
+//                                 <Text style={s.attachBtnText}>
+//                                     Upload File / Image
+//                                 </Text>
+//                             </TouchableOpacity>
+//                         )}
+//                     </Field>
+
+//                     {/* Submit */}
+//                     <TouchableOpacity
+//                         style={[
+//                             s.submitBtn,
+//                             (saving || uploading) && s.btnDisabled,
+//                         ]}
+//                         onPress={handleSubmit}
+//                         disabled={saving || uploading}
+//                         activeOpacity={0.85}
+//                     >
+//                         {saving || uploading ? (
+//                             <ActivityIndicator size="small" color="#fff" />
+//                         ) : (
+//                             <>
+//                                 <Feather name="send" size={16} color="#fff" />
+//                                 <Text style={s.submitBtnText}>
+//                                     Submit Ticket
+//                                 </Text>
+//                             </>
+//                         )}
+//                     </TouchableOpacity>
+//                 </View>
+//             </ScrollView>
+//             {/* </KeyboardAvoidingView> */}
+
+//             <DropdownModal
+//                 visible={deptModal}
+//                 onClose={() => setDeptModal(false)}
+//                 title="Select Department"
+//                 items={DEPARTMENTS}
+//                 selected={form.department}
+//                 onSelect={(item) => set("department", item.value)}
+//             />
+//             <DropdownModal
+//                 visible={prioModal}
+//                 onClose={() => setPrioModal(false)}
+//                 title="Select Priority"
+//                 items={PRIORITIES}
+//                 selected={form.priority}
+//                 onSelect={(item) => set("priority", item.value)}
+//             />
+//         </SafeAreaView>
+//     );
+// };
+
+// const s = StyleSheet.create({
+//     container: { flex: 1, backgroundColor: "#D7E9F2" },
+//     content: { paddingTop: 15, paddingBottom: 30 },
+//     card: {
+//         backgroundColor: "#F3FBFF",
+//         borderRadius: 24,
+//         padding: 16,
+//         marginHorizontal: 10,
+//         borderWidth: 1,
+//         borderColor: "#EBF7FD",
+//     },
+//     cardTitle: {
+//         fontSize: 20,
+//         fontWeight: "800",
+//         color: "#0f172a",
+//         marginBottom: 20,
+//     },
+//     row: { flexDirection: "row", gap: 10 },
+//     fieldWrap: { marginBottom: 16 },
+//     label: {
+//         fontSize: 11,
+//         fontWeight: "700",
+//         color: "#94a3b8",
+//         letterSpacing: 0.5,
+//         marginBottom: 8,
+//         textTransform: "uppercase",
+//     },
+//     input: {
+//         height: 50,
+//         backgroundColor: "#fff",
+//         borderWidth: 1.5,
+//         borderColor: "#e2e8f0",
+//         borderRadius: 12,
+//         paddingHorizontal: 14,
+//         fontSize: 14,
+//         color: "#0f172a",
+//         fontWeight: "500",
+//     },
+//     dropdown: {
+//         height: 50,
+//         backgroundColor: "#fff",
+//         borderWidth: 1.5,
+//         borderColor: "#e2e8f0",
+//         borderRadius: 12,
+//         paddingHorizontal: 14,
+//         flexDirection: "row",
+//         alignItems: "center",
+//         justifyContent: "space-between",
+//     },
+//     dropdownText: { fontSize: 14, color: "#0f172a", fontWeight: "500" },
+//     placeholder: { color: "#94a3b8" },
+//     textarea: {
+//         minHeight: 120,
+//         backgroundColor: "#fff",
+//         borderWidth: 1.5,
+//         borderColor: "#e2e8f0",
+//         borderRadius: 12,
+//         padding: 14,
+//         fontSize: 14,
+//         color: "#0f172a",
+//         fontWeight: "500",
+//     },
+//     attachBtn: {
+//         height: 50,
+//         backgroundColor: "#EFF9FF",
+//         borderRadius: 12,
+//         borderWidth: 1.5,
+//         borderColor: "#B0E0FD",
+//         borderStyle: "dashed",
+//         flexDirection: "row",
+//         alignItems: "center",
+//         justifyContent: "center",
+//         gap: 8,
+//     },
+//     attachBtnText: { fontSize: 14, fontWeight: "600", color: "#0069AF" },
+//     attachedRow: {
+//         height: 50,
+//         backgroundColor: "#EFF9FF",
+//         borderRadius: 12,
+//         borderWidth: 1.5,
+//         borderColor: "#B0E0FD",
+//         flexDirection: "row",
+//         alignItems: "center",
+//         paddingHorizontal: 14,
+//         gap: 8,
+//     },
+//     attachedName: {
+//         flex: 1,
+//         fontSize: 13,
+//         color: "#0069AF",
+//         fontWeight: "600",
+//     },
+//     submitBtn: {
+//         height: 52,
+//         backgroundColor: "#0069AF",
+//         borderRadius: 14,
+//         flexDirection: "row",
+//         justifyContent: "center",
+//         alignItems: "center",
+//         gap: 8,
+//         marginTop: 6,
+//     },
+//     btnDisabled: { opacity: 0.6 },
+//     submitBtnText: { color: "#fff", fontSize: 15, fontWeight: "700" },
+
+//     // Modal
+//     modalOverlay: {
+//         flex: 1,
+//         backgroundColor: "rgba(0,0,0,0.45)",
+//         justifyContent: "flex-end",
+//     },
+//     modalSheet: {
+//         backgroundColor: "#fff",
+//         borderTopLeftRadius: 24,
+//         borderTopRightRadius: 24,
+//         maxHeight: "60%",
+//         paddingBottom: 30,
+//     },
+//     modalHeader: {
+//         flexDirection: "row",
+//         justifyContent: "space-between",
+//         alignItems: "center",
+//         padding: 20,
+//         borderBottomWidth: 1,
+//         borderBottomColor: "#f1f5f9",
+//     },
+//     modalTitle: { fontSize: 17, fontWeight: "700", color: "#0f172a" },
+//     modalItem: {
+//         flexDirection: "row",
+//         justifyContent: "space-between",
+//         alignItems: "center",
+//         paddingHorizontal: 20,
+//         paddingVertical: 16,
+//     },
+//     modalItemText: { fontSize: 15, color: "#1e293b", fontWeight: "500" },
+//     separator: { height: 1, backgroundColor: "#f1f5f9", marginHorizontal: 20 },
+// });
+
+// export default AddSupportTickets;
+
 import React, { useState, useEffect } from "react";
 import {
+    StyleSheet,
+    ScrollView,
+    SafeAreaView,
     View,
     Text,
-    StyleSheet,
     TextInput,
-    ScrollView,
     TouchableOpacity,
     Modal,
     FlatList,
@@ -13,26 +644,44 @@ import {
     KeyboardAvoidingView,
     Platform,
 } from "react-native";
-import { Ionicons, Feather } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native";
+import { Feather, Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as ImagePicker from "expo-image-picker";
+import * as DocumentPicker from "expo-document-picker";
 import MainHeader from "../../componend/common/MainHeader";
-import { SkeletonBox } from "../../componend/common/SkeletonLoader";
 import {
-    getCountries,
-    getStatesByCountry,
-    checkPincode,
-    createAddress,
+    createSupportTicket,
+    updateSupportTicket,
+    uploadFilesToS3,
 } from "../../api/commonApi";
+
+const AUTH_USER_KEY = "baofeng_auth_user";
+
+const DEPARTMENTS = [
+    { label: "Support", value: "SUPPORT" },
+    { label: "Billing", value: "BILLING" },
+    { label: "Technical", value: "TECHNICAL" },
+];
+const PRIORITIES = [
+    { label: "High", value: "HIGH" },
+    { label: "Medium", value: "MEDIUM" },
+    { label: "Low", value: "LOW" },
+];
+const STATUSES = [
+    { label: "Open", value: "OPEN" },
+    { label: "In Progress", value: "IN_PROGRESS" },
+    { label: "Resolved", value: "RESOLVED" },
+    { label: "Closed", value: "CLOSED" },
+];
 
 // ── Dropdown Modal ─────────────────────────────────────────────
 const DropdownModal = ({
     visible,
     onClose,
     title,
-    data,
+    items,
+    selected,
     onSelect,
-    keyField = "_id",
-    labelField = "name",
 }) => (
     <Modal
         visible={visible}
@@ -40,478 +689,604 @@ const DropdownModal = ({
         animationType="fade"
         onRequestClose={onClose}
     >
-        <View style={styles.modalOverlay}>
-            <View style={styles.modalSheet}>
-                <View style={styles.modalHeader}>
-                    <Text style={styles.modalTitle}>{title}</Text>
+        <View style={s.modalOverlay}>
+            <View style={s.modalSheet}>
+                <View style={s.modalHeader}>
+                    <Text style={s.modalTitle}>{title}</Text>
                     <TouchableOpacity onPress={onClose}>
                         <Ionicons name="close" size={24} color="#64748b" />
                     </TouchableOpacity>
                 </View>
                 <FlatList
-                    data={data}
-                    keyExtractor={(item) => item[keyField]}
+                    data={items}
+                    keyExtractor={(item) => item.value}
                     renderItem={({ item }) => (
                         <TouchableOpacity
-                            style={styles.modalItem}
+                            style={s.modalItem}
                             onPress={() => {
                                 onSelect(item);
                                 onClose();
                             }}
                         >
-                            <Text style={styles.modalItemText}>
-                                {item[labelField]}
-                            </Text>
-                            <Ionicons
-                                name="chevron-forward"
-                                size={16}
-                                color="#94a3b8"
-                            />
+                            <Text style={s.modalItemText}>{item.label}</Text>
+                            {selected === item.value && (
+                                <Ionicons
+                                    name="checkmark"
+                                    size={18}
+                                    color="#0069AF"
+                                />
+                            )}
                         </TouchableOpacity>
                     )}
-                    ItemSeparatorComponent={() => (
-                        <View style={styles.separator} />
-                    )}
-                    showsVerticalScrollIndicator={false}
+                    ItemSeparatorComponent={() => <View style={s.separator} />}
                 />
             </View>
         </View>
     </Modal>
 );
 
+const Field = ({ label, children }) => (
+    <View style={s.fieldWrap}>
+        <Text style={s.label}>{label}</Text>
+        {children}
+    </View>
+);
+
 const AddSupportTickets = ({ navigation, route }) => {
-    const onSaved = route?.params?.onSaved;
+    // ── Edit vs Create mode ────────────────────────────────────
+    const ticket = route?.params?.ticket || null; // passed for edit
+    const onSaved = route?.params?.onSaved || null;
+    const isEdit = !!ticket;
 
-    // ── Form state ─────────────────────────────────────────────
     const [form, setForm] = useState({
-        firstName: "",
-        lastName: "",
-        phone: "",
-        email: "",
-        addressLine1: "",
-        addressLine2: "",
-        area: "",
-        city: "",
-        postalCode: "",
-        gstNumber: "",
+        name: ticket?.name || "",
+        email: ticket?.email || "",
+        phone: ticket?.phone || "",
+        subject: ticket?.subject || route?.params?.subject || "",
+        message: ticket?.message || route?.params?.message || "",
+        department: ticket?.department || "",
+        priority: ticket?.priority || "",
+        status: ticket?.status || "OPEN",
     });
-    const [selectedCountry, setSelectedCountry] = useState(null);
-    const [selectedState, setSelectedState] = useState(null);
-    const [isDefault, setIsDefault] = useState(false);
-    const [alsoSaveAsBilling, setAlsoSaveAsBilling] = useState(true);
 
-    // ── Data state ─────────────────────────────────────────────
-    const [countries, setCountries] = useState([]);
-    const [states, setStates] = useState([]);
-    const [loadingCountries, setLoadingCountries] = useState(false);
-    const [loadingStates, setLoadingStates] = useState(false);
-
-    // ── Pincode state ──────────────────────────────────────────
-    const [pincodeLoading, setPincodeLoading] = useState(false);
-    const [pincodeResult, setPincodeResult] = useState(null);
-
-    // ── UI state ───────────────────────────────────────────────
-    const [countryModal, setCountryModal] = useState(false);
-    const [stateModal, setStateModal] = useState(false);
+    const [deptModal, setDeptModal] = useState(false);
+    const [prioModal, setPrioModal] = useState(false);
+    const [statusModal, setStatusModal] = useState(false);
+    const [attachment, setAttachment] = useState(null);
+    const [uploading, setUploading] = useState(false);
     const [saving, setSaving] = useState(false);
 
-    const setField = (key, value) =>
-        setForm((prev) => ({ ...prev, [key]: value }));
+    // ── Auto-fill user from AsyncStorage (create mode only) ───
+    useEffect(() => {
+        if (isEdit) return; // edit: data comes from ticket
+        (async () => {
+            try {
+                const raw = await AsyncStorage.getItem(AUTH_USER_KEY);
+                if (!raw) return;
+                const user = JSON.parse(raw);
+                const fullName = [user.firstName, user.lastName]
+                    .filter(Boolean)
+                    .join(" ");
+                setForm((p) => ({
+                    ...p,
+                    name: fullName || p.name,
+                    email: user.email || p.email,
+                    phone: user.phoneNumber || p.phone,
+                }));
+            } catch {}
+        })();
+    }, []);
+
+    const set = (key, val) => setForm((p) => ({ ...p, [key]: val }));
+
+    // ── Pick file ──────────────────────────────────────────────
+    const pickFile = async () => {
+        Alert.alert("Attach File", "Choose source", [
+            {
+                text: "Camera",
+                onPress: async () => {
+                    const { status } =
+                        await ImagePicker.requestCameraPermissionsAsync();
+                    if (status !== "granted")
+                        return Alert.alert("Permission denied");
+                    const res = await ImagePicker.launchCameraAsync({
+                        quality: 0.8,
+                    });
+                    if (!res.canceled && res.assets?.[0]) {
+                        const a = res.assets[0];
+                        setAttachment({
+                            uri: a.uri,
+                            name: a.fileName || "photo.jpg",
+                            type: a.mimeType || "image/jpeg",
+                        });
+                    }
+                },
+            },
+            {
+                text: "Gallery",
+                onPress: async () => {
+                    const { status } =
+                        await ImagePicker.requestMediaLibraryPermissionsAsync();
+                    if (status !== "granted")
+                        return Alert.alert("Permission denied");
+                    const res = await ImagePicker.launchImageLibraryAsync({
+                        quality: 0.8,
+                    });
+                    if (!res.canceled && res.assets?.[0]) {
+                        const a = res.assets[0];
+                        setAttachment({
+                            uri: a.uri,
+                            name: a.fileName || "photo.jpg",
+                            type: a.mimeType || "image/jpeg",
+                        });
+                    }
+                },
+            },
+            {
+                text: "Document",
+                onPress: async () => {
+                    const res = await DocumentPicker.getDocumentAsync({
+                        type: "*/*",
+                        copyToCacheDirectory: true,
+                    });
+                    if (!res.canceled && res.assets?.[0]) {
+                        const a = res.assets[0];
+                        setAttachment({
+                            uri: a.uri,
+                            name: a.name,
+                            type: a.mimeType,
+                        });
+                    }
+                },
+            },
+            { text: "Cancel", style: "cancel" },
+        ]);
+    };
+
+    // ── Upload → return filename ───────────────────────────────
+    const uploadAttachment = async () => {
+        if (!attachment) return ticket?.document || "";
+        try {
+            setUploading(true);
+            const fd = new FormData();
+            fd.append("files", {
+                uri: attachment.uri,
+                name: attachment.name,
+                type: attachment.type,
+            });
+            const res = await uploadFilesToS3(fd);
+            if (res?.success && res?.data?.[0]) return res.data[0];
+            return ticket?.document || "";
+        } catch {
+            return ticket?.document || "";
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    // ── Submit ─────────────────────────────────────────────────
+    const handleSubmit = async () => {
+        if (!form.name.trim())
+            return Alert.alert("Required", "Name is required.");
+        if (!form.subject.trim())
+            return Alert.alert("Required", "Subject is required.");
+        if (!form.message.trim())
+            return Alert.alert("Required", "Message is required.");
+        if (!form.department)
+            return Alert.alert("Required", "Please select a department.");
+        if (!form.priority)
+            return Alert.alert("Required", "Please select a priority.");
+
+        try {
+            setSaving(true);
+            const docUrl = await uploadAttachment();
+
+            const payload = {
+                name: form.name.trim(),
+                email: form.email.trim(),
+                phone: form.phone.trim(),
+                subject: form.subject.trim(),
+                department: form.department,
+                priority: form.priority,
+                message: form.message.trim(),
+                document: docUrl,
+                status: form.status,
+            };
+
+            let res;
+            if (isEdit) {
+                res = await updateSupportTicket(ticket._id, payload);
+            } else {
+                payload.status = "OPEN";
+                res = await createSupportTicket(payload);
+            }
+
+            if (res?.success) {
+                const ticketNum =
+                    res.data?.ticketNumber || ticket?.ticketNumber || "";
+                Alert.alert(
+                    isEdit ? "Updated ✓" : "Created ✓",
+                    `Ticket ${ticketNum} ${isEdit ? "updated" : "created"} successfully.`,
+                    [
+                        {
+                            text: "OK",
+                            onPress: () => {
+                                onSaved?.();
+                                if (route?.params?.from == "OrderScreen") {
+                                    return navigation.replace("SupportTickets");
+                                }
+
+                                navigation.goBack();
+                            },
+                        },
+                    ],
+                );
+            } else {
+                Alert.alert("Error", res?.message || "Something went wrong.");
+            }
+        } catch {
+            Alert.alert("Error", "Network error. Please try again.");
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const selectedDept = DEPARTMENTS.find((d) => d.value === form.department);
+    const selectedPrio = PRIORITIES.find((p) => p.value === form.priority);
+    const selectedStatus = STATUSES.find((s) => s.value === form.status);
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={s.container}>
             <MainHeader bgColor="#ffffff" navigation={navigation} />
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : undefined}
                 style={{ flex: 1 }}
             >
                 <ScrollView
-                    contentContainerStyle={styles.content}
+                    contentContainerStyle={s.content}
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}
                 >
-                    <View style={styles.card}>
-                        <Text style={styles.title}>Open Ticket</Text>
+                    <View style={s.card}>
+                        {/* Title changes based on mode */}
+                        <Text style={s.cardTitle}>
+                            {isEdit ? "Edit Ticket" : "New Support Ticket"}
+                        </Text>
+                        {isEdit && (
+                            <Text style={s.ticketNumLabel}>
+                                {ticket.ticketNumber}
+                            </Text>
+                        )}
 
-                        <View style={styles.formContainer}>
-                            {/* Name Row */}
-                            <View style={styles.row}>
-                                <View style={{ flex: 1 }}>
-                                    <FormField
-                                        label="Name *"
-                                        value={form.firstName}
-                                        onChangeText={(v) =>
-                                            setField("firstName", v)
-                                        }
-                                        placeholder=""
-                                    />
-                                </View>
-                                {/* <View style={{ flex: 1 }}>
-                                    <FormField
-                                        label="Last Name"
-                                        value={form.lastName}
-                                        onChangeText={(v) =>
-                                            setField("lastName", v)
-                                        }
-                                        placeholder=""
-                                    />
-                                </View> */}
-                            </View>
-                            <FormField
-                                label="Email *"
-                                value={form.email}
-                                onChangeText={(v) => setField("email", v)}
-                                placeholder=""
-                                keyboardType="email-address"
-                                autoCapitalize="none"
+                        {/* Name */}
+                        <Field label="Your Name">
+                            <TextInput
+                                style={s.input}
+                                value={form.name}
+                                onChangeText={(v) => set("name", v)}
+                                placeholder="Full name"
+                                placeholderTextColor="#94a3b8"
                             />
-                            <FormField
-                                label="Phone *"
-                                value={form.phone}
-                                onChangeText={(v) => setField("phone", v)}
-                                placeholder=""
-                                keyboardType="phone-pad"
-                                maxLength={10}
-                            />
+                        </Field>
 
-                            <FormField
-                                label="Subject"
-                                value={form.email}
-                                onChangeText={(v) => setField("email", v)}
-                                placeholder=""
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                            />
-
-                            {/* Country Dropdown */}
-                            <View>
-                                <Text style={styles.label}>Department *</Text>
-                                {loadingCountries ? (
-                                    <SkeletonBox
-                                        width="100%"
-                                        height={50}
-                                        borderRadius={12}
+                        {/* Email + Phone */}
+                        <View style={s.row}>
+                            <View style={{ flex: 1 }}>
+                                <Field label="Email">
+                                    <TextInput
+                                        style={s.input}
+                                        value={form.email}
+                                        onChangeText={(v) => set("email", v)}
+                                        placeholder="Email"
+                                        keyboardType="email-address"
+                                        autoCapitalize="none"
+                                        placeholderTextColor="#94a3b8"
                                     />
-                                ) : (
-                                    <TouchableOpacity
-                                        style={styles.dropdown}
-                                        onPress={() => setCountryModal(true)}
-                                    >
-                                        <Text
-                                            style={[
-                                                styles.dropdownText,
-                                                !selectedCountry &&
-                                                    styles.placeholder,
-                                            ]}
-                                        >
-                                            {selectedCountry?.name ||
-                                                "Select department"}
-                                        </Text>
-                                        <Ionicons
-                                            name="chevron-down"
-                                            size={20}
-                                            color="#64748b"
-                                        />
-                                    </TouchableOpacity>
-                                )}
+                                </Field>
                             </View>
-                            <View>
-                                <Text style={styles.label}>
-                                    Related Service *
-                                </Text>
-                                {loadingStates ? (
-                                    <SkeletonBox
-                                        width="100%"
-                                        height={50}
-                                        borderRadius={12}
+                            <View style={{ flex: 1 }}>
+                                <Field label="Phone">
+                                    <TextInput
+                                        style={s.input}
+                                        value={form.phone}
+                                        onChangeText={(v) => set("phone", v)}
+                                        placeholder="Phone"
+                                        keyboardType="phone-pad"
+                                        placeholderTextColor="#94a3b8"
                                     />
-                                ) : (
-                                    <TouchableOpacity
-                                        style={[
-                                            styles.dropdown,
-                                            !selectedCountry &&
-                                                styles.dropdownDisabled,
-                                        ]}
-                                        onPress={() =>
-                                            selectedCountry &&
-                                            setStateModal(true)
-                                        }
-                                    >
-                                        <Text
-                                            style={[
-                                                styles.dropdownText,
-                                                !selectedState &&
-                                                    styles.placeholder,
-                                            ]}
-                                        >
-                                            {selectedState?.name ||
-                                                (selectedCountry
-                                                    ? "Select Related Service"
-                                                    : "Select Related Service")}
-                                        </Text>
-                                        <Ionicons
-                                            name="chevron-down"
-                                            size={20}
-                                            color="#64748b"
-                                        />
-                                    </TouchableOpacity>
-                                )}
-                            </View>
-                            {/* State Dropdown */}
-                            <View>
-                                <Text style={styles.label}>Priority *</Text>
-                                {loadingStates ? (
-                                    <SkeletonBox
-                                        width="100%"
-                                        height={50}
-                                        borderRadius={12}
-                                    />
-                                ) : (
-                                    <TouchableOpacity
-                                        style={[
-                                            styles.dropdown,
-                                            !selectedCountry &&
-                                                styles.dropdownDisabled,
-                                        ]}
-                                        onPress={() =>
-                                            selectedCountry &&
-                                            setStateModal(true)
-                                        }
-                                    >
-                                        <Text
-                                            style={[
-                                                styles.dropdownText,
-                                                !selectedState &&
-                                                    styles.placeholder,
-                                            ]}
-                                        >
-                                            {selectedState?.name ||
-                                                (selectedCountry
-                                                    ? "Select Priority"
-                                                    : "Select Priority")}
-                                        </Text>
-                                        <Ionicons
-                                            name="chevron-down"
-                                            size={20}
-                                            color="#64748b"
-                                        />
-                                    </TouchableOpacity>
-                                )}
-                            </View>
-
-                            <FormField
-                                label="Message"
-                                value={form.addressLine2}
-                                onChangeText={(v) =>
-                                    setField("addressLine2", v)
-                                }
-                                placeholder=""
-                                multiline={true}
-                                numberOfLines={6}
-                            />
-
-                            {/* Options */}
-                            <View style={styles.optionsCard}>
-                                <View
-                                    style={{
-                                        backgroundColor: "#E0F2FE",
-                                        padding: 12,
-                                        paddingHorizontal: 16,
-                                        borderRadius: 10,
-                                        alignSelf: "center",
-                                    }}
-                                >
-                                    <Text
-                                        style={{
-                                            color: "#0284C7",
-                                            fontWeight: "700",
-                                        }}
-                                    >
-                                        Choose File
-                                    </Text>
-                                </View>
+                                </Field>
                             </View>
                         </View>
 
+                        {/* Subject */}
+                        <Field label="Subject">
+                            <TextInput
+                                style={s.input}
+                                value={form.subject}
+                                onChangeText={(v) => set("subject", v)}
+                                placeholder="Brief description of the issue"
+                                placeholderTextColor="#94a3b8"
+                            />
+                        </Field>
+
+                        {/* Department + Priority */}
+                        <View style={s.row}>
+                            <View style={{ flex: 1 }}>
+                                <Field label="Department">
+                                    <TouchableOpacity
+                                        style={s.dropdown}
+                                        onPress={() => setDeptModal(true)}
+                                    >
+                                        <Text
+                                            style={[
+                                                s.dropdownText,
+                                                !form.department &&
+                                                    s.placeholder,
+                                            ]}
+                                        >
+                                            {selectedDept?.label || "Select"}
+                                        </Text>
+                                        <Feather
+                                            name="chevron-down"
+                                            size={16}
+                                            color="#94a3b8"
+                                        />
+                                    </TouchableOpacity>
+                                </Field>
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Field label="Priority">
+                                    <TouchableOpacity
+                                        style={s.dropdown}
+                                        onPress={() => setPrioModal(true)}
+                                    >
+                                        <Text
+                                            style={[
+                                                s.dropdownText,
+                                                !form.priority && s.placeholder,
+                                            ]}
+                                        >
+                                            {selectedPrio?.label || "Select"}
+                                        </Text>
+                                        <Feather
+                                            name="chevron-down"
+                                            size={16}
+                                            color="#94a3b8"
+                                        />
+                                    </TouchableOpacity>
+                                </Field>
+                            </View>
+                        </View>
+
+                        {/* Message */}
+                        <Field label="Message">
+                            <TextInput
+                                style={s.textarea}
+                                value={form.message}
+                                onChangeText={(v) => set("message", v)}
+                                placeholder="Describe your issue in detail..."
+                                placeholderTextColor="#94a3b8"
+                                multiline
+                                numberOfLines={5}
+                                textAlignVertical="top"
+                            />
+                        </Field>
+
+                        {/* Attachment */}
+                        <Field label="Attachment (optional)">
+                            {attachment ? (
+                                <View style={s.attachedRow}>
+                                    <Feather
+                                        name="paperclip"
+                                        size={14}
+                                        color="#0069AF"
+                                    />
+                                    <Text
+                                        style={s.attachedName}
+                                        numberOfLines={1}
+                                    >
+                                        {attachment.name}
+                                    </Text>
+                                    <TouchableOpacity
+                                        onPress={() => setAttachment(null)}
+                                    >
+                                        <Feather
+                                            name="x"
+                                            size={16}
+                                            color="#ef4444"
+                                        />
+                                    </TouchableOpacity>
+                                </View>
+                            ) : (
+                                <TouchableOpacity
+                                    style={s.attachBtn}
+                                    onPress={pickFile}
+                                >
+                                    <Feather
+                                        name="upload"
+                                        size={16}
+                                        color="#0069AF"
+                                    />
+                                    <Text style={s.attachBtnText}>
+                                        {isEdit && ticket?.document
+                                            ? `Replace: ${ticket.document}`
+                                            : "Upload File / Image"}
+                                    </Text>
+                                </TouchableOpacity>
+                            )}
+                        </Field>
+
+                        {/* Submit */}
                         <TouchableOpacity
                             style={[
-                                styles.saveButton,
-                                saving && styles.btnDisabled,
+                                s.submitBtn,
+                                isEdit && s.submitBtnEdit,
+                                (saving || uploading) && s.btnDisabled,
                             ]}
-                            // onPress={handleSave}
-                            disabled={saving}
-                            activeOpacity={0.8}
+                            onPress={handleSubmit}
+                            disabled={saving || uploading}
+                            activeOpacity={0.85}
                         >
-                            {saving ? (
-                                <ActivityIndicator color="#fff" />
+                            {saving || uploading ? (
+                                <ActivityIndicator size="small" color="#fff" />
                             ) : (
-                                <Text style={styles.saveButtonText}>
-                                    Submit
-                                </Text>
+                                <>
+                                    <Feather
+                                        name={isEdit ? "check" : "send"}
+                                        size={16}
+                                        color="#fff"
+                                    />
+                                    <Text style={s.submitBtnText}>
+                                        {isEdit
+                                            ? "Save Changes"
+                                            : "Submit Ticket"}
+                                    </Text>
+                                </>
                             )}
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
 
-            {/* Country Modal */}
             <DropdownModal
-                visible={countryModal}
-                onClose={() => setCountryModal(false)}
-                title="Select Country"
-                data={countries}
-                // onSelect={handleCountrySelect}
+                visible={deptModal}
+                onClose={() => setDeptModal(false)}
+                title="Select Department"
+                items={DEPARTMENTS}
+                selected={form.department}
+                onSelect={(item) => set("department", item.value)}
             />
-
-            {/* State Modal */}
             <DropdownModal
-                visible={stateModal}
-                onClose={() => setStateModal(false)}
-                title="Select State"
-                data={states}
-                // onSelect={setSelectedState}
+                visible={prioModal}
+                onClose={() => setPrioModal(false)}
+                title="Select Priority"
+                items={PRIORITIES}
+                selected={form.priority}
+                onSelect={(item) => set("priority", item.value)}
+            />
+            <DropdownModal
+                visible={statusModal}
+                onClose={() => setStatusModal(false)}
+                title="Select Status"
+                items={STATUSES}
+                selected={form.status}
+                onSelect={(item) => set("status", item.value)}
             />
         </SafeAreaView>
     );
 };
 
-// ── Reusable components ────────────────────────────────────────
-const FormField = ({
-    label,
-    value,
-    onChangeText,
-    placeholder,
-    multiline = false,
-    ...rest
-}) => (
-    <View>
-        <Text style={styles.label}>{label}</Text>
-        <TextInput
-            style={[styles.inputWrapper, multiline && { height: 120 }]}
-            value={value}
-            onChangeText={onChangeText}
-            placeholder={placeholder}
-            placeholderTextColor="#94a3b8"
-            multiline={multiline}
-            {...rest}
-        />
-    </View>
-);
-
-const CheckRow = ({ label, checked, onToggle }) => (
-    <TouchableOpacity style={styles.checkRow} onPress={onToggle}>
-        <View style={[styles.checkBox, checked && styles.checkBoxActive]}>
-            {checked && <Ionicons name="checkmark" size={13} color="#fff" />}
-        </View>
-        <Text style={styles.checkLabel}>{label}</Text>
-    </TouchableOpacity>
-);
-
-const styles = StyleSheet.create({
+const s = StyleSheet.create({
     container: { flex: 1, backgroundColor: "#D7E9F2" },
     content: { paddingTop: 15, paddingBottom: 30 },
     card: {
         backgroundColor: "#F3FBFF",
         borderRadius: 24,
-        padding: 15,
+        padding: 16,
         marginHorizontal: 10,
-        marginBottom: 15,
         borderWidth: 1,
         borderColor: "#EBF7FD",
     },
-    title: {
-        fontSize: 18,
-        fontWeight: "700",
+    cardTitle: {
+        fontSize: 20,
+        fontWeight: "800",
         color: "#0f172a",
+        marginBottom: 4,
+    },
+    ticketNumLabel: {
+        fontSize: 13,
+        color: "#0069AF",
+        fontWeight: "700",
         marginBottom: 20,
     },
-    formContainer: { gap: 16 },
     row: { flexDirection: "row", gap: 10 },
+    fieldWrap: { marginBottom: 16 },
     label: {
-        fontSize: 12,
-        fontWeight: "600",
+        fontSize: 11,
+        fontWeight: "700",
         color: "#94a3b8",
+        letterSpacing: 0.5,
         marginBottom: 8,
         textTransform: "uppercase",
-        letterSpacing: 0.5,
     },
-    inputWrapper: {
+    input: {
         height: 50,
-        backgroundColor: "#ffffff",
+        backgroundColor: "#fff",
         borderWidth: 1.5,
         borderColor: "#e2e8f0",
         borderRadius: 12,
-        paddingHorizontal: 15,
-        fontSize: 15,
+        paddingHorizontal: 14,
+        fontSize: 14,
         color: "#0f172a",
         fontWeight: "500",
     },
     dropdown: {
         height: 50,
-        backgroundColor: "#ffffff",
+        backgroundColor: "#fff",
         borderWidth: 1.5,
         borderColor: "#e2e8f0",
         borderRadius: 12,
-        paddingHorizontal: 15,
+        paddingHorizontal: 14,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
     },
-    dropdownDisabled: { opacity: 0.5 },
-    dropdownText: { fontSize: 15, color: "#0f172a", fontWeight: "500" },
+    dropdownText: { fontSize: 14, color: "#0f172a", fontWeight: "500" },
     placeholder: { color: "#94a3b8" },
-    pincodeRow: { flexDirection: "row", alignItems: "center" },
-    pincodeBadge: {
+    textarea: {
+        minHeight: 120,
+        backgroundColor: "#fff",
+        borderWidth: 1.5,
+        borderColor: "#e2e8f0",
+        borderRadius: 12,
+        padding: 14,
+        fontSize: 14,
+        color: "#0f172a",
+        fontWeight: "500",
+    },
+    attachBtn: {
+        height: 50,
+        backgroundColor: "#EFF9FF",
+        borderRadius: 12,
+        borderWidth: 1.5,
+        borderColor: "#B0E0FD",
+        borderStyle: "dashed",
         flexDirection: "row",
         alignItems: "center",
-        gap: 6,
-        marginTop: 6,
-        paddingHorizontal: 10,
-        paddingVertical: 7,
-        borderRadius: 8,
+        justifyContent: "center",
+        gap: 8,
     },
-    badgeSuccess: {
-        backgroundColor: "#f0fdf4",
-        borderWidth: 1,
-        borderColor: "#bbf7d0",
-    },
-    badgeFail: {
-        backgroundColor: "#fef2f2",
-        borderWidth: 1,
-        borderColor: "#fecaca",
-    },
-    pincodeText: { fontSize: 12, fontWeight: "600", flex: 1 },
-    optionsCard: {
-        backgroundColor: "#fff",
-        borderRadius: 14,
-        padding: 14,
-        borderWidth: 1,
-        borderColor: "#CBD5E1",
-        gap: 12,
-        borderStyle: "dashed",
-    },
-    checkRow: { flexDirection: "row", alignItems: "center", gap: 10 },
-    checkBox: {
-        width: 20,
-        height: 20,
-        borderRadius: 5,
+    attachBtnText: { fontSize: 13, fontWeight: "600", color: "#0069AF" },
+    attachedRow: {
+        height: 50,
+        backgroundColor: "#EFF9FF",
+        borderRadius: 12,
         borderWidth: 1.5,
-        borderColor: "#cbd5e1",
-        justifyContent: "center",
+        borderColor: "#B0E0FD",
+        flexDirection: "row",
         alignItems: "center",
+        paddingHorizontal: 14,
+        gap: 8,
     },
-    checkBoxActive: { backgroundColor: "#0069AF", borderColor: "#0069AF" },
-    checkLabel: { fontSize: 14, color: "#334155", fontWeight: "500", flex: 1 },
-    saveButton: {
-        backgroundColor: "#0064a3",
+    attachedName: {
+        flex: 1,
+        fontSize: 13,
+        color: "#0069AF",
+        fontWeight: "600",
+    },
+    submitBtn: {
         height: 52,
+        backgroundColor: "#0069AF",
         borderRadius: 14,
+        flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        marginTop: 20,
+        gap: 8,
+        marginTop: 6,
     },
+    submitBtnEdit: { backgroundColor: "#059669" }, // green for save
     btnDisabled: { opacity: 0.6 },
-    saveButtonText: { color: "#ffffff", fontSize: 15, fontWeight: "700" },
+    submitBtnText: { color: "#fff", fontSize: 15, fontWeight: "700" },
     // Modal
     modalOverlay: {
         flex: 1,
@@ -539,7 +1314,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         paddingHorizontal: 20,
-        paddingVertical: 15,
+        paddingVertical: 16,
     },
     modalItemText: { fontSize: 15, color: "#1e293b", fontWeight: "500" },
     separator: { height: 1, backgroundColor: "#f1f5f9", marginHorizontal: 20 },

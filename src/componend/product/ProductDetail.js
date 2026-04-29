@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -14,7 +14,13 @@ import {
     FontAwesome,
 } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { checkPincode, addToCart } from "../../api/commonApi";
+import {
+    checkPincode,
+    addToCart,
+    getWishlist,
+    deleteWishlistItem,
+    addToWishlist,
+} from "../../api/commonApi";
 import { LinearGradient } from "expo-linear-gradient";
 
 const CART_TOKEN_KEY = "baofeng_cart_token";
@@ -31,6 +37,9 @@ const ProductDetail = ({
     const [pincodeLoading, setPincodeLoading] = useState(false);
     const [pincodeResult, setPincodeResult] = useState(null); // { serviceable, codAllowed }
     const [isShowPinInput, setShowPinInput] = useState(false);
+    // ── Wishlist state ─────────────────────────────────────────
+    const [isWishlisted, setIsWishlisted] = useState(false);
+    const [wishLoading, setWishLoading] = useState(false);
 
     const {
         title = "",
@@ -44,10 +53,87 @@ const ProductDetail = ({
 
     const { unitSellingPrice = 0, unitMrp = 0, listingMongoId = "" } = listing;
 
+    // listing.listingId = business ID like "L00000514"
+    // productId = business ID like "P00000514"  (from product.productId)
+    const listingBusinessId = listing?.listingId || "";
+    const productBusinessId = product?.productBusinessId || productId || "";
+
     const discountPercent =
         unitMrp > 0
             ? (((unitMrp - unitSellingPrice) / unitMrp) * 100).toFixed(2)
             : 0;
+
+    // ── Check wishlist status on mount / listing change ────────
+
+    const checkWishlistStatus = async () => {
+        try {
+            const res = await getWishlist(1, 100);
+            if (res?.success && res?.data?.items) {
+                const found = res.data.items.some(
+                    (item) => item.listing?.listingId === listingBusinessId,
+                );
+
+                console.log(res?.data?.items);
+                setIsWishlisted(found);
+            }
+        } catch {
+            // silent — don't block UI
+        }
+    };
+
+    useEffect(() => {
+        if (!listingBusinessId) return;
+        checkWishlistStatus();
+    }, [listingBusinessId, product]);
+
+    // ── Toggle wishlist ────────────────────────────────────────
+    const handleWishlistToggle = async () => {
+        // Block if out of stock
+        if (!isInStock || stock === 0) {
+            Alert.alert(
+                "Out of Stock",
+                "This product is currently out of stock and cannot be added to your wishlist.",
+            );
+            return;
+        }
+
+        if (!listingBusinessId || !productBusinessId) {
+            Alert.alert("Error", "Product information missing.");
+            return;
+        }
+
+        try {
+            setWishLoading(true);
+
+            if (isWishlisted) {
+                // Remove from wishlist
+                const res = await deleteWishlistItem(listingBusinessId);
+                if (res?.success) {
+                    setIsWishlisted(false);
+                } else {
+                    Alert.alert("Error", "Failed to remove from wishlist.");
+                }
+            } else {
+                // Add to wishlist
+                const res = await addToWishlist({
+                    listingId: listingBusinessId,
+                    productId: productBusinessId,
+                });
+                if (res?.success) {
+                    setIsWishlisted(true);
+                } else {
+                    Alert.alert(
+                        "Error",
+                        res?.message || "Failed to add to wishlist.",
+                    );
+                }
+            }
+        } catch {
+            Alert.alert("Error", "Network error. Please try again.");
+        } finally {
+            setWishLoading(false);
+        }
+    };
 
     // ── COD / Pincode check ────────────────────────────────────
     const handlePincodeCheck = async () => {
@@ -76,12 +162,33 @@ const ProductDetail = ({
 
     return (
         <View style={styles.container}>
-            <FontAwesome
-                name="heart-o"
-                style={{ position: "absolute", right: 8, top: 6 }}
-                size={25}
-                color={"heart-o"}
-            />
+            {/* ── Wishlist Heart Button ── */}
+            <TouchableOpacity
+                onPress={handleWishlistToggle}
+                disabled={wishLoading}
+                style={{
+                    position: "absolute",
+                    right: 8,
+                    top: 6,
+                    zIndex: 10,
+                    padding: 4,
+                }}
+                activeOpacity={0.7}
+            >
+                {wishLoading ? (
+                    <ActivityIndicator
+                        size="small"
+                        color="#ef4444"
+                        style={{ width: 25, height: 25 }}
+                    />
+                ) : (
+                    <FontAwesome
+                        name={isWishlisted ? "heart" : "heart-o"}
+                        size={25}
+                        color={isWishlisted ? "#ef4444" : "#94a3b8"}
+                    />
+                )}
+            </TouchableOpacity>
             <View style={styles.brandTag}>
                 <Text style={styles.brandLabel}>Brand : </Text>
                 <Text style={styles.brandName}>{brandName}</Text>

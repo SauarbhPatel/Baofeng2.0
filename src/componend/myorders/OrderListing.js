@@ -870,7 +870,17 @@ const OrderItem = ({ order, navigation, onCancelPress }) => {
                 <View style={styles.buttonRow}>
                     {["PENDING", "PROCESSING"].includes(order.status) && (
                         <>
-                            <ActionButton label="Customer Support" />
+                            <ActionButton
+                                label="Customer Support"
+                                onPress={() =>
+                                    navigation.push("AddSupportTickets", {
+                                        from: "OrderScreen",
+                                        subject:
+                                            "Order issue " + order.orderNumber,
+                                        message: `Hi, I have an issue regarding order ${order.orderNumber}.`,
+                                    })
+                                }
+                            />
                             <ActionButton
                                 label="Cancel Order"
                                 onPress={onCancelPress}
@@ -892,7 +902,18 @@ const OrderItem = ({ order, navigation, onCancelPress }) => {
                                     navigation.push("OrderTracking", order)
                                 }
                             />
-                            <ActionButton label="Customer Support" primary />
+                            <ActionButton
+                                label="Customer Support"
+                                primary
+                                onPress={() =>
+                                    navigation.push("AddSupportTickets", {
+                                        from: "OrderScreen",
+                                        subject:
+                                            "Order issue " + order.orderNumber,
+                                        message: `Hi, I have an issue regarding order ${order.orderNumber}.`,
+                                    })
+                                }
+                            />
                         </>
                     )}
                     {order.status === "DELIVERED" && (
@@ -914,7 +935,18 @@ const OrderItem = ({ order, navigation, onCancelPress }) => {
 
                             <ActionButton label="Leave a Review" warning />
                             <ActionButton label="Reorder" primary />
-                            <ActionButton label="Customer Support" primary />
+                            <ActionButton
+                                label="Customer Support"
+                                primary
+                                onPress={() =>
+                                    navigation.push("AddSupportTickets", {
+                                        from: "OrderScreen",
+                                        subject:
+                                            "Order issue " + order.orderNumber,
+                                        message: `Hi, I have an issue regarding order ${order.orderNumber}.`,
+                                    })
+                                }
+                            />
                             <ActionButton label="Invoice" />
                         </View>
                     </>

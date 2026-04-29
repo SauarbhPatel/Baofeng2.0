@@ -197,12 +197,17 @@ const MyWishlistScreen = ({ navigation }) => {
 
     // ── Navigate to Product ────────────────────────────────────
     const handleProductPress = (item) => {
+        console.log(JSON.stringify(item));
         navigation.push("ProjectDetails", {
             product: {
-                slug: item.product?.slug || "",
+                slug:
+                    item.product?.slug +
+                        "-" +
+                        item.product?.variantCombination?.[0]?.attributeValue ||
+                    "",
                 listingId: item.listing?.listingId || "",
-                pickupPointId:
-                    item.listing?.inventoryByPickup?.[0]?.pickupPointId || "",
+                // pickupPointId:
+                //     item.listing?.inventoryByPickup?.[0]?.pickupPointId || "",
             },
         });
     };

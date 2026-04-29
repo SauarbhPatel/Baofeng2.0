@@ -31,7 +31,9 @@ export const getProductListing = (page = 1, limit = 4) =>
 // listingId → e.g. "L00000513"
 // pickupPointId → e.g. "69a1e57b1aeed5f800c42ef8"
 export const getProductDetails = (slug, listingId, pickupPointId) =>
-    __getApiData(`product/${slug}/${listingId}?pickupPointId=${pickupPointId}`);
+    __getApiData(
+        `product/${slug}/${listingId}${pickupPointId ? "?pickupPointId=" + pickupPointId : ""}`,
+    );
 
 // ─── Similar Products ─────────────────────────────────────────
 export const getSimilarProducts = (categoryId, productId) =>
@@ -118,6 +120,8 @@ export const getWishlist = (page = 1, limit = 10) =>
 export const deleteWishlistItem = (listingId) =>
     __deleteApiData(`wishlist/${listingId}`);
 
+export const addToWishlist = (payload) => __postApiData("wishlist", payload);
+
 // ─── Documents ────────────────────────────────────────────────
 // Upload file to S3 — payload is FormData with key "files"
 export const uploadFilesToS3 = (formData) =>
@@ -149,3 +153,17 @@ export const getReturnListing = (page = 1, limit = 10) =>
 
 export const getReturnById = (returnId) =>
     __getApiData(`returnExchange/findOne/${returnId}`);
+
+export const getSupportTickets = (params = {}) => {
+    const q = new URLSearchParams({ sortOrder: "DESC", ...params }).toString();
+    return __getApiData(`supportTicket/findAllSupportTickets?${q}`);
+};
+
+export const createSupportTicket = (payload) =>
+    __postApiData("supportTicket/createSupportTicket", payload);
+
+export const updateSupportTicket = (ticketId, payload) =>
+    __patchApiData(`supportTicket/updateSupportTicket/${ticketId}`, payload);
+
+export const deleteSupportTicket = (ticketId) =>
+    __deleteApiData(`supportTicket/deleteOneSupportTicket/${ticketId}`);

@@ -52,6 +52,7 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
 
     useEffect(() => {
         if (slug && listingId) {
+            console.log(slug, listingId, pickupPointId);
             fetchProduct(slug, listingId, pickupPointId);
         }
     }, [slug, listingId, pickupPointId]);
@@ -67,8 +68,8 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
             const res = await getProductDetails(
                 productSlug,
                 productListingId,
-                // productPpickupPointId || DEFAULT_PICKUP_POINT_ID,
-                DEFAULT_PICKUP_POINT_ID,
+                // productPpickupPointId || "",
+                // DEFAULT_PICKUP_POINT_ID,
             );
             if (res?.success && res?.data) {
                 setProduct(res.data);
@@ -194,7 +195,7 @@ const ProjectDetailsScreen = ({ navigation, route }) => {
                 case "CustomerReviews":
                     return (
                         <>
-                            <CustomerReviews />
+                            <CustomerReviews reviews={product?.reviews} />
                         </>
                     );
                 case "HomeBanner1":

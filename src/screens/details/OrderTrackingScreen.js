@@ -1,45 +1,3 @@
-// import { StyleSheet, ScrollView } from "react-native";
-
-// import { SafeAreaView } from "react-native";
-// import MainHeader from "../../componend/common/MainHeader";
-// import OrderBox from "../../componend/ordertracking/OrderBox";
-// import TrackingHistory from "../../componend/ordertracking/TrackingHistory";
-// import OrderItems from "../../componend/ordertracking/OrderItems";
-// import DeliveryAddressBox from "../../componend/ordertracking/DeliveryAddressBox";
-// import CourierDetails from "../../componend/ordertracking/CourierDetails";
-// import OrderSummary from "../../componend/ordertracking/OrderSummary";
-// import NeedHelp from "../../componend/ordertracking/NeedHelp";
-
-// const OrderTrackingScreen = ({ navigation }) => {
-//     return (
-//         <SafeAreaView style={styles.container}>
-//             <MainHeader bgColor="#ffffff" />
-
-//             <ScrollView
-//                 contentContainerStyle={{ paddingTop: 15 }}
-//                 showsVerticalScrollIndicator={false}
-//             >
-//                 <OrderBox />
-//                 <TrackingHistory />
-//                 <OrderItems />
-//                 <DeliveryAddressBox />
-//                 <CourierDetails />
-//                 <OrderSummary />
-//                 <NeedHelp />
-//             </ScrollView>
-//         </SafeAreaView>
-//     );
-// };
-
-// const styles = StyleSheet.create({
-//     container: {
-//         flex: 1,
-//         backgroundColor: "#D7E9F2",
-//     },
-// });
-
-// export default OrderTrackingScreen;
-
 import React, { useEffect, useState } from "react";
 import {
     StyleSheet,
@@ -47,7 +5,6 @@ import {
     SafeAreaView,
     View,
     Text,
-    ActivityIndicator,
     TouchableOpacity,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -60,30 +17,9 @@ import CourierDetails from "../../componend/ordertracking/CourierDetails";
 import OrderSummary from "../../componend/ordertracking/OrderSummary";
 import NeedHelp from "../../componend/ordertracking/NeedHelp";
 import { getOrderTracking } from "../../api/commonApi";
-import { SkeletonBox } from "../../componend/common/SkeletonLoader";
+import { OrderTrackingSkeleton } from "../../componend/common/OrderTrackingSkeletonLoader";
 
 const AUTH_USER_KEY = "baofeng_auth_user";
-
-// ── Loading skeleton ───────────────────────────────────────────
-const TrackingSkeleton = () => (
-    <View style={{ paddingTop: 15, gap: 15 }}>
-        {[180, 260, 140, 140, 130, 160].map((h, i) => (
-            <SkeletonBox
-                key={i}
-                width="100%"
-                height={h}
-                borderRadius={24}
-                style={{
-                    marginHorizontal: 10,
-                    width: undefined,
-                    alignSelf: "stretch",
-                    marginLeft: 10,
-                    marginRight: 10,
-                }}
-            />
-        ))}
-    </View>
-);
 
 const OrderTrackingScreen = ({ navigation, route }) => {
     const [order, setOrder] = useState(null);
@@ -239,9 +175,10 @@ const OrderTrackingScreen = ({ navigation, route }) => {
             {loading ? (
                 <ScrollView
                     showsVerticalScrollIndicator={false}
-                    style={{ backgroundColor: "#fff", marginTop: 1 }}
+                    // style={{ backgroundColor: "#fff", marginTop: 1 }}
                 >
-                    <TrackingSkeleton />
+                    {/* <TrackingSkeleton /> */}
+                    <OrderTrackingSkeleton />
                 </ScrollView>
             ) : error ? (
                 <View style={styles.errorBox}>
